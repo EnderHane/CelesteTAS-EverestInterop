@@ -2,7 +2,7 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <AssemblyName>Celeste Studio</AssemblyName>
-        <TargetFramework>net452</TargetFramework>
+        <TargetFramework>net48</TargetFramework>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <LangVersion>10</LangVersion>
         <AssemblyTitle>Celeste Studio</AssemblyTitle>
