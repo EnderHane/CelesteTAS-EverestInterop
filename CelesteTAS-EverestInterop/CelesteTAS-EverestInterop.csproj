@@ -33,7 +33,6 @@
         <NoWarn>CS1591</NoWarn>
         <PlatformTarget>AnyCPU</PlatformTarget>
     </PropertyGroup>
-    <Import Project="..\StudioCommunication\StudioCommunication.projitems" Label="Shared" />
     <ItemGroup>
         <PackageReference Include="DotNetZip" Version="1.13.8" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" />
@@ -76,7 +75,5 @@
         <None Remove="lib-stripped\**" />
         <None Remove="CelesteTAS-EverestInterop.csproj.DotSettings" />
     </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Source" />
-    </ItemGroup>
+    <Import Project="..\TasCommunication\TasCommunication.projitems" Label="Shared" />
 </Project>

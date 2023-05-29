@@ -19,9 +19,9 @@ using TAS.Utils;
 
 namespace TAS.Communication;
 
-public sealed class StudioCommunicationClient : StudioCommunicationBase {
+public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommunicationClient {
     private static Dictionary<string, ModUpdateInfo> modUpdateInfos;
-    public static StudioCommunicationClient Instance { get; private set; }
+    internal static StudioCommunicationClient Instance { get; private set; }
 
     private byte[] lastBindingsData = new byte[0];
     private readonly List<Thread> threads = new();
@@ -43,7 +43,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase {
         Destroy();
     }
 
-    public static bool Run() {
+    internal static bool Run() {
         if (Instance != null) {
             return false;
         }
@@ -89,6 +89,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase {
     /// </summary>
     /// <param name="target"></param>
     /// <returns></returns>
+    [Obsolete]
     public static StudioCommunicationClient RunExternal(string target) {
         StudioCommunicationClient client = new StudioCommunicationClient(target);
         RunThread($"StudioCom Client_{target}");
@@ -405,11 +406,11 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase {
 
         celeste.SendModVersion();
 
-        Initialized = true;
+        IsInitialized = true;
     }
 
     private void SendStateNow(StudioInfo studioInfo, bool canFail) {
-        if (Initialized) {
+        if (IsInitialized) {
             byte[] data = studioInfo.ToByteArray();
             Message message = new(MessageID.SendState, data);
             if (canFail) {

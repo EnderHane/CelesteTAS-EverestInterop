@@ -6,16 +6,17 @@
     <SharedGUID>FA3F6463-0E8F-4396-BC13-707A1CFA8BFA</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>StudioCommunication</Import_RootNamespace>
+    <Import_RootNamespace>TasCommunication</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Actions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BinaryFormatterHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommunicationBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)State.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StudioCommunicationBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudioCommunication\StudioCommunicationBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudioInfo.cs" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -34,7 +34,7 @@ public partial class Studio : BaseForm {
     private int totalFrames, currentFrame;
     private bool updating;
 
-    private bool DisableTyping => tasStates.HasFlag(States.Enable) && !tasStates.HasFlag(States.FrameStep) && StudioCommunicationBase.Initialized ||
+    private bool DisableTyping => tasStates.HasFlag(States.Enable) && !tasStates.HasFlag(States.FrameStep) && (CommunicationServer.Instance?.IsInitialized ?? false) ||
                                   CommunicationWrapper.Forwarding;
 
     private string TitleBarText =>
@@ -286,7 +286,7 @@ public partial class Studio : BaseForm {
     private void TASStudio_FormClosed(object sender, FormClosedEventArgs e) {
         Settings.StopWatcher();
         SaveSettings();
-        StudioCommunicationServer.Instance?.SendPath(string.Empty);
+        CommunicationServer.Instance?.SendPath(string.Empty);
         Thread.Sleep(50);
     }
 
@@ -375,7 +375,7 @@ public partial class Studio : BaseForm {
                         CopyGameInfo();
                         break;
                     case Keys.D: // Ctrl + Shift + D
-                        StudioCommunicationServer.Instance?.ExternalReset();
+                        CommunicationServer.Instance?.ExternalReset();
                         break;
                     case Keys.L: // Ctrl + Shift + L
                         CombineInputs(false);
@@ -401,9 +401,9 @@ public partial class Studio : BaseForm {
     }
 
     private void SaveAsFile() {
-        StudioCommunicationServer.Instance?.WriteWait();
+        CommunicationServer.Instance?.WriteWait();
         richText.SaveNewFile();
-        StudioCommunicationServer.Instance?.SendPath(CurrentFileName);
+        CommunicationServer.Instance?.SendPath(CurrentFileName);
         Text = TitleBarText;
         UpdateRecentFiles();
     }
@@ -491,7 +491,7 @@ public partial class Studio : BaseForm {
             return;
         }
 
-        StudioCommunicationServer.Instance?.WriteWait();
+        CommunicationServer.Instance?.WriteWait();
 
         Tuple<string, int> tuple = new(CurrentFileName, richText.Selection.Start.iLine);
         if (richText.OpenFile(fileName)) {
@@ -505,7 +505,7 @@ public partial class Studio : BaseForm {
             }
         }
 
-        StudioCommunicationServer.Instance?.SendPath(CurrentFileName);
+        CommunicationServer.Instance?.SendPath(CurrentFileName);
         Text = TitleBarText;
     }
 
@@ -725,7 +725,7 @@ public partial class Studio : BaseForm {
     private string GetDataFromGame(GameDataType? gameDataTypes, object arg = null) {
         CommunicationWrapper.ReturnData = null;
         if (gameDataTypes.HasValue) {
-            StudioCommunicationServer.Instance.GetDataFromGame(gameDataTypes.Value, arg);
+            CommunicationServer.Instance.GetDataFromGame(gameDataTypes.Value, arg);
         }
 
         int sleepTimeout = 150;
@@ -742,11 +742,11 @@ public partial class Studio : BaseForm {
     }
 
     private void ToggleGameSetting(string settingName, object value, object sender, bool showResult = true) {
-        if (StudioCommunicationServer.Instance == null) {
+        if (CommunicationServer.Instance == null) {
             return;
         }
 
-        StudioCommunicationServer.Instance.ToggleGameSetting(settingName, value);
+        CommunicationServer.Instance.ToggleGameSetting(settingName, value);
         if (showResult && GetDataFromGame(null) is { } settingStatus) {
             ShowTooltip($"{sender.ToString().Replace("&", "")}: {settingStatus}");
         }
@@ -771,7 +771,7 @@ public partial class Studio : BaseForm {
         bool lastHooked = false;
         while (true) {
             try {
-                bool hooked = StudioCommunicationBase.Initialized;
+                bool hooked = (CommunicationServer.Instance?.IsInitialized ?? false);
                 if (lastHooked != hooked) {
                     lastHooked = hooked;
                     Invoke((Action) delegate { EnableStudio(hooked); });
@@ -824,7 +824,7 @@ public partial class Studio : BaseForm {
                 richText.ReloadFile();
             }
 
-            StudioCommunicationServer.Run();
+            CommunicationServer.Run();
         }
     }
 
@@ -858,7 +858,7 @@ public partial class Studio : BaseForm {
     private void FixSomeBugsWhenOutOfMinimized() {
         if (lastWindowState == FormWindowState.Minimized && WindowState == FormWindowState.Normal) {
             richText.ScrollLeft();
-            StudioCommunicationServer.Instance?.ExternalReset();
+            CommunicationServer.Instance?.ExternalReset();
         }
 
         lastWindowState = WindowState;
@@ -896,7 +896,7 @@ public partial class Studio : BaseForm {
     }
 
     private void UpdateStatusBar() {
-        if (StudioCommunicationBase.Initialized) {
+        if ((CommunicationServer.Instance?.IsInitialized ?? false)) {
             string gameInfo = CommunicationWrapper.StudioInfo?.GameInfo ?? string.Empty;
             statusBarBuilder.Clear();
             if (currentFrame > 0) {
@@ -1610,7 +1610,7 @@ public partial class Studio : BaseForm {
     }
 
     private void reconnectStudioAndCelesteToolStripMenuItem_Click(object sender, EventArgs e) {
-        StudioCommunicationServer.Instance?.ExternalReset();
+        CommunicationServer.Instance?.ExternalReset();
     }
 
     private void insertModInfoStripMenuItem1_Click(object sender, EventArgs e) {
@@ -1679,12 +1679,12 @@ public partial class Studio : BaseForm {
         Settings.Instance.ShowGameInfo = !Settings.Instance.ShowGameInfo;
         SaveSettings();
         if (Settings.Instance.ShowGameInfo) {
-            StudioCommunicationServer.Instance?.ExternalReset();
+            CommunicationServer.Instance?.ExternalReset();
         }
     }
 
     private void convertToLibTASInputsToolStripMenuItem_Click(object sender, EventArgs e) {
-        if (!StudioCommunicationBase.Initialized || Process.GetProcessesByName("Celeste").Length == 0) {
+        if (!(CommunicationServer.Instance?.IsInitialized ?? false) || Process.GetProcessesByName("Celeste").Length == 0) {
             MessageBox.Show("This feature requires the support of CelesteTAS mod, please launch the game.",
                 "Information",
                 MessageBoxButtons.OK,
@@ -1706,7 +1706,7 @@ public partial class Studio : BaseForm {
             }
 
             if (dialog.ShowDialog() == DialogResult.OK) {
-                StudioCommunicationServer.Instance.ConvertToLibTas(dialog.FileName);
+                CommunicationServer.Instance.ConvertToLibTas(dialog.FileName);
             }
         }
     }
@@ -1719,7 +1719,7 @@ public partial class Studio : BaseForm {
         }
 
         string initText = $"RecordCount: 1{Environment.NewLine}";
-        if (StudioCommunicationBase.Initialized && Process.GetProcessesByName("Celeste").Length > 0) {
+        if ((CommunicationServer.Instance?.IsInitialized ?? false) && Process.GetProcessesByName("Celeste").Length > 0) {
             if (GetDataFromGame(GameDataType.ConsoleCommand, true) is { } simpleConsoleCommand) {
                 initText += $"{Environment.NewLine}{simpleConsoleCommand}{Environment.NewLine}   1{Environment.NewLine}";
                 if (GetDataFromGame(GameDataType.ModUrl) is { } modUrl) {
@@ -1802,7 +1802,7 @@ public partial class Studio : BaseForm {
     }
 
     private void SetDecimals(string settingName, object sender, bool floatNumber = false) {
-        if (StudioCommunicationServer.Instance == null) {
+        if (CommunicationServer.Instance == null) {
             return;
         }
 

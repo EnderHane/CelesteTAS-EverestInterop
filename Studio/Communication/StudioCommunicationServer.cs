@@ -9,11 +9,11 @@ using StudioCommunication;
 
 namespace CelesteStudio.Communication;
 
-public sealed class StudioCommunicationServer : StudioCommunicationBase {
+public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommunicationServer {
     private StudioCommunicationServer() { }
-    public static StudioCommunicationServer Instance { get; private set; }
+    internal static StudioCommunicationServer Instance { get; private set; }
 
-    public static void Run() {
+    internal static void Run() {
         //this should be modified to check if there's another studio open as well
         if (Instance != null) {
             return;
@@ -150,7 +150,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase {
 
         studio.ProcessVersionInfo(lastMessage.Data);
 
-        Initialized = true;
+        IsInitialized = true;
     }
 
     public void SendPath(string path) => PendingWrite = () => SendPathNow(path, false);
@@ -160,7 +160,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase {
     public void GetDataFromGame(GameDataType gameDataType, object arg) => PendingWrite = () => GetGameDataNow(gameDataType, arg);
 
     private void SendPathNow(string path, bool canFail) {
-        if (Initialized || !canFail) {
+        if (IsInitialized || !canFail) {
             byte[] pathBytes = path != null ? Encoding.UTF8.GetBytes(path) : new byte[0];
 
             WriteMessageGuaranteed(new Message(MessageID.SendPath, pathBytes));
@@ -168,7 +168,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase {
     }
 
     private void ConvertToLibTasNow(string path) {
-        if (!Initialized) {
+        if (!IsInitialized) {
             return;
         }
 
@@ -178,7 +178,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase {
     }
 
     private void SendHotkeyPressedNow(HotkeyID hotkey, bool released) {
-        if (!Initialized) {
+        if (!IsInitialized) {
             return;
         }
 
@@ -187,7 +187,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase {
     }
 
     private void ToggleGameSettingNow(string settingName, object value) {
-        if (!Initialized) {
+        if (!IsInitialized) {
             return;
         }
 
@@ -198,7 +198,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase {
     }
 
     private void GetGameDataNow(GameDataType gameDataType, object arg) {
-        if (!Initialized) {
+        if (!IsInitialized) {
             return;
         }
 

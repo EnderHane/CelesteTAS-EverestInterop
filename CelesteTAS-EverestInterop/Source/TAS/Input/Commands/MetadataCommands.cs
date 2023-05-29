@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -115,6 +115,6 @@ public static class MetadataCommands {
         bool needsReload = Manager.Controller.NeedsReload;
         File.WriteAllLines(tasFilePath, allLines);
         Manager.Controller.NeedsReload = needsReload;
-        StudioCommunicationClient.Instance?.UpdateLines(updateLines);
+        CommunicationClient.Instance?.UpdateLines(updateLines);
     }
 }

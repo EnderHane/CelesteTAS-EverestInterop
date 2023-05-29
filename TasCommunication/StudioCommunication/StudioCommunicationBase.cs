@@ -1,13 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Reflection;
 using System.Threading;
+using TasCommunication;
 
 namespace StudioCommunication;
 
-public class StudioCommunicationBase {
+public class StudioCommunicationBase : ICommunicationBase {
     private const int BufferSize = 0x100000;
 
     // ReSharper disable once MemberCanBePrivate.Global
@@ -30,6 +31,8 @@ public class StudioCommunicationBase {
     private bool waiting;
 
     private static readonly bool runningOnMono = Type.GetType("Mono.Runtime") != null;
+
+    public bool IsInitialized { get; protected set; }
 
     protected StudioCommunicationBase(string target = "CelesteTAS") {
         if (PlatformUtils.Wine || PlatformUtils.NonWindows) {
@@ -57,8 +60,6 @@ public class StudioCommunicationBase {
 
         AttachedCom.Add(this);
     }
-
-    public static bool Initialized { get; protected set; }
 
     ~StudioCommunicationBase() {
         sharedMemory.Dispose();
@@ -220,7 +221,7 @@ public class StudioCommunicationBase {
     }
 
     protected void ForceReset(NeedsResetException e) {
-        Initialized = false;
+        IsInitialized = false;
         waiting = false;
         failedWrites = 0;
         PendingWrite = null;

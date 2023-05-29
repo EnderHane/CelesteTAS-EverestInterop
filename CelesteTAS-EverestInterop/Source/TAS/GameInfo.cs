@@ -10,6 +10,7 @@ using Monocle;
 using MonoMod.Cil;
 using MonoMod.Utils;
 using StudioCommunication;
+using TAS.Communication;
 using TAS.EverestInterop.InfoHUD;
 using TAS.Module;
 using TAS.Utils;
@@ -60,7 +61,7 @@ public static class GameInfo {
 
     public static string StudioInfo {
         get {
-            List<string> infos = new() {Status};
+            List<string> infos = new() { Status };
 
             if (InfoMouse.MouseInfo.IsNotEmpty()) {
                 infos.Add(InfoMouse.MouseInfo);
@@ -80,7 +81,7 @@ public static class GameInfo {
 
     public static string ExactStudioInfo {
         get {
-            List<string> infos = new() {ExactStatus};
+            List<string> infos = new() { ExactStatus };
 
             if (InfoMouse.MouseInfo.IsNotEmpty()) {
                 infos.Add(InfoMouse.MouseInfo);
@@ -255,7 +256,7 @@ public static class GameInfo {
                 string statuses = GetStatuses(level, player);
 
                 string timers = string.Empty;
-                Follower firstRedBerryFollower = player.Leader.Followers.Find(follower => follower.Entity is Strawberry {Golden: false});
+                Follower firstRedBerryFollower = player.Leader.Followers.Find(follower => follower.Entity is Strawberry { Golden: false });
                 if (firstRedBerryFollower?.Entity is Strawberry firstRedBerry) {
                     float collectTimer = firstRedBerry.collectTimer;
                     if (collectTimer <= 0.15f) {
@@ -328,14 +329,14 @@ public static class GameInfo {
             ExactStatus = ExactStatusWithoutTime + $"[{LevelName}] Timer: {ChapterTime}";
 
             if (TasSettings.InfoHud && (TasSettings.InfoWatchEntity & HudOptions.HudOnly) != 0 ||
-                (TasSettings.InfoWatchEntity & HudOptions.StudioOnly) != 0 && StudioCommunicationBase.Initialized) {
+                (TasSettings.InfoWatchEntity & HudOptions.StudioOnly) != 0 && (CommunicationClient.Instance?.IsInitialized ?? false)) {
                 WatchingInfo = InfoWatchEntity.GetInfo();
             } else {
                 WatchingInfo = string.Empty;
             }
 
             if (TasSettings.InfoHud && (TasSettings.InfoCustom & HudOptions.HudOnly) != 0 ||
-                (TasSettings.InfoCustom & HudOptions.StudioOnly) != 0 && StudioCommunicationBase.Initialized) {
+                (TasSettings.InfoCustom & HudOptions.StudioOnly) != 0 && (CommunicationClient.Instance?.IsInitialized ?? false)) {
                 CustomInfo = InfoCustom.GetInfo();
             } else {
                 CustomInfo = string.Empty;
@@ -386,7 +387,7 @@ public static class GameInfo {
                 statuses.Add($"Jump({jumpTimer})");
             }
 
-            if (player.StateMachine.State == Player.StNormal && (player.Speed.Y > 0f || player.Holding is {SlowFall: true})) {
+            if (player.StateMachine.State == Player.StNormal && (player.Speed.Y > 0f || player.Holding is { SlowFall: true })) {
                 statuses.Add($"MaxFall({ConvertSpeedUnit(player.maxFall, TasSettings.SpeedUnit):0.##})");
             }
 

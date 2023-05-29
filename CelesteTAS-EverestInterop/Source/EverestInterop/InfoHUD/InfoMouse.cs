@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Celeste;
 using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
-using StudioCommunication;
+using TAS.Communication;
 using TAS.Module;
 using TAS.Utils;
 
@@ -44,7 +44,7 @@ public static class InfoMouse {
             return;
         }
 
-        if (!TasSettings.InfoHud && !StudioCommunicationBase.Initialized) {
+        if (!TasSettings.InfoHud && !(CommunicationClient.Instance?.IsInitialized ?? false)) {
             return;
         }
 

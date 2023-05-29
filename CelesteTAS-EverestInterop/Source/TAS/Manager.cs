@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
@@ -220,7 +220,7 @@ public static class Manager {
             GameInfo.LevelName,
             GameInfo.ChapterTime
         );
-        StudioCommunicationClient.Instance?.SendState(studioInfo, !ShouldForceState);
+        CommunicationClient.Instance?.SendState(studioInfo, !ShouldForceState);
     }
 
     public static bool IsLoading() {

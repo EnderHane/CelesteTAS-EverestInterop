@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -70,7 +70,7 @@ static class CommunicationWrapper {
                     slowForwarding = true;
                 }
 
-                StudioCommunicationServer.Instance?.SendHotkeyPressed(hotkeyIDs);
+                CommunicationServer.Instance?.SendHotkeyPressed(hotkeyIDs);
                 anyPressed = true;
             }
         }
@@ -100,7 +100,7 @@ static class CommunicationWrapper {
         }
 
         if (!pressed) {
-            StudioCommunicationServer.Instance.SendHotkeyPressed(hotkeyId, true);
+            CommunicationServer.Instance.SendHotkeyPressed(hotkeyId, true);
             forwarding = false;
         }
     }

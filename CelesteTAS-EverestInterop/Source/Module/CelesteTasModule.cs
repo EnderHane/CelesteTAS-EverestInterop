@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Celeste;
 using Celeste.Mod;
 using FMOD.Studio;
@@ -25,7 +25,7 @@ public class CelesteTasModule : EverestModule {
         AttributeUtils.Invoke<InitializeAttribute>();
 
         // required run after TasCommandAttribute.CollectMethods()
-        StudioCommunicationClient.Run();
+        CommunicationClient.Run();
     }
 
     public override void Load() {

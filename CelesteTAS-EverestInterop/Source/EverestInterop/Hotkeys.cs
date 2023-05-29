@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -257,7 +257,7 @@ public static class Hotkeys {
 
     private static void InputOnInitialize(On.Celeste.Input.orig_Initialize orig) {
         orig();
-        StudioCommunicationClient.Instance?.SendCurrentBindings();
+        CommunicationClient.Instance?.SendCurrentBindings();
     }
 
     private static void ModReload(ILContext il) {
