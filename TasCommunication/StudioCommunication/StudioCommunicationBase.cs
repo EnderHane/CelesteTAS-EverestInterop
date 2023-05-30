@@ -164,7 +164,7 @@ public class StudioCommunicationBase : ICommunicationBase {
         if (!local) {
             foreach (var com in AttachedCom) {
                 if (com != this) {
-                    com.PendingWrite = com.PendingWrite ?? (() => WriteMessage(message));
+                    com.PendingWrite ??= (() => WriteMessage(message));
                 }
             }
         }
