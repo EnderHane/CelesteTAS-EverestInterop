@@ -50,10 +50,6 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
 
         Instance = new StudioCommunicationClient();
 
-#if DEBUG
-        //SetupDebugVariables();
-#endif
-
         RunThread("StudioCom Client");
         return true;
     }
