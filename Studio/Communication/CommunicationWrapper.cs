@@ -9,7 +9,7 @@ using Char = CelesteStudio.RichText.Char;
 
 namespace CelesteStudio.Communication;
 
-static class CommunicationWrapper {
+internal static class CommunicationWrapper {
     public static StudioInfo? StudioInfo;
     public static string ReturnData;
     private static Dictionary<HotkeyID, List<Keys>> bindings;
