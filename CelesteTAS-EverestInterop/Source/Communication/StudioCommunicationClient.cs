@@ -405,7 +405,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
         IsInitialized = true;
     }
 
-    private void SendStateNow(StudioInfo studioInfo, bool canFail) {
+    private void SendStateNow(TasInfo studioInfo, bool canFail) {
         if (IsInitialized) {
             byte[] data = studioInfo.ToByteArray();
             Message message = new(MessageID.SendState, data);
@@ -417,7 +417,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
         }
     }
 
-    public void SendState(StudioInfo studioInfo, bool canFail) {
+    public void SendState(TasInfo studioInfo, bool canFail) {
         PendingWrite = () => SendStateNow(studioInfo, canFail);
     }
 

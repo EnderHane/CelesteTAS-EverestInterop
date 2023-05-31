@@ -73,7 +73,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
 
     private void ProcessSendState(byte[] data) {
         try {
-            StudioInfo studioInfo = StudioInfo.FromByteArray(data);
+            TasInfo studioInfo = TasInfo.FromByteArray(data);
             CommunicationWrapper.StudioInfo = studioInfo;
         } catch (InvalidCastException) {
             string studioVersion = Studio.Version.ToString(3);

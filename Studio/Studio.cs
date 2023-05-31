@@ -833,12 +833,12 @@ public partial class Studio : BaseForm {
             Invoke((Action) UpdateValues);
         } else {
             if (CommunicationWrapper.StudioInfo != null) {
-                StudioInfo studioInfo = CommunicationWrapper.StudioInfo.Value;
+                TasInfo studioInfo = CommunicationWrapper.StudioInfo.Value;
                 richText.PlayingLine = studioInfo.CurrentLine;
                 richText.CurrentLineSuffix = studioInfo.CurrentLineSuffix;
                 richText.SaveStateLine = studioInfo.SaveStateLine;
                 currentFrame = studioInfo.CurrentFrameInTas;
-                tasStates = (States) studioInfo.tasStates;
+                tasStates = (States) studioInfo.TasStates;
                 if (tasStates.HasFlag(States.Enable) && !tasStates.HasFlag(States.FrameStep)) {
                     totalFrames = studioInfo.TotalFrames;
                 }

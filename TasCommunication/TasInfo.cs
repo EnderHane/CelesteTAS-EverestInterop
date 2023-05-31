@@ -1,20 +1,20 @@
-﻿namespace StudioCommunication;
+namespace StudioCommunication;
 
 // ReSharper disable once StructCanBeMadeReadOnly
-public record struct StudioInfo {
+public readonly record struct TasInfo {
     public readonly int CurrentLine;
     public readonly string CurrentLineSuffix;
     public readonly int CurrentFrameInTas;
     public readonly int TotalFrames;
     public readonly int SaveStateLine;
-    public readonly int tasStates;
+    public readonly int TasStates;
     public readonly string GameInfo;
     public readonly string LevelName;
     public readonly string ChapterTime;
 
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once ConvertToPrimaryConstructor
-    public StudioInfo(
+    public TasInfo(
         int currentLine, string currentLineSuffix, int currentFrameInTas, int totalFrames, int saveStateLine, int tasStates,
         string gameInfo, string levelName, string chapterTime) {
         CurrentLine = currentLine;
@@ -22,7 +22,7 @@ public record struct StudioInfo {
         CurrentFrameInTas = currentFrameInTas;
         TotalFrames = totalFrames;
         SaveStateLine = saveStateLine;
-        this.tasStates = tasStates;
+        TasStates = tasStates;
         GameInfo = gameInfo;
         LevelName = levelName;
         ChapterTime = chapterTime;
@@ -36,7 +36,7 @@ public record struct StudioInfo {
             CurrentFrameInTas,
             TotalFrames,
             SaveStateLine,
-            tasStates,
+            TasStates,
             GameInfo,
             LevelName,
             ChapterTime,
@@ -44,9 +44,9 @@ public record struct StudioInfo {
     }
 
     // ReSharper disable once UnusedMember.Global
-    public static StudioInfo FromByteArray(byte[] data) {
+    public static TasInfo FromByteArray(byte[] data) {
         object[] values = BinaryFormatterHelper.FromByteArray<object[]>(data);
-        return new StudioInfo(
+        return new TasInfo(
             (int) values[0],
             values[1] as string,
             (int) values[2],

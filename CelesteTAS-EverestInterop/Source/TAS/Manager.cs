@@ -209,7 +209,7 @@ public static class Manager {
         }
 
         InputFrame previous = Controller.Previous;
-        StudioInfo studioInfo = new(
+        TasInfo studioInfo = new(
             previous?.Line ?? -1,
             $"{Controller.CurrentFrameInInput + (previous?.FrameOffset ?? 0)}{previous?.RepeatString ?? ""}",
             Controller.CurrentFrameInTas,

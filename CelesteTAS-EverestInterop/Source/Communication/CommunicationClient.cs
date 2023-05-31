@@ -17,7 +17,7 @@ public interface ICommunicationClient : ICommunicationBase {
 
     void SendCurrentBindings(bool forceSend = false);
 
-    void SendState(StudioInfo studioInfo, bool canFail);
+    void SendState(TasInfo studioInfo, bool canFail);
 
     void UpdateLines(Dictionary<int, string> lines);
 

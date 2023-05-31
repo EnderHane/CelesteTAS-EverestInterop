@@ -14,7 +14,6 @@ using StudioCommunication;
 using TAS.Communication;
 using TAS.Module;
 using TAS.Utils;
-using InputButtons = Microsoft.Xna.Framework.Input.Buttons;
 using Hud = TAS.EverestInterop.InfoHUD.InfoHud;
 using Camera = TAS.EverestInterop.CenterCamera;
 

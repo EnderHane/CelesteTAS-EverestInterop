@@ -10,7 +10,7 @@ using Char = CelesteStudio.RichText.Char;
 namespace CelesteStudio.Communication;
 
 internal static class CommunicationWrapper {
-    public static StudioInfo? StudioInfo;
+    public static TasInfo? StudioInfo;
     public static string ReturnData;
     private static Dictionary<HotkeyID, List<Keys>> bindings;
     private static bool fastForwarding;
@@ -28,8 +28,6 @@ internal static class CommunicationWrapper {
         bindings = newBindings;
     }
 
-    //"wrapper"
-    //This doesn't work in release build and i don't particularly care to figure out why.
     public static bool CheckControls(ref Message msg) {
         if (!Settings.Instance.SendInputsToCeleste
             || Environment.OSVersion.Platform == PlatformID.Unix
