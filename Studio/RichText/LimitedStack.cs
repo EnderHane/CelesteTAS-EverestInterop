@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace CelesteStudio.RichText;
 
@@ -26,7 +26,7 @@ public class LimitedStack<T> {
 
         int i = LastIndex;
         T item = items[i];
-        items[i] = default(T);
+        items[i] = default;
 
         count--;
 
@@ -35,7 +35,7 @@ public class LimitedStack<T> {
 
     public T Peek() {
         if (count == 0) {
-            return default(T);
+            return default;
         }
 
         return items[LastIndex];

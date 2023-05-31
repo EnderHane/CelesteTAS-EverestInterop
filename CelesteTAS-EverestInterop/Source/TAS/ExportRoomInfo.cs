@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +16,7 @@ public static class ExportRoomInfo {
     private static StreamWriter streamWriter;
     private static bool exporting;
     private static string lastRoomName;
-    private static readonly List<RoomInfo> roomInfos = new();
+    private static readonly List<RoomInfo> RoomInfos = new();
 
     [Load]
     private static void Load() {
@@ -39,7 +39,7 @@ public static class ExportRoomInfo {
         string roomName = session?.Level;
 
         if (Engine.Scene is Level {Completed: true} level) {
-            if (roomInfos.LastOrDefault() is {RoomName: { }} lastRoomInfo) {
+            if (RoomInfos.LastOrDefault() is {RoomName: { }} lastRoomInfo) {
                 lastRoomInfo.LeaveRoomChapterTime ??= level.Session.Time;
                 if (level.TimerStopped) {
                     lastRoomInfo.LeaveRoomFileTime ??= SaveData.Instance?.Time;
@@ -49,24 +49,24 @@ public static class ExportRoomInfo {
 
         if (lastRoomName != roomName) {
             if (roomName.IsNotNullOrEmpty() && session != null) {
-                if (roomInfos.LastOrDefault() is { } lastRoomInfo && lastRoomInfo.AreaKey == session.Area) {
+                if (RoomInfos.LastOrDefault() is { } lastRoomInfo && lastRoomInfo.AreaKey == session.Area) {
                     lastRoomInfo.LeaveRoomChapterTime ??= session.Time;
                     lastRoomInfo.LeaveRoomFileTime ??= SaveData.Instance?.Time;
                 }
 
-                roomInfos.Add(new RoomInfo {
+                RoomInfos.Add(new RoomInfo {
                     AreaKey = session.Area,
                     RoomName = roomName,
                     EnterRoomChapterTime = session.Time,
                     EnterRoomFileTime = SaveData.Instance?.Time
                 });
             } else {
-                if (roomInfos.LastOrDefault() is { } lastRoomInfo) {
+                if (RoomInfos.LastOrDefault() is { } lastRoomInfo) {
                     lastRoomInfo.LeaveRoomChapterTime ??= SaveData.Instance?.CurrentSession_Safe?.Time;
                     lastRoomInfo.LeaveRoomFileTime ??= SaveData.Instance?.Time;
                 }
 
-                roomInfos.Add(new RoomInfo());
+                RoomInfos.Add(new RoomInfo());
             }
         }
 
@@ -89,7 +89,7 @@ public static class ExportRoomInfo {
 
     private static void BeginExport(string path) {
         exporting = true;
-        roomInfos.Clear();
+        RoomInfos.Clear();
         streamWriter?.Dispose();
         if (Path.GetDirectoryName(path) is { } dir && dir.IsNotEmpty()) {
             Directory.CreateDirectory(dir);
@@ -104,7 +104,7 @@ public static class ExportRoomInfo {
     private static void EndExport() {
         ExportInfo();
         exporting = false;
-        roomInfos.Clear();
+        RoomInfos.Clear();
         streamWriter?.Dispose();
     }
 
@@ -113,20 +113,20 @@ public static class ExportRoomInfo {
             return;
         }
 
-        if (roomInfos.FirstOrDefault() is {AreaKey: null}) {
-            roomInfos.RemoveAt(0);
+        if (RoomInfos.FirstOrDefault() is {AreaKey: null}) {
+            RoomInfos.RemoveAt(0);
         }
 
-        if (roomInfos.LastOrDefault() is {AreaKey: null}) {
-            roomInfos.RemoveAt(roomInfos.Count - 1);
+        if (RoomInfos.LastOrDefault() is {AreaKey: null}) {
+            RoomInfos.RemoveAt(RoomInfos.Count - 1);
         }
 
-        if (roomInfos.LastOrDefault() is { } lastRoomInfo) {
+        if (RoomInfos.LastOrDefault() is { } lastRoomInfo) {
             lastRoomInfo.LeaveRoomChapterTime ??= SaveData.Instance?.CurrentSession_Safe?.Time;
             lastRoomInfo.LeaveRoomFileTime ??= SaveData.Instance?.Time;
         }
 
-        foreach (RoomInfo roomInfo in roomInfos) {
+        foreach (RoomInfo roomInfo in RoomInfos) {
             streamWriter.WriteLine(roomInfo);
         }
     }

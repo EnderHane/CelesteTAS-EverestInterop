@@ -14,6 +14,7 @@ using TAS.Communication;
 using TAS.EverestInterop.InfoHUD;
 using TAS.Module;
 using TAS.Utils;
+using TasCommunication;
 
 namespace TAS;
 

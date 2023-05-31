@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,23 +9,23 @@ namespace CelesteStudio.RichText;
 /// Diapason of text chars
 /// </summary>
 public class Range : IEnumerable<Place> {
-    public readonly RichText tb;
-    List<Place> cachedCharIndexToPlace;
+    public readonly RichText Tb;
+    private List<Place> cachedCharIndexToPlace;
 
-    string cachedText;
-    int cachedTextVersion = -1;
+    private string cachedText;
+    private int cachedTextVersion = -1;
 
     private bool columnSelectionMode;
-    Place end;
-    int preferedPos = -1;
-    Place start;
-    int updating = 0;
+    private Place end;
+    private int preferedPos = -1;
+    private Place start;
+    private int updating = 0;
 
     /// <summary>
     /// Constructor
     /// </summary>
     public Range(RichText tb) {
-        this.tb = tb;
+        Tb = tb;
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public class Range : IEnumerable<Place> {
     public virtual bool IsEmpty {
         get {
             if (ColumnSelectionMode) {
-                return Start.iChar == End.iChar;
+                return Start.Char == End.Char;
             } else {
                 return Start == End;
             }
@@ -103,8 +103,8 @@ public class Range : IEnumerable<Place> {
                 return Text_ColumnSelectionMode;
             }
 
-            int fromLine = Math.Min(end.iLine, start.iLine);
-            int toLine = Math.Max(end.iLine, start.iLine);
+            int fromLine = Math.Min(end.Line, start.Line);
+            int toLine = Math.Max(end.Line, start.Line);
             int fromChar = FromX;
             int toChar = ToX;
             if (fromLine < 0) {
@@ -115,9 +115,9 @@ public class Range : IEnumerable<Place> {
             StringBuilder sb = new();
             for (int y = fromLine; y <= toLine; y++) {
                 int fromX = y == fromLine ? fromChar : 0;
-                int toX = y == toLine ? Math.Min(tb[y].Count - 1, toChar - 1) : tb[y].Count - 1;
+                int toX = y == toLine ? Math.Min(Tb[y].Count - 1, toChar - 1) : Tb[y].Count - 1;
                 for (int x = fromX; x <= toX; x++) {
-                    sb.Append(tb[y][x].c);
+                    sb.Append(Tb[y][x].Char_);
                 }
 
                 if (y != toLine && fromLine != toLine) {
@@ -134,10 +134,10 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public char CharAfterStart {
         get {
-            if (Start.iChar >= tb[Start.iLine].Count) {
+            if (Start.Char >= Tb[Start.Line].Count) {
                 return '\n';
             } else {
-                return tb[Start.iLine][Start.iChar].c;
+                return Tb[Start.Line][Start.Char].Char_;
             }
         }
     }
@@ -147,14 +147,14 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public char CharBeforeStart {
         get {
-            if (Start.iChar > tb[Start.iLine].Count) {
+            if (Start.Char > Tb[Start.Line].Count) {
                 return '\n';
             }
 
-            if (Start.iChar <= 0) {
+            if (Start.Char <= 0) {
                 return '\n';
             } else {
-                return tb[Start.iLine][Start.iChar - 1].c;
+                return Tb[Start.Line][Start.Char - 1].Char_;
             }
         }
     }
@@ -164,15 +164,15 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     internal int FromX {
         get {
-            if (end.iLine < start.iLine) {
-                return end.iChar;
+            if (end.Line < start.Line) {
+                return end.Char;
             }
 
-            if (end.iLine > start.iLine) {
-                return start.iChar;
+            if (end.Line > start.Line) {
+                return start.Char;
             }
 
-            return Math.Min(end.iChar, start.iChar);
+            return Math.Min(end.Char, start.Char);
         }
     }
 
@@ -181,24 +181,24 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     internal int ToX {
         get {
-            if (end.iLine < start.iLine) {
-                return start.iChar;
+            if (end.Line < start.Line) {
+                return start.Char;
             }
 
-            if (end.iLine > start.iLine) {
-                return end.iChar;
+            if (end.Line > start.Line) {
+                return end.Char;
             }
 
-            return Math.Max(end.iChar, start.iChar);
+            return Math.Max(end.Char, start.Char);
         }
     }
 
     public RangeRect Bounds {
         get {
-            int minX = Math.Min(Start.iChar, End.iChar);
-            int minY = Math.Min(Start.iLine, End.iLine);
-            int maxX = Math.Max(Start.iChar, End.iChar);
-            int maxY = Math.Max(Start.iLine, End.iLine);
+            int minX = Math.Min(Start.Char, End.Char);
+            int minY = Math.Min(Start.Line, End.Line);
+            int maxX = Math.Max(Start.Char, End.Char);
+            int maxY = Math.Max(Start.Line, End.Line);
             return new RangeRect(minY, minX, maxY, maxX);
         }
     }
@@ -212,8 +212,8 @@ public class Range : IEnumerable<Place> {
             yield break;
         }
 
-        int fromLine = Math.Min(end.iLine, start.iLine);
-        int toLine = Math.Max(end.iLine, start.iLine);
+        int fromLine = Math.Min(end.Line, start.Line);
+        int toLine = Math.Max(end.Line, start.Line);
         int fromChar = FromX;
         int toChar = ToX;
         if (fromLine < 0) {
@@ -223,7 +223,7 @@ public class Range : IEnumerable<Place> {
         //
         for (int y = fromLine; y <= toLine; y++) {
             int fromX = y == fromLine ? fromChar : 0;
-            int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
+            int toX = y == toLine ? Math.Min(toChar - 1, Tb[y].Count - 1) : Tb[y].Count - 1;
             for (int x = fromX; x <= toX; x++) {
                 yield return new Place(x, y);
             }
@@ -235,28 +235,28 @@ public class Range : IEnumerable<Place> {
     }
 
     public bool Contains(Place place) {
-        if (place.iLine < Math.Min(start.iLine, end.iLine)) {
+        if (place.Line < Math.Min(start.Line, end.Line)) {
             return false;
         }
 
-        if (place.iLine > Math.Max(start.iLine, end.iLine)) {
+        if (place.Line > Math.Max(start.Line, end.Line)) {
             return false;
         }
 
         Place s = start;
         Place e = end;
 
-        if (s.iLine > e.iLine || (s.iLine == e.iLine && s.iChar > e.iChar)) {
+        if (s.Line > e.Line || (s.Line == e.Line && s.Char > e.Char)) {
             var temp = s;
             s = e;
             e = temp;
         }
 
-        if (place.iLine == s.iLine && place.iChar < s.iChar) {
+        if (place.Line == s.Line && place.Char < s.Char) {
             return false;
         }
 
-        if (place.iLine == e.iLine && place.iChar > e.iChar) {
+        if (place.Line == e.Line && place.Char > e.Char) {
             return false;
         }
 
@@ -281,10 +281,10 @@ public class Range : IEnumerable<Place> {
         Place newStart = r1.Start > r2.Start ? r1.Start : r2.Start;
         Place newEnd = r1.End < r2.End ? r1.End : r2.End;
         if (newEnd < newStart) {
-            return new Range(tb, start, start);
+            return new Range(Tb, start, start);
         }
 
-        return tb.GetRange(newStart, newEnd);
+        return Tb.GetRange(newStart, newEnd);
     }
 
     /// <summary>
@@ -300,7 +300,7 @@ public class Range : IEnumerable<Place> {
         Place newStart = r1.Start < r2.Start ? r1.Start : r2.Start;
         Place newEnd = r1.End > r2.End ? r1.End : r2.End;
 
-        return tb.GetRange(newStart, newEnd);
+        return Tb.GetRange(newStart, newEnd);
     }
 
     /// <summary>
@@ -309,42 +309,42 @@ public class Range : IEnumerable<Place> {
     public void SelectAll() {
         ColumnSelectionMode = false;
 
-        if (tb.LinesCount == 0) {
+        if (Tb.LinesCount == 0) {
             Start = new Place(0, 0);
         } else {
             end = new Place(0, 0);
-            start = new Place(tb[tb.LinesCount - 1].Count, tb.LinesCount - 1);
+            start = new Place(Tb[Tb.LinesCount - 1].Count, Tb.LinesCount - 1);
         }
 
-        if (this == tb.Selection) {
-            tb.Invalidate();
+        if (this == Tb.Selection) {
+            Tb.Invalidate();
         }
     }
 
     public void SelectBlock() {
         ColumnSelectionMode = false;
 
-        if (tb.LinesCount == 0) {
+        if (Tb.LinesCount == 0) {
             Start = new Place(0, 0);
         } else {
             Normalize();
-            int startLine = start.iLine;
-            int endLine = end.iLine;
+            int startLine = start.Line;
+            int endLine = end.Line;
 
             while (startLine > 0) {
-                if (tb.Lines[startLine].Trim().Length == 0) {
+                if (Tb.Lines[startLine].Trim().Length == 0) {
                     break;
                 }
 
                 startLine--;
             }
 
-            if (startLine > 0 && startLine < tb.LinesCount - 1) {
+            if (startLine > 0 && startLine < Tb.LinesCount - 1) {
                 startLine++;
             }
 
-            while (endLine < tb.LinesCount - 1) {
-                if (tb.Lines[endLine].Trim().Length == 0) {
+            while (endLine < Tb.LinesCount - 1) {
+                if (Tb.Lines[endLine].Trim().Length == 0) {
                     break;
                 }
 
@@ -352,25 +352,25 @@ public class Range : IEnumerable<Place> {
             }
 
             start = new Place(0, startLine);
-            end = new Place(tb[endLine].Count, endLine);
+            end = new Place(Tb[endLine].Count, endLine);
         }
 
-        if (this == tb.Selection) {
-            tb.Invalidate();
+        if (this == Tb.Selection) {
+            Tb.Invalidate();
         }
     }
 
     internal void GetText(out string text, out List<Place> charIndexToPlace) {
         //try get cached text
-        if (tb.TextVersion == cachedTextVersion) {
+        if (Tb.TextVersion == cachedTextVersion) {
             text = cachedText;
             charIndexToPlace = cachedCharIndexToPlace;
             return;
         }
 
         //
-        int fromLine = Math.Min(end.iLine, start.iLine);
-        int toLine = Math.Max(end.iLine, start.iLine);
+        int fromLine = Math.Min(end.Line, start.Line);
+        int toLine = Math.Max(end.Line, start.Line);
         int fromChar = FromX;
         int toChar = ToX;
 
@@ -379,16 +379,16 @@ public class Range : IEnumerable<Place> {
         if (fromLine >= 0) {
             for (int y = fromLine; y <= toLine; y++) {
                 int fromX = y == fromLine ? fromChar : 0;
-                int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
+                int toX = y == toLine ? Math.Min(toChar - 1, Tb[y].Count - 1) : Tb[y].Count - 1;
                 for (int x = fromX; x <= toX; x++) {
-                    sb.Append(tb[y][x].c);
+                    sb.Append(Tb[y][x].Char_);
                     charIndexToPlace.Add(new Place(x, y));
                 }
 
                 if (y != toLine && fromLine != toLine) {
                     foreach (char c in Environment.NewLine) {
                         sb.Append(c);
-                        charIndexToPlace.Add(new Place(tb[y].Count /*???*/, y));
+                        charIndexToPlace.Add(new Place(Tb[y].Count /*???*/, y));
                     }
                 }
             }
@@ -399,7 +399,7 @@ public class Range : IEnumerable<Place> {
         //caching
         cachedText = text;
         cachedCharIndexToPlace = charIndexToPlace;
-        cachedTextVersion = tb.TextVersion;
+        cachedTextVersion = Tb.TextVersion;
     }
 
     /// <summary>
@@ -429,14 +429,14 @@ public class Range : IEnumerable<Place> {
             return GoRightThroughFolded_ColumnSelectionMode();
         }
 
-        if (start.iLine >= tb.LinesCount - 1 && start.iChar >= tb[tb.LinesCount - 1].Count) {
+        if (start.Line >= Tb.LinesCount - 1 && start.Char >= Tb[Tb.LinesCount - 1].Count) {
             return false;
         }
 
-        if (start.iChar < tb[start.iLine].Count) {
+        if (start.Char < Tb[start.Line].Count) {
             start.Offset(1, 0);
         } else {
-            start = new Place(0, start.iLine + 1);
+            start = new Place(0, start.Line + 1);
         }
 
         preferedPos = -1;
@@ -464,14 +464,14 @@ public class Range : IEnumerable<Place> {
     public bool GoLeftThroughFolded() {
         ColumnSelectionMode = false;
 
-        if (start.iChar == 0 && start.iLine == 0) {
+        if (start.Char == 0 && start.Line == 0) {
             return false;
         }
 
-        if (start.iChar > 0) {
+        if (start.Char > 0) {
             start.Offset(-1, 0);
         } else {
-            start = new Place(tb[start.iLine - 1].Count, start.iLine - 1);
+            start = new Place(Tb[start.Line - 1].Count, start.Line - 1);
         }
 
         preferedPos = -1;
@@ -490,16 +490,16 @@ public class Range : IEnumerable<Place> {
             }
         }
 
-        if (start.iChar != 0 || start.iLine != 0) {
-            if (start.iChar > 0 && tb.lineInfos[start.iLine].VisibleState == VisibleState.Visible) {
+        if (start.Char != 0 || start.Line != 0) {
+            if (start.Char > 0 && Tb.LineInfos[start.Line].VisibleState == VisibleState.Visible) {
                 start.Offset(-1, 0);
             } else {
-                int i = tb.FindPrevVisibleLine(start.iLine);
-                if (i == start.iLine) {
+                int i = Tb.FindPrevVisibleLine(start.Line);
+                if (i == start.Line) {
                     return;
                 }
 
-                start = new Place(tb[i].Count, i);
+                start = new Place(Tb[i].Count, i);
             }
         }
 
@@ -522,12 +522,12 @@ public class Range : IEnumerable<Place> {
             }
         }
 
-        if (start.iLine < tb.LinesCount - 1 || start.iChar < tb[tb.LinesCount - 1].Count) {
-            if (start.iChar < tb[start.iLine].Count && tb.lineInfos[start.iLine].VisibleState == VisibleState.Visible) {
+        if (start.Line < Tb.LinesCount - 1 || start.Char < Tb[Tb.LinesCount - 1].Count) {
+            if (start.Char < Tb[start.Line].Count && Tb.LineInfos[start.Line].VisibleState == VisibleState.Visible) {
                 start.Offset(1, 0);
             } else {
-                int i = tb.FindNextVisibleLine(start.iLine);
-                if (i == start.iLine) {
+                int i = Tb.FindNextVisibleLine(start.Line);
+                if (i == start.Line) {
                     return;
                 }
 
@@ -548,37 +548,37 @@ public class Range : IEnumerable<Place> {
         ColumnSelectionMode = false;
 
         if (!shift) {
-            if (start.iLine > end.iLine) {
+            if (start.Line > end.Line) {
                 Start = End;
                 return;
             }
         }
 
         if (preferedPos < 0) {
-            preferedPos = start.iChar - tb.lineInfos[start.iLine]
-                .GetWordWrapStringStartPosition(tb.lineInfos[start.iLine].GetWordWrapStringIndex(start.iChar));
+            preferedPos = start.Char - Tb.LineInfos[start.Line]
+                .GetWordWrapStringStartPosition(Tb.LineInfos[start.Line].GetWordWrapStringIndex(start.Char));
         }
 
-        int iWW = tb.lineInfos[start.iLine].GetWordWrapStringIndex(start.iChar);
+        int iWW = Tb.LineInfos[start.Line].GetWordWrapStringIndex(start.Char);
         if (iWW == 0) {
-            if (start.iLine <= 0) {
+            if (start.Line <= 0) {
                 return;
             }
 
-            int i = tb.FindPrevVisibleLine(start.iLine);
-            if (i == start.iLine) {
+            int i = Tb.FindPrevVisibleLine(start.Line);
+            if (i == start.Line) {
                 return;
             }
 
-            start.iLine = i;
-            iWW = tb.lineInfos[start.iLine].WordWrapStringsCount;
+            start.Line = i;
+            iWW = Tb.LineInfos[start.Line].WordWrapStringsCount;
         }
 
         if (iWW > 0) {
-            int finish = tb.lineInfos[start.iLine].GetWordWrapStringFinishPosition(iWW - 1, tb[start.iLine]);
-            start.iChar = tb.lineInfos[start.iLine].GetWordWrapStringStartPosition(iWW - 1) + preferedPos;
-            if (start.iChar > finish + 1) {
-                start.iChar = finish + 1;
+            int finish = Tb.LineInfos[start.Line].GetWordWrapStringFinishPosition(iWW - 1, Tb[start.Line]);
+            start.Char = Tb.LineInfos[start.Line].GetWordWrapStringStartPosition(iWW - 1) + preferedPos;
+            if (start.Char > finish + 1) {
+                start.Char = finish + 1;
             }
         }
 
@@ -593,34 +593,34 @@ public class Range : IEnumerable<Place> {
         ColumnSelectionMode = false;
 
         if (preferedPos < 0) {
-            preferedPos = start.iChar - tb.lineInfos[start.iLine]
-                .GetWordWrapStringStartPosition(tb.lineInfos[start.iLine].GetWordWrapStringIndex(start.iChar));
+            preferedPos = start.Char - Tb.LineInfos[start.Line]
+                .GetWordWrapStringStartPosition(Tb.LineInfos[start.Line].GetWordWrapStringIndex(start.Char));
         }
 
-        int pageHeight = tb.ClientRectangle.Height / tb.CharHeight - 1;
+        int pageHeight = Tb.ClientRectangle.Height / Tb.CharHeight - 1;
 
         for (int i = 0; i < pageHeight; i++) {
-            int iWW = tb.lineInfos[start.iLine].GetWordWrapStringIndex(start.iChar);
+            int iWW = Tb.LineInfos[start.Line].GetWordWrapStringIndex(start.Char);
             if (iWW == 0) {
-                if (start.iLine <= 0) {
+                if (start.Line <= 0) {
                     break;
                 }
 
                 //pass hidden
-                int newLine = tb.FindPrevVisibleLine(start.iLine);
-                if (newLine == start.iLine) {
+                int newLine = Tb.FindPrevVisibleLine(start.Line);
+                if (newLine == start.Line) {
                     break;
                 }
 
-                start.iLine = newLine;
-                iWW = tb.lineInfos[start.iLine].WordWrapStringsCount;
+                start.Line = newLine;
+                iWW = Tb.LineInfos[start.Line].WordWrapStringsCount;
             }
 
             if (iWW > 0) {
-                int finish = tb.lineInfos[start.iLine].GetWordWrapStringFinishPosition(iWW - 1, tb[start.iLine]);
-                start.iChar = tb.lineInfos[start.iLine].GetWordWrapStringStartPosition(iWW - 1) + preferedPos;
-                if (start.iChar > finish + 1) {
-                    start.iChar = finish + 1;
+                int finish = Tb.LineInfos[start.Line].GetWordWrapStringFinishPosition(iWW - 1, Tb[start.Line]);
+                start.Char = Tb.LineInfos[start.Line].GetWordWrapStringStartPosition(iWW - 1) + preferedPos;
+                if (start.Char > finish + 1) {
+                    start.Char = finish + 1;
                 }
             }
         }
@@ -636,38 +636,38 @@ public class Range : IEnumerable<Place> {
         ColumnSelectionMode = false;
 
         if (!shift) {
-            if (start.iLine < end.iLine) {
+            if (start.Line < end.Line) {
                 Start = End;
                 return;
             }
         }
 
         if (preferedPos < 0) {
-            preferedPos = start.iChar - tb.lineInfos[start.iLine]
-                .GetWordWrapStringStartPosition(tb.lineInfos[start.iLine].GetWordWrapStringIndex(start.iChar));
+            preferedPos = start.Char - Tb.LineInfos[start.Line]
+                .GetWordWrapStringStartPosition(Tb.LineInfos[start.Line].GetWordWrapStringIndex(start.Char));
         }
 
-        int iWW = tb.lineInfos[start.iLine].GetWordWrapStringIndex(start.iChar);
-        if (iWW >= tb.lineInfos[start.iLine].WordWrapStringsCount - 1) {
-            if (start.iLine >= tb.LinesCount - 1) {
+        int iWW = Tb.LineInfos[start.Line].GetWordWrapStringIndex(start.Char);
+        if (iWW >= Tb.LineInfos[start.Line].WordWrapStringsCount - 1) {
+            if (start.Line >= Tb.LinesCount - 1) {
                 return;
             }
 
             //pass hidden
-            int i = tb.FindNextVisibleLine(start.iLine);
-            if (i == start.iLine) {
+            int i = Tb.FindNextVisibleLine(start.Line);
+            if (i == start.Line) {
                 return;
             }
 
-            start.iLine = i;
+            start.Line = i;
             iWW = -1;
         }
 
-        if (iWW < tb.lineInfos[start.iLine].WordWrapStringsCount - 1) {
-            int finish = tb.lineInfos[start.iLine].GetWordWrapStringFinishPosition(iWW + 1, tb[start.iLine]);
-            start.iChar = tb.lineInfos[start.iLine].GetWordWrapStringStartPosition(iWW + 1) + preferedPos;
-            if (start.iChar > finish + 1) {
-                start.iChar = finish + 1;
+        if (iWW < Tb.LineInfos[start.Line].WordWrapStringsCount - 1) {
+            int finish = Tb.LineInfos[start.Line].GetWordWrapStringFinishPosition(iWW + 1, Tb[start.Line]);
+            start.Char = Tb.LineInfos[start.Line].GetWordWrapStringStartPosition(iWW + 1) + preferedPos;
+            if (start.Char > finish + 1) {
+                start.Char = finish + 1;
             }
         }
 
@@ -682,34 +682,34 @@ public class Range : IEnumerable<Place> {
         ColumnSelectionMode = false;
 
         if (preferedPos < 0) {
-            preferedPos = start.iChar - tb.lineInfos[start.iLine]
-                .GetWordWrapStringStartPosition(tb.lineInfos[start.iLine].GetWordWrapStringIndex(start.iChar));
+            preferedPos = start.Char - Tb.LineInfos[start.Line]
+                .GetWordWrapStringStartPosition(Tb.LineInfos[start.Line].GetWordWrapStringIndex(start.Char));
         }
 
-        int pageHeight = tb.ClientRectangle.Height / tb.CharHeight - 1;
+        int pageHeight = Tb.ClientRectangle.Height / Tb.CharHeight - 1;
 
         for (int i = 0; i < pageHeight; i++) {
-            int iWW = tb.lineInfos[start.iLine].GetWordWrapStringIndex(start.iChar);
-            if (iWW >= tb.lineInfos[start.iLine].WordWrapStringsCount - 1) {
-                if (start.iLine >= tb.LinesCount - 1) {
+            int iWW = Tb.LineInfos[start.Line].GetWordWrapStringIndex(start.Char);
+            if (iWW >= Tb.LineInfos[start.Line].WordWrapStringsCount - 1) {
+                if (start.Line >= Tb.LinesCount - 1) {
                     break;
                 }
 
                 //pass hidden
-                int newLine = tb.FindNextVisibleLine(start.iLine);
-                if (newLine == start.iLine) {
+                int newLine = Tb.FindNextVisibleLine(start.Line);
+                if (newLine == start.Line) {
                     break;
                 }
 
-                start.iLine = newLine;
+                start.Line = newLine;
                 iWW = -1;
             }
 
-            if (iWW < tb.lineInfos[start.iLine].WordWrapStringsCount - 1) {
-                int finish = tb.lineInfos[start.iLine].GetWordWrapStringFinishPosition(iWW + 1, tb[start.iLine]);
-                start.iChar = tb.lineInfos[start.iLine].GetWordWrapStringStartPosition(iWW + 1) + preferedPos;
-                if (start.iChar > finish + 1) {
-                    start.iChar = finish + 1;
+            if (iWW < Tb.LineInfos[start.Line].WordWrapStringsCount - 1) {
+                int finish = Tb.LineInfos[start.Line].GetWordWrapStringFinishPosition(iWW + 1, Tb[start.Line]);
+                start.Char = Tb.LineInfos[start.Line].GetWordWrapStringStartPosition(iWW + 1) + preferedPos;
+                if (start.Char > finish + 1) {
+                    start.Char = finish + 1;
                 }
             }
         }
@@ -724,15 +724,15 @@ public class Range : IEnumerable<Place> {
     internal void GoHome(bool shift) {
         ColumnSelectionMode = false;
 
-        if (start.iLine < 0) {
+        if (start.Line < 0) {
             return;
         }
 
-        if (tb.lineInfos[start.iLine].VisibleState != VisibleState.Visible) {
+        if (Tb.LineInfos[start.Line].VisibleState != VisibleState.Visible) {
             return;
         }
 
-        start = new Place(0, start.iLine);
+        start = new Place(0, start.Line);
 
         if (!shift) {
             end = start;
@@ -746,15 +746,15 @@ public class Range : IEnumerable<Place> {
     internal void GoEnd(bool shift) {
         ColumnSelectionMode = false;
 
-        if (start.iLine < 0) {
+        if (start.Line < 0) {
             return;
         }
 
-        if (tb.lineInfos[start.iLine].VisibleState != VisibleState.Visible) {
+        if (Tb.LineInfos[start.Line].VisibleState != VisibleState.Visible) {
             return;
         }
 
-        start = new Place(tb[start.iLine].Count, start.iLine);
+        start = new Place(Tb[start.Line].Count, start.Line);
 
         if (!shift) {
             end = start;
@@ -770,11 +770,11 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void SetStyle(Style style) {
         //search code for style
-        int code = tb.GetOrSetStyleLayerIndex(style);
+        int code = Tb.GetOrSetStyleLayerIndex(style);
         //set code to chars
         SetStyle(ToStyleIndex(code));
         //
-        tb.Invalidate();
+        Tb.Invalidate();
     }
 
     /// <summary>
@@ -782,7 +782,7 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void SetStyle(Style style, string regexPattern) {
         //search code for style
-        StyleIndex layer = ToStyleIndex(tb.GetOrSetStyleLayerIndex(style));
+        StyleIndex layer = ToStyleIndex(Tb.GetOrSetStyleLayerIndex(style));
         SetStyle(layer, regexPattern, RegexOptions.None);
     }
 
@@ -791,7 +791,7 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void SetStyle(Style style, Regex regex) {
         //search code for style
-        StyleIndex layer = ToStyleIndex(tb.GetOrSetStyleLayerIndex(style));
+        StyleIndex layer = ToStyleIndex(Tb.GetOrSetStyleLayerIndex(style));
         SetStyle(layer, regex);
     }
 
@@ -801,7 +801,7 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void SetStyle(Style style, string regexPattern, RegexOptions options) {
         //search code for style
-        StyleIndex layer = ToStyleIndex(tb.GetOrSetStyleLayerIndex(style));
+        StyleIndex layer = ToStyleIndex(Tb.GetOrSetStyleLayerIndex(style));
         SetStyle(layer, regexPattern, options);
     }
 
@@ -809,7 +809,7 @@ public class Range : IEnumerable<Place> {
     /// Set style for given regex pattern
     /// </summary>
     public void SetStyle(StyleIndex styleLayer, string regexPattern, RegexOptions options) {
-        if (Math.Abs(Start.iLine - End.iLine) > 1000) {
+        if (Math.Abs(Start.Line - End.Line) > 1000) {
             options |= SyntaxHighlighter.RegexCompiledOption;
         }
 
@@ -819,7 +819,7 @@ public class Range : IEnumerable<Place> {
         }
 
         //
-        tb.Invalidate();
+        Tb.Invalidate();
     }
 
     /// <summary>
@@ -831,7 +831,7 @@ public class Range : IEnumerable<Place> {
         }
 
         //
-        tb.Invalidate();
+        Tb.Invalidate();
     }
 
     /// <summary>
@@ -839,8 +839,8 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void SetStyle(StyleIndex styleIndex) {
         //set code to chars
-        int fromLine = Math.Min(End.iLine, Start.iLine);
-        int toLine = Math.Max(End.iLine, Start.iLine);
+        int fromLine = Math.Min(End.Line, Start.Line);
+        int toLine = Math.Max(End.Line, Start.Line);
         int fromChar = FromX;
         int toChar = ToX;
         if (fromLine < 0) {
@@ -850,11 +850,11 @@ public class Range : IEnumerable<Place> {
         //
         for (int y = fromLine; y <= toLine; y++) {
             int fromX = y == fromLine ? fromChar : 0;
-            int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
+            int toX = y == toLine ? Math.Min(toChar - 1, Tb[y].Count - 1) : Tb[y].Count - 1;
             for (int x = fromX; x <= toX; x++) {
-                Char c = tb[y][x];
-                c.style |= styleIndex;
-                tb[y][x] = c;
+                StudioChar c = Tb[y][x];
+                c.Style |= styleIndex;
+                Tb[y][x] = c;
             }
         }
     }
@@ -880,15 +880,15 @@ public class Range : IEnumerable<Place> {
         }
 
         foreach (var range in GetRanges(startFoldingPattern, options)) {
-            tb[range.Start.iLine].FoldingStartMarker = startFoldingPattern;
+            Tb[range.Start.Line].FoldingStartMarker = startFoldingPattern;
         }
 
         foreach (var range in GetRanges(finishFoldingPattern, options)) {
-            tb[range.Start.iLine].FoldingEndMarker = startFoldingPattern;
+            Tb[range.Start.Line].FoldingEndMarker = startFoldingPattern;
         }
 
         //
-        tb.Invalidate();
+        Tb.Invalidate();
     }
 
     /// <summary>
@@ -897,14 +897,14 @@ public class Range : IEnumerable<Place> {
     /// <param name="startEndFoldingPattern">Pattern for start and end folding line</param>
     public void SetFoldingMarkers(string foldingPattern, RegexOptions options) {
         foreach (var range in GetRanges(foldingPattern, options)) {
-            if (range.Start.iLine > 0) {
-                tb[range.Start.iLine - 1].FoldingEndMarker = foldingPattern;
+            if (range.Start.Line > 0) {
+                Tb[range.Start.Line - 1].FoldingEndMarker = foldingPattern;
             }
 
-            tb[range.Start.iLine].FoldingStartMarker = foldingPattern;
+            Tb[range.Start.Line].FoldingStartMarker = foldingPattern;
         }
 
-        tb.Invalidate();
+        Tb.Invalidate();
     }
 
     /// <summary>
@@ -923,14 +923,12 @@ public class Range : IEnumerable<Place> {
     /// <returns>Enumeration of ranges</returns>
     public IEnumerable<Range> GetRanges(string regexPattern, RegexOptions options) {
         //get text
-        string text;
-        List<Place> charIndexToPlace;
-        GetText(out text, out charIndexToPlace);
+        GetText(out string text, out List<Place> charIndexToPlace);
         //create regex
         Regex regex = new(regexPattern, options);
         //
         foreach (Match m in regex.Matches(text)) {
-            Range r = new(tb);
+            Range r = new(Tb);
             //try get 'range' group, otherwise use group 0
             Group group = m.Groups["range"];
             if (!group.Success) {
@@ -956,14 +954,14 @@ public class Range : IEnumerable<Place> {
         //create regex
         Regex regex = new(regexPattern, options);
         //
-        var fts = tb.TextSource as FileTextSource; //<----!!!! ugly
+        var fts = Tb.TextSource as FileTextSource; //<----!!!! ugly
         //enumaerate lines
-        for (int iLine = Start.iLine; iLine <= End.iLine; iLine++) {
+        for (int iLine = Start.Line; iLine <= End.Line; iLine++) {
             //
             bool isLineLoaded = fts != null ? fts.IsLineLoaded(iLine) : true;
             //
-            var r = new Range(tb, new Place(0, iLine), new Place(tb[iLine].Count, iLine));
-            if (iLine == Start.iLine || iLine == End.iLine) {
+            var r = new Range(Tb, new Place(0, iLine), new Place(Tb[iLine].Count, iLine));
+            if (iLine == Start.Line || iLine == End.Line) {
                 r = r.GetIntersectionWith(this);
             }
 
@@ -983,12 +981,10 @@ public class Range : IEnumerable<Place> {
     /// <returns>Enumeration of ranges</returns>
     public IEnumerable<Range> GetRanges(Regex regex) {
         //get text
-        string text;
-        List<Place> charIndexToPlace;
-        GetText(out text, out charIndexToPlace);
+        GetText(out string text, out List<Place> charIndexToPlace);
         //
         foreach (Match m in regex.Matches(text)) {
-            Range r = new(tb);
+            Range r = new(Tb);
             //try get 'range' group, otherwise use group 0
             Group group = m.Groups["range"];
             if (!group.Success) {
@@ -1007,7 +1003,7 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void ClearStyle(params Style[] styles) {
         try {
-            ClearStyle(tb.GetStyleIndexMask(styles));
+            ClearStyle(Tb.GetStyleIndexMask(styles));
         } catch {
             // ignore
         }
@@ -1018,8 +1014,8 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void ClearStyle(StyleIndex styleIndex) {
         //set code to chars
-        int fromLine = Math.Min(End.iLine, Start.iLine);
-        int toLine = Math.Max(End.iLine, Start.iLine);
+        int fromLine = Math.Min(End.Line, Start.Line);
+        int toLine = Math.Max(End.Line, Start.Line);
         int fromChar = FromX;
         int toChar = ToX;
         if (fromLine < 0) {
@@ -1029,16 +1025,16 @@ public class Range : IEnumerable<Place> {
         //
         for (int y = fromLine; y <= toLine; y++) {
             int fromX = y == fromLine ? fromChar : 0;
-            int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
+            int toX = y == toLine ? Math.Min(toChar - 1, Tb[y].Count - 1) : Tb[y].Count - 1;
             for (int x = fromX; x <= toX; x++) {
-                Char c = tb[y][x];
-                c.style &= ~styleIndex;
-                tb[y][x] = c;
+                StudioChar c = Tb[y][x];
+                c.Style &= ~styleIndex;
+                Tb[y][x] = c;
             }
         }
 
         //
-        tb.Invalidate();
+        Tb.Invalidate();
     }
 
     /// <summary>
@@ -1046,19 +1042,19 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void ClearFoldingMarkers() {
         //set code to chars
-        int fromLine = Math.Min(End.iLine, Start.iLine);
-        int toLine = Math.Max(End.iLine, Start.iLine);
+        int fromLine = Math.Min(End.Line, Start.Line);
+        int toLine = Math.Max(End.Line, Start.Line);
         if (fromLine < 0) {
             return;
         }
 
         //
         for (int y = fromLine; y <= toLine; y++) {
-            tb[y].ClearFoldingMarkers();
+            Tb[y].ClearFoldingMarkers();
         }
 
         //
-        tb.Invalidate();
+        Tb.Invalidate();
     }
 
     void OnSelectionChanged() {
@@ -1067,9 +1063,9 @@ public class Range : IEnumerable<Place> {
         cachedText = null;
         cachedCharIndexToPlace = null;
         //
-        if (tb.Selection == this) {
+        if (Tb.Selection == this) {
             if (updating == 0) {
-                tb.OnSelectionChanged();
+                Tb.OnSelectionChanged();
             }
         }
     }
@@ -1118,8 +1114,8 @@ public class Range : IEnumerable<Place> {
     /// </summary>
     public void Expand() {
         Normalize();
-        start = new Place(0, start.iLine);
-        end = new Place(tb.GetLineLength(end.iLine), end.iLine);
+        start = new Place(0, start.Line);
+        end = new Place(Tb.GetLineLength(end.Line), end.Line);
     }
 
     /// <summary>
@@ -1137,7 +1133,7 @@ public class Range : IEnumerable<Place> {
     /// <param name="allowedSymbolsPattern">Allowed chars pattern for fragment</param>
     /// <returns>Range of found fragment</returns>
     public Range GetFragment(string allowedSymbolsPattern, RegexOptions options) {
-        Range r = new(tb);
+        Range r = new(Tb);
         r.Start = Start;
         Regex regex = new(allowedSymbolsPattern, options);
         //go left, check symbols
@@ -1160,7 +1156,7 @@ public class Range : IEnumerable<Place> {
 
         Place endFragment = r.Start;
 
-        return new Range(tb, startFragment, endFragment);
+        return new Range(Tb, startFragment, endFragment);
     }
 
     bool IsIdentifierChar(char c) {
@@ -1195,7 +1191,7 @@ public class Range : IEnumerable<Place> {
         Start = range.Start;
         End = range.End;
 
-        if (tb.lineInfos[Start.iLine].VisibleState != VisibleState.Visible) {
+        if (Tb.LineInfos[Start.Line].VisibleState != VisibleState.Visible) {
             GoRight(shift);
         }
     }
@@ -1228,7 +1224,7 @@ public class Range : IEnumerable<Place> {
         Start = range.Start;
         End = range.End;
 
-        if (tb.lineInfos[Start.iLine].VisibleState != VisibleState.Visible) {
+        if (Tb.LineInfos[Start.Line].VisibleState != VisibleState.Visible) {
             GoLeft(shift);
         }
     }
@@ -1237,7 +1233,7 @@ public class Range : IEnumerable<Place> {
         ColumnSelectionMode = false;
 
         start = new Place(0, 0);
-        if (tb.lineInfos[Start.iLine].VisibleState != VisibleState.Visible) {
+        if (Tb.LineInfos[Start.Line].VisibleState != VisibleState.Visible) {
             GoRight(shift);
         }
 
@@ -1251,8 +1247,8 @@ public class Range : IEnumerable<Place> {
     internal void GoLast(bool shift) {
         ColumnSelectionMode = false;
 
-        start = new Place(tb[tb.LinesCount - 1].Count, tb.LinesCount - 1);
-        if (tb.lineInfos[Start.iLine].VisibleState != VisibleState.Visible) {
+        start = new Place(Tb[Tb.LinesCount - 1].Count, Tb.LinesCount - 1);
+        if (Tb.LineInfos[Start.Line].VisibleState != VisibleState.Visible) {
             GoLeft(shift);
         }
 
@@ -1274,12 +1270,12 @@ public class Range : IEnumerable<Place> {
         }
 
         var rect = Bounds;
-        for (int y = rect.iStartLine; y <= rect.iEndLine; y++) {
-            if (rect.iStartChar > tb[y].Count && !includeEmpty) {
+        for (int y = rect.StartLine; y <= rect.EndLine; y++) {
+            if (rect.StartChar > Tb[y].Count && !includeEmpty) {
                 continue;
             }
 
-            var r = new Range(tb, rect.iStartChar, y, Math.Min(rect.iEndChar, tb[y].Count), y);
+            var r = new Range(Tb, rect.StartChar, y, Math.Min(rect.EndChar, Tb[y].Count), y);
             yield return r;
         }
     }
@@ -1287,23 +1283,23 @@ public class Range : IEnumerable<Place> {
     #region ColumnSelectionMode
 
     private Range GetIntersectionWith_ColumnSelectionMode(Range range) {
-        if (range.Start.iLine != range.End.iLine) {
-            return new Range(tb, Start, Start);
+        if (range.Start.Line != range.End.Line) {
+            return new Range(Tb, Start, Start);
         }
 
         var rect = Bounds;
-        if (range.Start.iLine < rect.iStartLine || range.Start.iLine > rect.iEndLine) {
-            return new Range(tb, Start, Start);
+        if (range.Start.Line < rect.StartLine || range.Start.Line > rect.EndLine) {
+            return new Range(Tb, Start, Start);
         }
 
-        return new Range(tb, rect.iStartChar, range.Start.iLine, rect.iEndChar, range.Start.iLine).GetIntersectionWith(range);
+        return new Range(Tb, rect.StartChar, range.Start.Line, rect.EndChar, range.Start.Line).GetIntersectionWith(range);
     }
 
     private bool GoRightThroughFolded_ColumnSelectionMode() {
         var boundes = Bounds;
         bool endOfLines = true;
-        for (int iLine = boundes.iStartLine; iLine <= boundes.iEndLine; iLine++) {
-            if (boundes.iEndChar < tb[iLine].Count) {
+        for (int iLine = boundes.StartLine; iLine <= boundes.EndLine; iLine++) {
+            if (boundes.EndChar < Tb[iLine].Count) {
                 endOfLines = false;
                 break;
             }
@@ -1327,14 +1323,14 @@ public class Range : IEnumerable<Place> {
 
     private IEnumerable<Place> GetEnumerator_ColumnSelectionMode() {
         var bounds = Bounds;
-        if (bounds.iStartLine < 0) {
+        if (bounds.StartLine < 0) {
             yield break;
         }
 
         //
-        for (int y = bounds.iStartLine; y <= bounds.iEndLine; y++) {
-            for (int x = bounds.iStartChar; x < bounds.iEndChar; x++) {
-                if (x < tb[y].Count) {
+        for (int y = bounds.StartLine; y <= bounds.EndLine; y++) {
+            for (int x = bounds.StartChar; x < bounds.EndChar; x++) {
+                if (x < Tb[y].Count) {
                     yield return new Place(x, y);
                 }
             }
@@ -1345,19 +1341,19 @@ public class Range : IEnumerable<Place> {
         get {
             StringBuilder sb = new();
             var bounds = Bounds;
-            if (bounds.iStartLine < 0) {
+            if (bounds.StartLine < 0) {
                 return "";
             }
 
             //
-            for (int y = bounds.iStartLine; y <= bounds.iEndLine; y++) {
-                for (int x = bounds.iStartChar; x < bounds.iEndChar; x++) {
-                    if (x < tb[y].Count) {
-                        sb.Append(tb[y][x].c);
+            for (int y = bounds.StartLine; y <= bounds.EndLine; y++) {
+                for (int x = bounds.StartChar; x < bounds.EndChar; x++) {
+                    if (x < Tb[y].Count) {
+                        sb.Append(Tb[y][x].Char_);
                     }
                 }
 
-                if (bounds.iEndLine != bounds.iStartLine && y != bounds.iEndLine) {
+                if (bounds.EndLine != bounds.StartLine && y != bounds.EndLine) {
                     sb.AppendLine();
                 }
             }
@@ -1367,22 +1363,22 @@ public class Range : IEnumerable<Place> {
     }
 
     internal void GoDown_ColumnSelectionMode() {
-        int iLine = tb.FindNextVisibleLine(End.iLine);
-        End = new Place(End.iChar, iLine);
+        int iLine = Tb.FindNextVisibleLine(End.Line);
+        End = new Place(End.Char, iLine);
     }
 
     internal void GoUp_ColumnSelectionMode() {
-        int iLine = tb.FindPrevVisibleLine(End.iLine);
-        End = new Place(End.iChar, iLine);
+        int iLine = Tb.FindPrevVisibleLine(End.Line);
+        End = new Place(End.Char, iLine);
     }
 
     internal void GoRight_ColumnSelectionMode() {
-        End = new Place(End.iChar + 1, End.iLine);
+        End = new Place(End.Char + 1, End.Line);
     }
 
     internal void GoLeft_ColumnSelectionMode() {
-        if (End.iChar > 0) {
-            End = new Place(End.iChar - 1, End.iLine);
+        if (End.Char > 0) {
+            End = new Place(End.Char - 1, End.Line);
         }
     }
 
@@ -1390,15 +1386,15 @@ public class Range : IEnumerable<Place> {
 }
 
 public struct RangeRect {
-    public RangeRect(int iStartLine, int iStartChar, int iEndLine, int iEndChar) {
-        this.iStartLine = iStartLine;
-        this.iStartChar = iStartChar;
-        this.iEndLine = iEndLine;
-        this.iEndChar = iEndChar;
+    public RangeRect(int startLine, int startChar, int endLine, int endChar) {
+        StartLine = startLine;
+        StartChar = startChar;
+        EndLine = endLine;
+        EndChar = endChar;
     }
 
-    public int iStartLine;
-    public int iStartChar;
-    public int iEndLine;
-    public int iEndChar;
+    public int StartLine;
+    public int StartChar;
+    public int EndLine;
+    public int EndChar;
 }

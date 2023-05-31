@@ -59,18 +59,18 @@ public class ExportToHTML {
     }
 
     public string GetHtml(Range r) {
-        tb = r.tb;
+        tb = r.Tb;
         Dictionary<StyleIndex, object> styles = new();
         StringBuilder sb = new();
         StringBuilder tempSB = new();
         StyleIndex currentStyleId = StyleIndex.None;
         r.Normalize();
-        int currentLine = r.Start.iLine;
+        int currentLine = r.Start.Line;
         styles[currentStyleId] = null;
         //
         if (UseOriginalFont) {
             sb.AppendFormat("<font style=\"font-family: {0}, monospace; font-size: {1}px; line-height: {2}px;\">",
-                r.tb.Font.Name, r.tb.CharHeight - r.tb.LineInterval, r.tb.CharHeight);
+                r.Tb.Font.Name, r.Tb.CharHeight - r.Tb.LineInterval, r.Tb.CharHeight);
         }
 
         //
@@ -81,26 +81,26 @@ public class ExportToHTML {
         //
         bool hasNonSpace = false;
         foreach (Place p in r) {
-            Char c = r.tb[p.iLine][p.iChar];
-            if (c.style != currentStyleId) {
+            StudioChar c = r.Tb[p.Line][p.Char];
+            if (c.Style != currentStyleId) {
                 Flush(sb, tempSB, currentStyleId);
-                currentStyleId = c.style;
+                currentStyleId = c.Style;
                 styles[currentStyleId] = null;
             }
 
-            if (p.iLine != currentLine) {
-                for (int i = currentLine; i < p.iLine; i++) {
+            if (p.Line != currentLine) {
+                for (int i = currentLine; i < p.Line; i++) {
                     tempSB.AppendLine(UseBr ? "<br>" : "");
                     if (IncludeLineNumbers) {
                         tempSB.AppendFormat("<span class=lineNumber>{0}</span>  ", i + 2);
                     }
                 }
 
-                currentLine = p.iLine;
+                currentLine = p.Line;
                 hasNonSpace = false;
             }
 
-            switch (c.c) {
+            switch (c.Char_) {
                 case ' ':
                     if ((hasNonSpace || !UseForwardNbsp) && !UseNbsp) {
                         goto default;
@@ -119,7 +119,7 @@ public class ExportToHTML {
                     break;
                 default:
                     hasNonSpace = true;
-                    tempSB.Append(c.c);
+                    tempSB.Append(c.Char_);
                     break;
             }
         }

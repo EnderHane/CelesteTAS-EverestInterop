@@ -15,6 +15,7 @@ using CelesteStudio.Communication;
 using CelesteStudio.Entities;
 using CelesteStudio.RichText;
 using StudioCommunication;
+using TasCommunication;
 
 namespace CelesteStudio;
 
@@ -34,7 +35,8 @@ public partial class Studio : BaseForm {
     private int totalFrames, currentFrame;
     private bool updating;
 
-    private bool DisableTyping => tasStates.HasFlag(States.Enable) && !tasStates.HasFlag(States.FrameStep) && (CommunicationServer.Instance?.IsInitialized ?? false) ||
+    private bool DisableTyping => tasStates.HasFlag(States.Enable) && !tasStates.HasFlag(States.FrameStep) &&
+                                  (CommunicationServer.Instance?.IsInitialized ?? false) ||
                                   CommunicationWrapper.Forwarding;
 
     private string TitleBarText =>
@@ -411,12 +413,12 @@ public partial class Studio : BaseForm {
     private void GoDownCommentAndBreakpoint(KeyEventArgs e) {
         List<int> commentLine = richText.FindLines(@"^\s*#|^\*\*\*");
         if (commentLine.Count > 0) {
-            int line = commentLine.FirstOrDefault(i => i > richText.Selection.Start.iLine);
+            int line = commentLine.FirstOrDefault(i => i > richText.Selection.Start.Line);
             if (line == 0) {
                 line = richText.LinesCount - 1;
             }
 
-            while (richText.Selection.Start.iLine < line) {
+            while (richText.Selection.Start.Line < line) {
                 richText.Selection.GoDown(e.Shift);
             }
 
@@ -430,8 +432,8 @@ public partial class Studio : BaseForm {
     private void GoUpCommentAndBreakpoint(KeyEventArgs e) {
         List<int> commentLine = richText.FindLines(@"^\s*#|^\*\*\*");
         if (commentLine.Count > 0) {
-            int line = commentLine.FindLast(i => i < richText.Selection.Start.iLine);
-            while (richText.Selection.Start.iLine > line) {
+            int line = commentLine.FindLast(i => i < richText.Selection.Start.Line);
+            while (richText.Selection.Start.Line > line) {
                 richText.Selection.GoUp(e.Shift);
             }
 
@@ -493,7 +495,7 @@ public partial class Studio : BaseForm {
 
         CommunicationServer.Instance?.WriteWait();
 
-        Tuple<string, int> tuple = new(CurrentFileName, richText.Selection.Start.iLine);
+        Tuple<string, int> tuple = new(CurrentFileName, richText.Selection.Start.Line);
         if (richText.OpenFile(fileName)) {
             previousFile = tuple;
             UpdateRecentFiles();
@@ -518,7 +520,7 @@ public partial class Studio : BaseForm {
             string[] args = spaceRegex.IsMatch(trimText) ? trimText.Split() : trimText.Split(',');
 
             bool jumpToEndLabel = false;
-            int clickPosition = richText.Selection.Start.iChar;
+            int clickPosition = richText.Selection.Start.Char;
             int leftSpace = text.Length - text.TrimStart().Length;
             if (args.Length >= 4 && args[0].Length + args[1].Length + args[2].Length + 2 + leftSpace < clickPosition) {
                 jumpToEndLabel = true;
@@ -635,14 +637,14 @@ public partial class Studio : BaseForm {
     }
 
     private void ClearUncommentedBreakpoints() {
-        var line = Math.Min(richText.Selection.Start.iLine, richText.Selection.End.iLine);
+        var line = Math.Min(richText.Selection.Start.Line, richText.Selection.End.Line);
         List<int> breakpoints = richText.FindLines(@"^\s*\*\*\*");
         richText.RemoveLines(breakpoints);
         richText.Selection.Start = new Place(0, Math.Min(line, richText.LinesCount - 1));
     }
 
     private void ClearBreakpoints() {
-        var line = Math.Min(richText.Selection.Start.iLine, richText.Selection.End.iLine);
+        var line = Math.Min(richText.Selection.Start.Line, richText.Selection.End.Line);
         List<int> breakpoints = richText.FindLines(@"^\s*#*\s*\*\*\*");
         richText.RemoveLines(breakpoints);
         richText.Selection.Start = new Place(0, Math.Min(line, richText.LinesCount - 1));
@@ -688,7 +690,7 @@ public partial class Studio : BaseForm {
     }
 
     private void InsertOrRemoveText(Regex regex, string insertText) {
-        int currentLine = richText.Selection.Start.iLine;
+        int currentLine = richText.Selection.Start.Line;
         if (regex.IsMatch(richText.Lines[currentLine])) {
             richText.RemoveLine(currentLine);
             if (currentLine == richText.LinesCount) {
@@ -754,7 +756,7 @@ public partial class Studio : BaseForm {
 
     private void InsertNewLine(string text) {
         text = text.Trim();
-        int startLine = richText.Selection.Start.iLine;
+        int startLine = richText.Selection.Start.Line;
         richText.Selection = new Range(richText, 0, startLine, 0, startLine);
         richText.InsertText(text + "\n");
         int lenght = text.Split('\n')[0].Length;
@@ -807,7 +809,7 @@ public partial class Studio : BaseForm {
         if (hooked) {
             try {
                 if (string.IsNullOrEmpty(CurrentFileName)) {
-                    newFileToolStripMenuItem_Click(null, null);
+                    NewFileToolStripMenuItem_Click(null, null);
                 }
 
                 richText.Focus();
@@ -864,7 +866,7 @@ public partial class Studio : BaseForm {
         lastWindowState = WindowState;
     }
 
-    private void tasText_LineRemoved(object sender, LineRemovedEventArgs e) {
+    private void TasText_LineRemoved(object sender, LineRemovedEventArgs e) {
         if (updating) {
             return;
         }
@@ -879,7 +881,7 @@ public partial class Studio : BaseForm {
         UpdateStatusBar();
     }
 
-    private void tasText_LineInserted(object sender, LineInsertedEventArgs e) {
+    private void TasText_LineInserted(object sender, LineInsertedEventArgs e) {
         if (updating) {
             return;
         }
@@ -905,8 +907,8 @@ public partial class Studio : BaseForm {
 
             statusBarBuilder.Append($"{totalFrames}");
 
-            int startLine = richText.Selection.Start.iLine;
-            int endLine = richText.Selection.End.iLine;
+            int startLine = richText.Selection.Start.Line;
+            int endLine = richText.Selection.End.Line;
             if (startLine != endLine) {
                 if (endLine < startLine) {
                     int temp = startLine;
@@ -950,7 +952,7 @@ public partial class Studio : BaseForm {
         richText.Height = ClientSize.Height - statusPanel.Height - menuStrip.Height;
     }
 
-    private void tasText_TextChanged(object sender, TextChangedEventArgs e) {
+    private void TasText_TextChanged(object sender, TextChangedEventArgs e) {
         lastChanged = DateTime.Now;
         UpdateLines((RichText.RichText) sender, e.ChangedRange);
     }
@@ -959,8 +961,8 @@ public partial class Studio : BaseForm {
         Range origRange = richText.Selection.Clone();
 
         origRange.Normalize();
-        int start = origRange.Start.iLine;
-        int end = origRange.End.iLine;
+        int start = origRange.Start.Line;
+        int end = origRange.End.Line;
 
         List<InputRecord> selection = InputRecords.GetRange(start, end - start + 1);
 
@@ -1004,8 +1006,8 @@ public partial class Studio : BaseForm {
         Range origRange = richText.Selection.Clone();
 
         origRange.Normalize();
-        int start = origRange.Start.iLine;
-        int end = origRange.End.iLine;
+        int start = origRange.Start.Line;
+        int end = origRange.End.Line;
 
         if (start == end) {
             if (!sameActions) {
@@ -1133,8 +1135,8 @@ public partial class Studio : BaseForm {
         Range origRange = richText.Selection.Clone();
 
         origRange.Normalize();
-        int start = origRange.Start.iLine;
-        int end = origRange.End.iLine;
+        int start = origRange.Start.Line;
+        int end = origRange.End.Line;
 
         while (start < end) {
             InputRecord startRecord = InputRecords[start];
@@ -1219,8 +1221,8 @@ public partial class Studio : BaseForm {
 
         updating = true;
 
-        int start = range.Start.iLine;
-        int end = range.End.iLine;
+        int start = range.Start.Line;
+        int end = range.End.Line;
         if (start > end) {
             int temp = start;
             start = end;
@@ -1253,7 +1255,7 @@ public partial class Studio : BaseForm {
                         InputRecord.ProcessExclusiveActions(oldInput, newInput);
                         formattedText = newInput.ToString();
 
-                        int index = oldRange.Start.iChar + formattedText.Length - text.Length;
+                        int index = oldRange.Start.Char + formattedText.Length - text.Length;
                         if (index < 0) {
                             index = 0;
                         }
@@ -1317,7 +1319,7 @@ public partial class Studio : BaseForm {
         if (modified) {
             tas.Selection = new Range(tas, 0, originalStart, tas[end].Count, end);
             tas.SelectedText = sb.ToString();
-            tas.Selection = new Range(tas, place.iChar, end, place.iChar, end);
+            tas.Selection = new Range(tas, place.Char, end, place.Char, end);
         }
 
         if (tas.IsChanged) {
@@ -1329,17 +1331,17 @@ public partial class Studio : BaseForm {
         updating = false;
     }
 
-    private void tasText_NoChanges(object sender, EventArgs e) {
+    private void TasText_NoChanges(object sender, EventArgs e) {
         Text = TitleBarText;
     }
 
-    private void tasText_FileOpening(object sender, EventArgs e) {
+    private void TasText_FileOpening(object sender, EventArgs e) {
         InputRecords.Clear();
         totalFrames = 0;
         UpdateStatusBar();
     }
 
-    private void tasText_LineNeeded(object sender, LineNeededEventArgs e) {
+    private void TasText_LineNeeded(object sender, LineNeededEventArgs e) {
         InputRecord record = new(e.SourceLineText);
         e.DisplayedLineText = record.ToString();
     }
@@ -1357,20 +1359,20 @@ public partial class Studio : BaseForm {
         return true;
     }
 
-    private void autoRemoveExclusiveActionsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void AutoRemoveExclusiveActionsToolStripMenuItem_Click(object sender, EventArgs e) {
         Settings.Instance.AutoRemoveMutuallyExclusiveActions = !Settings.Instance.AutoRemoveMutuallyExclusiveActions;
     }
 
-    private void alwaysOnTopToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void AlwaysOnTopToolStripMenuItem_Click(object sender, EventArgs e) {
         Settings.Instance.AlwaysOnTop = !Settings.Instance.AlwaysOnTop;
         TopMost = Settings.Instance.AlwaysOnTop;
     }
 
-    private void homeMenuItem_Click(object sender, EventArgs e) {
+    private void HomeMenuItem_Click(object sender, EventArgs e) {
         Process.Start("https://github.com/EverestAPI/CelesteTAS-EverestInterop");
     }
 
-    private void settingsToolStripMenuItem_Opened(object sender, EventArgs e) {
+    private void SettingsToolStripMenuItem_Opened(object sender, EventArgs e) {
         settingsToolStripMenuItem.DropDown.Opacity = 1f;
         sendInputsToCelesteMenuItem.Checked = Settings.Instance.SendInputsToCeleste;
         autoRemoveExclusiveActionsToolStripMenuItem.Checked = Settings.Instance.AutoRemoveMutuallyExclusiveActions;
@@ -1381,7 +1383,7 @@ public partial class Studio : BaseForm {
         backupFileCountsToolStripMenuItem.Text = $"Backup File Count: {Settings.Instance.AutoBackupCount}";
     }
 
-    private void openPreviousFileToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void OpenPreviousFileToolStripMenuItem_Click(object sender, EventArgs e) {
         if (RecentFiles.Count <= 1) {
             return;
         }
@@ -1400,7 +1402,7 @@ public partial class Studio : BaseForm {
         OpenFile(fileName, startLine);
     }
 
-    private void sendInputsToCelesteMenuItem_Click(object sender, EventArgs e) {
+    private void SendInputsToCelesteMenuItem_Click(object sender, EventArgs e) {
         Settings.Instance.SendInputsToCeleste = !Settings.Instance.SendInputsToCeleste;
         if (settingsToolStripMenuItem.DropDown.Opacity == 0f) {
             ShowTooltip((Settings.Instance.SendInputsToCeleste ? "Enable" : "Disable") + " Send Inputs to Celeste");
@@ -1409,193 +1411,193 @@ public partial class Studio : BaseForm {
         settingsToolStripMenuItem.DropDown.Opacity = 0f;
     }
 
-    private void openFileMenuItem_Click(object sender, EventArgs e) {
+    private void OpenFileMenuItem_Click(object sender, EventArgs e) {
         OpenFile();
     }
 
-    private void fileToolStripMenuItem_DropDownOpened(object sender, EventArgs e) {
+    private void FileToolStripMenuItem_DropDownOpened(object sender, EventArgs e) {
         CreateRecentFilesMenu();
         CreateBackupFilesMenu();
         openPreviousFileToolStripMenuItem.Enabled = RecentFiles.Count >= 2;
     }
 
-    private void insertRemoveBreakPointToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void InsertRemoveBreakPointToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertOrRemoveText(InputRecord.BreakpointRegex, "***");
     }
 
-    private void insertRemoveSavestateBreakPointToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void InsertRemoveSavestateBreakPointToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertOrRemoveText(InputRecord.BreakpointRegex, "***S");
     }
 
-    private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e) {
         SaveAsFile();
     }
 
-    private void commentUncommentTextToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CommentUncommentTextToolStripMenuItem_Click(object sender, EventArgs e) {
         CommentText(true);
     }
 
-    private void removeAllUncommentedBreakpointsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void RemoveAllUncommentedBreakpointsToolStripMenuItem_Click(object sender, EventArgs e) {
         ClearUncommentedBreakpoints();
     }
 
-    private void removeAllBreakpointsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void RemoveAllBreakpointsToolStripMenuItem_Click(object sender, EventArgs e) {
         ClearBreakpoints();
     }
 
-    private void commentUncommentAllBreakpointsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CommentUncommentAllBreakpointsToolStripMenuItem_Click(object sender, EventArgs e) {
         CommentUncommentAllBreakpoints();
     }
 
-    private void insertRoomNameToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void InsertRoomNameToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertRoomName();
     }
 
-    private void insertCurrentInGameTimeToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void InsertCurrentInGameTimeToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertTime();
     }
 
-    private void insertConsoleLoadCommandToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void InsertConsoleLoadCommandToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertDataFromGame(GameDataType.ConsoleCommand, false);
     }
 
-    private void insertSimpleConsoleLoadCommandToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void InsertSimpleConsoleLoadCommandToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertDataFromGame(GameDataType.ConsoleCommand, true);
     }
 
-    private void enforceLegalToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void EnforceLegalToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("EnforceLegal");
     }
 
-    private void assertToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void AssertToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Assert, Condition, Expected, Actual");
     }
 
-    private void unsafeToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void UnsafeToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Unsafe");
     }
 
-    private void safeToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SafeToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Safe");
     }
 
-    private void readToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ReadToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Read, File Name, Starting Line, (Ending Line)");
     }
 
-    private void playToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void PlayToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Play, Starting Line");
     }
 
-    private void setToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SetToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Set, (Mod).Setting, Value");
     }
 
-    private void invokeToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void InvokeToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Invoke, Entity.Method, Parameter");
     }
 
-    private void pressToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void PressToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Press, Key1, Key2...");
     }
 
-    private void analogueModeToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void AnalogueModeToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("AnalogMode, Ignore/Circle/Square/Precise");
     }
 
-    private void stunPauseToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void StunPauseToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("StunPause\n\nEndStunPause");
     }
 
-    private void endStunPauseToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void EndStunPauseToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("EndStunPause");
     }
 
-    private void stunPauseModeToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void StunPauseModeToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("StunPauseMode, Simulate/Input");
     }
 
-    private void autoInputToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void AutoInputToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("AutoInput, 2\n   1,S,N\n  10,O\nStartAutoInput\n\nEndAutoInput");
     }
 
-    private void startAutoInputToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void StartAutoInputToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("StartAutoInput");
     }
 
-    private void endAutoInputToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void EndAutoInputToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("EndAutoInput");
     }
 
-    private void skipAutoInputToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SkipAutoInputToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("SkipAutoInput");
     }
 
-    private void startExportToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void StartExportToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("ExportGameInfo (Path) (Entities)");
     }
 
-    private void finishExportToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void FinishExportToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("EndExportGameInfo");
     }
 
-    private void startExportRoomInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void StartExportRoomInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("ExportRoomInfo dump_room_info.txt");
     }
 
-    private void finishExportRoomInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void FinishExportRoomInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("EndExportRoomInfo");
     }
 
-    private void addToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void AddToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Add, (input line)");
     }
 
-    private void skipToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SkipToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Skip");
     }
 
-    private void startExportLibTASToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void StartExportLibTASToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("ExportLibTAS (Path)");
     }
 
-    private void finishExportLibTASToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void FinishExportLibTASToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("EndExportLibTAS");
     }
 
-    private void completeInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CompleteInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertDataFromGame(GameDataType.CompleteInfoCommand);
     }
 
-    private void recordCountToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void RecordCountToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("RecordCount: 1");
     }
 
-    private void fileTimeToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void FileTimeToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("FileTime:");
     }
 
-    private void chapterTimeToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ChapterTimeToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("ChapterTime:");
     }
 
-    private void repeatToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void RepeatToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("Repeat 2\n\nEndRepeat");
     }
 
-    private void endRepeatToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void EndRepeatToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("EndRepeat");
     }
 
-    private void exitGameToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ExitGameToolStripMenuItem_Click(object sender, EventArgs e) {
         InsertNewLine("ExitGame");
     }
 
-    private void copyGamerDataMenuItem_Click(object sender, EventArgs e) {
+    private void CopyGamerDataMenuItem_Click(object sender, EventArgs e) {
         CopyGameInfo();
     }
 
-    private void fontToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void FontToolStripMenuItem_Click(object sender, EventArgs e) {
         if (fontDialog.ShowDialog() != DialogResult.Cancel) {
             //check monospace font
             SizeF sizeM = RichText.RichText.GetCharSize(fontDialog.Font, 'M');
@@ -1609,11 +1611,11 @@ public partial class Studio : BaseForm {
         }
     }
 
-    private void reconnectStudioAndCelesteToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ReconnectStudioAndCelesteToolStripMenuItem_Click(object sender, EventArgs e) {
         CommunicationServer.Instance?.ExternalReset();
     }
 
-    private void insertModInfoStripMenuItem1_Click(object sender, EventArgs e) {
+    private void InsertModInfoStripMenuItem1_Click(object sender, EventArgs e) {
         InsertDataFromGame(GameDataType.ModInfo);
     }
 
@@ -1625,8 +1627,8 @@ public partial class Studio : BaseForm {
         Range range = richText.Selection.Clone();
         range.Normalize();
 
-        int start = range.Start.iLine;
-        int end = range.End.iLine;
+        int start = range.Start.Line;
+        int end = range.End.Line;
 
         richText.Selection = new Range(richText, 0, start, richText[end].Count, end);
         string text = richText.SelectedText;
@@ -1646,36 +1648,36 @@ public partial class Studio : BaseForm {
         richText.ScrollLeft();
     }
 
-    private void swapDashKeysStripMenuItem_Click(object sender, EventArgs e) {
+    private void SwapDashKeysStripMenuItem_Click(object sender, EventArgs e) {
         SwapActionKeys('C', 'X');
     }
 
-    private void swapJumpKeysToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SwapJumpKeysToolStripMenuItem_Click(object sender, EventArgs e) {
         SwapActionKeys('J', 'K');
     }
 
-    private void swapSelectedLAndRToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SwapSelectedLAndRToolStripMenuItem_Click(object sender, EventArgs e) {
         SwapActionKeys('L', 'R');
     }
 
-    private void combineConsecutiveSameInputsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CombineConsecutiveSameInputsToolStripMenuItem_Click(object sender, EventArgs e) {
         CombineInputs(true);
     }
 
-    private void forceCombineInputsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ForceCombineInputsToolStripMenuItem_Click(object sender, EventArgs e) {
         CombineInputs(false);
     }
 
-    private void convertDashToDemoDashToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ConvertDashToDemoDashToolStripMenuItem_Click(object sender, EventArgs e) {
         ConvertDashToDemoDash();
     }
 
-    private void openReadFileToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void OpenReadFileToolStripMenuItem_Click(object sender, EventArgs e) {
         TryOpenReadFile();
         TryGoToPlayLine();
     }
 
-    private void showGameInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ShowGameInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         Settings.Instance.ShowGameInfo = !Settings.Instance.ShowGameInfo;
         SaveSettings();
         if (Settings.Instance.ShowGameInfo) {
@@ -1683,7 +1685,7 @@ public partial class Studio : BaseForm {
         }
     }
 
-    private void convertToLibTASInputsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ConvertToLibTASInputsToolStripMenuItem_Click(object sender, EventArgs e) {
         if (!(CommunicationServer.Instance?.IsInitialized ?? false) || Process.GetProcessesByName("Celeste").Length == 0) {
             MessageBox.Show("This feature requires the support of CelesteTAS mod, please launch the game.",
                 "Information",
@@ -1711,7 +1713,7 @@ public partial class Studio : BaseForm {
         }
     }
 
-    private void newFileToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void NewFileToolStripMenuItem_Click(object sender, EventArgs e) {
         int index = 1;
         string gamePath = Path.Combine(Directory.GetCurrentDirectory(), "TAS Files");
         if (!Directory.Exists(gamePath)) {
@@ -1741,63 +1743,63 @@ public partial class Studio : BaseForm {
         OpenFile(fileName);
     }
 
-    private void toggleHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ToggleHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("ShowHitboxes", null, sender);
     }
 
-    private void toggleTriggerHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ToggleTriggerHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("ShowTriggerHitboxes", null, sender);
     }
 
-    private void unloadedRoomsHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void UnloadedRoomsHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("ShowUnloadedRoomsHitboxes", null, sender);
     }
 
-    private void cameraHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CameraHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("ShowCameraHitboxes", null, sender);
     }
 
-    private void toggleSimplifiedHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ToggleSimplifiedHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("SimplifiedHitboxes", null, sender);
     }
 
-    private void switchActualCollideHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SwitchActualCollideHitboxesToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("ShowActualCollideHitboxes", null, sender);
     }
 
-    private void toggleSimplifiedGraphicsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ToggleSimplifiedGraphicsToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("SimplifiedGraphics", null, sender);
     }
 
-    private void toggleGameplayToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ToggleGameplayToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("ShowGameplay", null, sender);
     }
 
-    private void toggleCenterCameraToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ToggleCenterCameraToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("CenterCamera", null, sender);
     }
 
-    private void switchInfoHUDToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SwitchInfoHUDToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("InfoHud", null, sender);
     }
 
-    private void tASInputInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void TASInputInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("InfoTasInput", null, sender);
     }
 
-    private void gameInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void GameInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("InfoGame", null, sender);
     }
 
-    private void watchEntityInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void WatchEntityInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("InfoWatchEntity", null, sender);
     }
 
-    private void customInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CustomInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("InfoCustom", null, sender);
     }
 
-    private void subpixelIndicatorToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SubpixelIndicatorToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("InfoSubpixelIndicator", null, sender);
     }
 
@@ -1824,64 +1826,64 @@ public partial class Studio : BaseForm {
         }
     }
 
-    private void positionDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void PositionDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
         SetDecimals("Position Decimals", sender);
     }
 
-    private void speedDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SpeedDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
         SetDecimals("Speed Decimals", sender);
     }
 
-    private void velocityDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void VelocityDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
         SetDecimals("Velocity Decimals", sender);
     }
 
-    private void angleDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void AngleDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
         SetDecimals("Angle Decimals", sender);
     }
 
-    private void customInfoDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CustomInfoDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
         SetDecimals("Custom Info Decimals", sender);
     }
 
-    private void subpixelIndicatorDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SubpixelIndicatorDecimalsToolStripMenuItem_Click(object sender, EventArgs e) {
         SetDecimals("Subpixel Indicator Decimals", sender);
     }
 
-    private void unitOfSpeedToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void UnitOfSpeedToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("SpeedUnit", null, sender);
     }
 
-    private void fastForwardSpeedToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void FastForwardSpeedToolStripMenuItem_Click(object sender, EventArgs e) {
         SetDecimals("Fast Forward Speed", sender);
     }
 
-    private void slowForwardSpeedToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SlowForwardSpeedToolStripMenuItem_Click(object sender, EventArgs e) {
         SetDecimals("Slow Forward Speed", sender, true);
     }
 
-    private void copyCustomInfoTemplateToClipboardToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CopyCustomInfoTemplateToClipboardToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("Copy Custom Info Template to Clipboard", null, sender);
     }
 
-    private void setCustomInfoTemplateFromClipboardToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void SetCustomInfoTemplateFromClipboardToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("Set Custom Info Template From Clipboard", null, sender);
     }
 
-    private void clearCustomInfoTemplateToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ClearCustomInfoTemplateToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("Clear Custom Info Template", null, sender);
     }
 
-    private void clearWatchEntityInfoToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void ClearWatchEntityInfoToolStripMenuItem_Click(object sender, EventArgs e) {
         ToggleGameSetting("Clear Watch Entity Info", null, sender);
     }
 
-    private void enabledAutoBackupToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void EnabledAutoBackupToolStripMenuItem_Click(object sender, EventArgs e) {
         Settings.Instance.AutoBackupEnabled = !Settings.Instance.AutoBackupEnabled;
         SaveSettings();
     }
 
-    private void backupRateToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void BackupRateToolStripMenuItem_Click(object sender, EventArgs e) {
         string origRate = Settings.Instance.AutoBackupRate.ToString();
         if (!DialogUtils.ShowInputDialog("Backup Rate (minutes)", ref origRate)) {
             return;
@@ -1896,7 +1898,7 @@ public partial class Studio : BaseForm {
         backupRateToolStripMenuItem.Text = $"Backup Rate (minutes): {Settings.Instance.AutoBackupRate}";
     }
 
-    private void backupFileCountsToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void BackupFileCountsToolStripMenuItem_Click(object sender, EventArgs e) {
         string origCount = Settings.Instance.AutoBackupCount.ToString();
         if (!DialogUtils.ShowInputDialog("Backup File Count", ref origCount)) {
             return;
@@ -1931,25 +1933,25 @@ public partial class Studio : BaseForm {
         dividerLabel.BackColor = dividerColor;
     }
 
-    private void lightToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void LightToolStripMenuItem_Click(object sender, EventArgs e) {
         Settings.Instance.ThemesType = ThemesType.Light;
         Themes.ResetThemes();
         SaveSettings();
     }
 
-    private void darkToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void DarkToolStripMenuItem_Click(object sender, EventArgs e) {
         Settings.Instance.ThemesType = ThemesType.Dark;
         Themes.ResetThemes();
         SaveSettings();
     }
 
-    private void customToolStripMenuItem_Click(object sender, EventArgs e) {
+    private void CustomToolStripMenuItem_Click(object sender, EventArgs e) {
         Settings.Instance.ThemesType = ThemesType.Custom;
         Themes.ResetThemes();
         SaveSettings();
     }
 
-    private void themesToolStripMenuItem_DropDownOpened(object sender, EventArgs e) {
+    private void ThemesToolStripMenuItem_DropDownOpened(object sender, EventArgs e) {
         lightToolStripMenuItem.Checked = Settings.Instance.ThemesType == ThemesType.Light;
         darkToolStripMenuItem.Checked = Settings.Instance.ThemesType == ThemesType.Dark;
         customToolStripMenuItem.Checked = Settings.Instance.ThemesType == ThemesType.Custom;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,8 +13,8 @@ namespace TAS.Input.Commands;
 
 public static class InvokeCommand {
     private static bool consolePrintLog;
-    private const string logPrefix = "{Invoke Command Failed: }";
-    private static readonly object nonReturnObject = new();
+    private const string LogPrefix = "{Invoke Command Failed: }";
+    private static readonly object NonReturnObject = new();
 
     [Monocle.Command("invoke", "Invoke level/session/entity method. eg invoke Level.Pause; invoke Player.Jump (CelesteTAS)")]
     private static void Invoke(string arg1, string arg2, string arg3, string arg4, string arg5, string arg6, string arg7, string arg8,
@@ -41,7 +41,7 @@ public static class InvokeCommand {
                 if (InfoCustom.TryParseMemberNames(args[0], out string typeText, out List<string> memberNames, out string errorMessage)
                     && InfoCustom.TryParseType(typeText, out Type type, out string entityId, out errorMessage)) {
                     object result = FindObjectAndInvoke(type, entityId, memberNames, parameters);
-                    if (result != nonReturnObject) {
+                    if (result != NonReturnObject) {
                         result ??= "null";
                         result.Log(consolePrintLog, LogLevel.Warn);
                     }
@@ -56,7 +56,7 @@ public static class InvokeCommand {
 
     private static object FindObjectAndInvoke(Type type, string entityId, List<string> memberNames, string[] parameters) {
         if (memberNames.IsEmpty()) {
-            return nonReturnObject;
+            return NonReturnObject;
         }
 
         string lastMemberName = memberNames.Last();
@@ -70,7 +70,7 @@ public static class InvokeCommand {
         } else if (memberNames.IsNotEmpty() && type.GetMethodInfo(memberNames.First(), null) is {IsStatic: true}) {
             obj = InfoCustom.GetMemberValue(type, null, memberNames);
             if (TryPrintErrorLog()) {
-                return nonReturnObject;
+                return NonReturnObject;
             }
 
             objType = obj.GetType();
@@ -78,18 +78,18 @@ public static class InvokeCommand {
             obj = SetCommand.FindSpecialObject(type, entityId);
             if (obj == null) {
                 Log($"{type.FullName}{entityId} object is not found");
-                return nonReturnObject;
+                return NonReturnObject;
             } else {
                 if (type.IsSameOrSubclassOf(typeof(Entity)) && obj is List<Entity> entities) {
                     if (entities.IsEmpty()) {
                         Log($"{type.FullName}{entityId} entity is not found");
-                        return nonReturnObject;
+                        return NonReturnObject;
                     } else {
                         List<object> memberValues = new();
                         foreach (Entity entity in entities) {
                             object memberValue = InfoCustom.GetMemberValue(type, entity, memberNames);
                             if (TryPrintErrorLog()) {
-                                return nonReturnObject;
+                                return NonReturnObject;
                             }
 
                             if (memberValue != null) {
@@ -98,7 +98,7 @@ public static class InvokeCommand {
                         }
 
                         if (memberValues.IsEmpty()) {
-                            return nonReturnObject;
+                            return NonReturnObject;
                         }
 
                         obj = memberValues;
@@ -124,18 +124,18 @@ public static class InvokeCommand {
                 }
             }
 
-            return result.IsEmpty() ? nonReturnObject : string.Join("\n", result);
+            return result.IsEmpty() ? NonReturnObject : string.Join("\n", result);
         } else {
             if (TryInvokeMethod(obj, out object r)) {
                 return r;
             } else {
-                return nonReturnObject;
+                return NonReturnObject;
             }
         }
 
         void Log(string text) {
             if (!consolePrintLog) {
-                text = $"{logPrefix}{text}";
+                text = $"{LogPrefix}{text}";
             }
 
             text.Log(consolePrintLog, LogLevel.Warn);
@@ -184,7 +184,7 @@ public static class InvokeCommand {
                 return methodInfo.ReturnType != typeof(void);
             } else {
                 Log($"{objType.FullName}.{lastMemberName} member not found");
-                returnObject = nonReturnObject;
+                returnObject = NonReturnObject;
                 return false;
             }
         }

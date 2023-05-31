@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste;
@@ -13,7 +13,7 @@ using TAS.Utils;
 namespace TAS.EverestInterop.Hitboxes;
 
 public static class HitboxOptimized {
-    private static readonly List<Circle> pufferPushRadius = new();
+    private static readonly List<Circle> PufferPushRadius = new();
 
     private static bool IsShowHitboxes() {
         return TasSettings.ShowHitboxes;
@@ -33,7 +33,7 @@ public static class HitboxOptimized {
             });
         }
 
-        typeof(Puffer).GetMethodInfo("Explode").HookBefore<Puffer>(self => pufferPushRadius.Add(new Circle(40f, self.X, self.Y)));
+        typeof(Puffer).GetMethodInfo("Explode").HookBefore<Puffer>(self => PufferPushRadius.Add(new Circle(40f, self.X, self.Y)));
         typeof(Puffer).GetMethod("Render").IlHook((cursor, context) => {
             if (cursor.TryGotoNext(i => i.MatchLdloc(out _), i => i.MatchLdcI4(28))) {
                 cursor.Index++;
@@ -44,7 +44,7 @@ public static class HitboxOptimized {
         if (ModUtils.GetType("CrystallineHelper", "vitmod.CustomPuffer") is { } customPufferType &&
             customPufferType.CreateGetDelegate<Entity, Circle>("pushRadius") is { } getPushRadius) {
             customPufferType.GetMethodInfo("Explode")
-                .HookBefore<Entity>(self => pufferPushRadius.Add(new Circle(getPushRadius.Invoke(self).Radius, self.X, self.Y)));
+                .HookBefore<Entity>(self => PufferPushRadius.Add(new Circle(getPushRadius.Invoke(self).Radius, self.X, self.Y)));
             // its debug render also needs optimize
             // but i have no good idea, so i put it aside
         }
@@ -304,12 +304,12 @@ public static class HitboxOptimized {
     }
 
     private static void AddPufferPushRadius() {
-        foreach (Circle circle in pufferPushRadius) {
+        foreach (Circle circle in PufferPushRadius) {
             Draw.Circle(circle.Position, circle.Radius, HitboxColor.PufferPushRadiusColor, 4);
         }
 
         if (Engine.FreezeTimer <= 0f) {
-            pufferPushRadius.Clear();
+            PufferPushRadius.Clear();
         }
     }
 

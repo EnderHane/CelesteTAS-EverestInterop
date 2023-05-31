@@ -6,17 +6,17 @@ using Celeste;
 using Celeste.Mod;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using StudioCommunication;
 using TAS.Communication;
 using TAS.EverestInterop;
 using TAS.Input;
 using TAS.Input.Commands;
 using TAS.Utils;
+using TasCommunication;
 
 namespace TAS;
 
 public static class Manager {
-    private static readonly ConcurrentQueue<Action> mainThreadActions = new();
+    private static readonly ConcurrentQueue<Action> MainThreadActions = new();
 
     public static bool Running;
     public static readonly InputController Controller = new();
@@ -42,12 +42,12 @@ public static class Manager {
         if (Thread.CurrentThread == MainThreadHelper.MainThread) {
             action();
         } else {
-            mainThreadActions.Enqueue(action);
+            MainThreadActions.Enqueue(action);
         }
     }
 
     private static void ExecuteMainThreadActions() {
-        while (mainThreadActions.TryDequeue(out Action action)) {
+        while (MainThreadActions.TryDequeue(out Action action)) {
             action.Invoke();
         }
     }

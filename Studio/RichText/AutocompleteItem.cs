@@ -121,7 +121,7 @@ public class SnippetAutocompleteItem : AutocompleteItem {
         var p2 = e.Tb.Selection.Start;
         //do auto indent
         if (e.Tb.AutoIndent) {
-            for (int iLine = p1.iLine + 1; iLine <= p2.iLine; iLine++) {
+            for (int iLine = p1.Line + 1; iLine <= p2.Line; iLine++) {
                 e.Tb.Selection.Start = new Place(0, iLine);
                 e.Tb.DoAutoIndent(iLine);
             }

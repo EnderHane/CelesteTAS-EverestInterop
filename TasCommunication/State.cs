@@ -1,6 +1,6 @@
 using System;
 
-namespace StudioCommunication;
+namespace TasCommunication;
 
 [Flags]
 public enum States : byte {

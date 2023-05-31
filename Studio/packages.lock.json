@@ -11,10 +11,24 @@
           "Microsoft.NETFramework.ReferenceAssemblies.net48": "1.0.2"
         }
       },
+      "Tommy.Serializer": {
+        "type": "Direct",
+        "requested": "[0.1.0, )",
+        "resolved": "0.1.0",
+        "contentHash": "z/xFtZZcq537BKOI+7oerBM5ckFu7QAA23hJROyjY9Fe36s7upELqVVeg5sz51HJi6Vx7KAqRbbk5WpGuUqGmg==",
+        "dependencies": {
+          "Tommy": "2.0.0"
+        }
+      },
       "Microsoft.NETFramework.ReferenceAssemblies.net48": {
         "type": "Transitive",
         "resolved": "1.0.2",
         "contentHash": "5auzRPELLLWdSifssw9eSL11wiIaOx/U/mJUIXilEWdYfjVx509SOn3HwDQCrZY0VKHQxvMk+enM67RXtfsrVg=="
+      },
+      "Tommy": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "5XBermvZiJPubbS6njoNRcq8+hy+iKQ21xArDznKoc/nvSLyF/va4PCwHHMLESf2SVFUbadP9zl0KqQzHHhVPg=="
       }
     }
   }

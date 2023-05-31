@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -43,9 +43,7 @@ public abstract class Style : IDisposable {
     /// Occurs when user click on StyleVisualMarker joined to this style 
     /// </summary>
     public virtual void OnVisualMarkerClick(RichText tb, VisualMarkerEventArgs args) {
-        if (VisualMarkerClick != null) {
-            VisualMarkerClick(tb, args);
-        }
+        VisualMarkerClick?.Invoke(tb, args);
     }
 
     /// <summary>
@@ -57,7 +55,7 @@ public abstract class Style : IDisposable {
     }
 
     public static Size GetSizeOfRange(Range range) {
-        return new((range.End.iChar - range.Start.iChar) * range.tb.CharWidth, range.tb.CharHeight);
+        return new((range.End.Char - range.Start.Char) * range.Tb.CharWidth, range.Tb.CharHeight);
     }
 
     public static GraphicsPath GetRoundedRectangle(Rectangle rect, int d) {
@@ -87,13 +85,13 @@ public abstract class Style : IDisposable {
 /// </summary>
 public class TextStyle : Style {
     //public readonly Font Font;
-    public StringFormat stringFormat;
+    public StringFormat StringFormat;
 
     public TextStyle(Brush foreBrush, Brush backgroundBrush, FontStyle fontStyle) {
         ForeBrush = foreBrush;
         BackgroundBrush = backgroundBrush;
         FontStyle = fontStyle;
-        stringFormat = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
+        StringFormat = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
     }
 
     public Brush ForeBrush { get; set; }
@@ -104,32 +102,30 @@ public class TextStyle : Style {
     public override void Draw(Graphics gr, Point position, Range range) {
         //draw background
         if (BackgroundBrush != null) {
-            gr.FillRectangle(BackgroundBrush, position.X, position.Y, (range.End.iChar - range.Start.iChar) * range.tb.CharWidth,
-                range.tb.CharHeight);
+            gr.FillRectangle(BackgroundBrush, position.X, position.Y, (range.End.Char - range.Start.Char) * range.Tb.CharWidth,
+                range.Tb.CharHeight);
         }
 
         //draw chars
-        Font f = new(range.tb.Font, FontStyle);
+        Font f = new(range.Tb.Font, FontStyle);
         //Font fHalfSize = new Font(range.tb.Font.FontFamily, f.SizeInPoints/2, FontStyle);
-        Line line = range.tb[range.Start.iLine];
-        float dx = range.tb.CharWidth;
-        float y = position.Y + range.tb.LineInterval / 2;
-        float x = position.X - range.tb.CharWidth / 3;
+        Line line = range.Tb[range.Start.Line];
+        float dx = range.Tb.CharWidth;
+        float y = position.Y + range.Tb.LineInterval / 2;
+        float x = position.X - range.Tb.CharWidth / 3;
 
-        if (ForeBrush == null) {
-            ForeBrush = new SolidBrush(range.tb.ForeColor);
-        }
+        ForeBrush ??= new SolidBrush(range.Tb.ForeColor);
 
         //IME mode
-        if (range.tb.ImeAllowed) {
-            for (int i = range.Start.iChar; i < range.End.iChar; i++) {
-                SizeF size = RichText.GetCharSize(f, line[i].c);
+        if (range.Tb.ImeAllowed) {
+            for (int i = range.Start.Char; i < range.End.Char; i++) {
+                SizeF size = RichText.GetCharSize(f, line[i].Char_);
 
-                var gs = gr.Save();
-                float k = size.Width > range.tb.CharWidth + 1 ? range.tb.CharWidth / size.Width : 1;
-                gr.TranslateTransform(x, y + (1 - k) * range.tb.CharHeight / 2);
+                GraphicsState gs = gr.Save();
+                float k = size.Width > range.Tb.CharWidth + 1 ? range.Tb.CharWidth / size.Width : 1;
+                gr.TranslateTransform(x, y + (1 - k) * range.Tb.CharHeight / 2);
                 gr.ScaleTransform(k, (float) Math.Sqrt(k));
-                gr.DrawString(line[i].c.ToString(), f, ForeBrush, 0, 0, stringFormat);
+                gr.DrawString(line[i].Char_.ToString(), f, ForeBrush, 0, 0, StringFormat);
                 gr.Restore(gs);
                 /*
                 if(size.Width>range.tb.CharWidth*1.5f)
@@ -140,11 +136,11 @@ public class TextStyle : Style {
                 x += dx;
             }
         } else
-            //classic mode 
+        //classic mode 
         {
-            for (int i = range.Start.iChar; i < range.End.iChar; i++) {
+            for (int i = range.Start.Char; i < range.End.Char; i++) {
                 //draw char
-                gr.DrawString(line[i].c.ToString(), f, ForeBrush, x, y, stringFormat);
+                gr.DrawString(line[i].Char_.ToString(), f, ForeBrush, x, y, StringFormat);
                 x += dx;
             }
         }
@@ -156,13 +152,9 @@ public class TextStyle : Style {
     public override void Dispose() {
         base.Dispose();
 
-        if (ForeBrush != null) {
-            ForeBrush.Dispose();
-        }
+        ForeBrush?.Dispose();
 
-        if (BackgroundBrush != null) {
-            BackgroundBrush.Dispose();
-        }
+        BackgroundBrush?.Dispose();
     }
 
     public override string GetCSS() {
@@ -210,33 +202,33 @@ public class FoldedBlockStyle : TextStyle {
         base(foreBrush, backgroundBrush, fontStyle) { }
 
     public override void Draw(Graphics gr, Point position, Range range) {
-        if (range.End.iChar > range.Start.iChar) {
+        if (range.End.Char > range.Start.Char) {
             base.Draw(gr, position, range);
 
             int firstNonSpaceSymbolX = position.X;
 
             //find first non space symbol
-            for (int i = range.Start.iChar; i < range.End.iChar; i++) {
-                if (range.tb[range.Start.iLine][i].c != ' ') {
+            for (int i = range.Start.Char; i < range.End.Char; i++) {
+                if (range.Tb[range.Start.Line][i].Char_ != ' ') {
                     break;
                 } else {
-                    firstNonSpaceSymbolX += range.tb.CharWidth;
+                    firstNonSpaceSymbolX += range.Tb.CharWidth;
                 }
             }
 
             //create marker
-            range.tb.AddVisualMarker(new FoldedAreaMarker(range.Start.iLine,
+            range.Tb.AddVisualMarker(new FoldedAreaMarker(range.Start.Line,
                 new Rectangle(firstNonSpaceSymbolX, position.Y,
-                    position.X + (range.End.iChar - range.Start.iChar) * range.tb.CharWidth - firstNonSpaceSymbolX, range.tb.CharHeight)));
+                    position.X + (range.End.Char - range.Start.Char) * range.Tb.CharWidth - firstNonSpaceSymbolX, range.Tb.CharHeight)));
         } else {
             //draw '...'
-            using (Font f = new(range.tb.Font, FontStyle)) {
-                gr.DrawString("...", f, ForeBrush, range.tb.LeftIndent, position.Y - 2);
+            using (Font f = new(range.Tb.Font, FontStyle)) {
+                gr.DrawString("...", f, ForeBrush, range.Tb.LeftIndent, position.Y - 2);
             }
 
             //create marker
-            range.tb.AddVisualMarker(new FoldedAreaMarker(range.Start.iLine,
-                new Rectangle(range.tb.LeftIndent + 2, position.Y, 2 * range.tb.CharHeight, range.tb.CharHeight)));
+            range.Tb.AddVisualMarker(new FoldedAreaMarker(range.Start.Line,
+                new Rectangle(range.Tb.LeftIndent + 2, position.Y, 2 * range.Tb.CharHeight, range.Tb.CharHeight)));
         }
     }
 }
@@ -259,8 +251,8 @@ public class SelectionStyle : Style {
     public override void Draw(Graphics gr, Point position, Range range) {
         //draw background
         if (BackgroundBrush != null) {
-            Rectangle rect = new(position.X, position.Y, (range.End.iChar - range.Start.iChar) * range.tb.CharWidth,
-                range.tb.CharHeight);
+            Rectangle rect = new(position.X, position.Y, (range.End.Char - range.Start.Char) * range.Tb.CharWidth,
+                range.Tb.CharHeight);
             if (rect.Width == 0) {
                 return;
             }
@@ -272,9 +264,7 @@ public class SelectionStyle : Style {
     public override void Dispose() {
         base.Dispose();
 
-        if (BackgroundBrush != null) {
-            BackgroundBrush.Dispose();
-        }
+        BackgroundBrush?.Dispose();
     }
 }
 
@@ -293,8 +283,8 @@ public class MarkerStyle : Style {
     public override void Draw(Graphics gr, Point position, Range range) {
         //draw background
         if (BackgroundBrush != null) {
-            Rectangle rect = new(position.X, position.Y, (range.End.iChar - range.Start.iChar) * range.tb.CharWidth,
-                range.tb.CharHeight);
+            Rectangle rect = new(position.X, position.Y, (range.End.Char - range.Start.Char) * range.Tb.CharWidth,
+                range.Tb.CharHeight);
             if (rect.Width == 0) {
                 return;
             }
@@ -308,9 +298,7 @@ public class MarkerStyle : Style {
     public override void Dispose() {
         base.Dispose();
 
-        if (BackgroundBrush != null) {
-            BackgroundBrush.Dispose();
-        }
+        BackgroundBrush?.Dispose();
     }
 
     public override string GetCSS() {
@@ -331,30 +319,28 @@ public class MarkerStyle : Style {
 /// Draws small rectangle for popup menu
 /// </summary>
 public class ShortcutStyle : Style {
-    public Pen borderPen;
+    public Pen BorderPen;
 
     public ShortcutStyle(Pen borderPen) {
-        this.borderPen = borderPen;
+        BorderPen = borderPen;
     }
 
     public override void Draw(Graphics gr, Point position, Range range) {
         //get last char coordinates
-        Point p = range.tb.PlaceToPoint(range.End);
+        Point p = range.Tb.PlaceToPoint(range.End);
         //draw small square under char
-        Rectangle rect = new(p.X - 5, p.Y + range.tb.CharHeight - 2, 4, 3);
+        Rectangle rect = new(p.X - 5, p.Y + range.Tb.CharHeight - 2, 4, 3);
         gr.FillPath(Brushes.White, GetRoundedRectangle(rect, 1));
-        gr.DrawPath(borderPen, GetRoundedRectangle(rect, 1));
+        gr.DrawPath(BorderPen, GetRoundedRectangle(rect, 1));
         //add visual marker for handle mouse events
-        AddVisualMarker(range.tb,
-            new StyleVisualMarker(new Rectangle(p.X - range.tb.CharWidth, p.Y, range.tb.CharWidth, range.tb.CharHeight), this));
+        AddVisualMarker(range.Tb,
+            new StyleVisualMarker(new Rectangle(p.X - range.Tb.CharWidth, p.Y, range.Tb.CharWidth, range.Tb.CharHeight), this));
     }
 
     public override void Dispose() {
         base.Dispose();
 
-        if (borderPen != null) {
-            borderPen.Dispose();
-        }
+        BorderPen?.Dispose();
     }
 }
 
@@ -370,9 +356,9 @@ public class WavyLineStyle : Style {
     private Pen Pen { get; set; }
 
     public override void Draw(Graphics gr, Point pos, Range range) {
-        var size = GetSizeOfRange(range);
-        var start = new Point(pos.X, pos.Y + size.Height - 1);
-        var end = new Point(pos.X + size.Width, pos.Y + size.Height - 1);
+        Size size = GetSizeOfRange(range);
+        Point start = new(pos.X, pos.Y + size.Height - 1);
+        Point end = new(pos.X + size.Width, pos.Y + size.Height - 1);
         DrawWavyLine(gr, start, end);
     }
 
@@ -383,7 +369,7 @@ public class WavyLineStyle : Style {
         }
 
         int offset = -1;
-        var points = new List<Point>();
+        List<Point> points = new();
 
         for (int i = start.X; i <= end.X; i += 2) {
             points.Add(new Point(i, start.Y + offset));
@@ -395,8 +381,6 @@ public class WavyLineStyle : Style {
 
     public override void Dispose() {
         base.Dispose();
-        if (Pen != null) {
-            Pen.Dispose();
-        }
+        Pen?.Dispose();
     }
 }

@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 
-namespace StudioCommunication;
+namespace TasCommunication;
 
 public static class PlatformUtils {
     private static bool? runningOnWine;

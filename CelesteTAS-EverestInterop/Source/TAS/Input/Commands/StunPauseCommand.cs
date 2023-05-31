@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +8,7 @@ using MonoMod.RuntimeDetour;
 using StudioCommunication;
 using TAS.Module;
 using TAS.Utils;
+using TasCommunication;
 
 namespace TAS.Input.Commands;
 
@@ -18,8 +19,8 @@ public static class StunPauseCommand {
     }
 
     private static Dictionary<string, AutoInputCommand.Arguments> AutoInputArgs => AutoInputCommand.AutoInputArgs;
-    private static readonly GetDelegate<Level, float> unpauseTimer = FastReflection.CreateGetDelegate<Level, float>("unpauseTimer");
-    private static readonly float unpauseTime = unpauseTimer != null ? 0.15f : 0f;
+    private static readonly GetDelegate<Level, float> UnpauseTimer = FastReflection.CreateGetDelegate<Level, float>("unpauseTimer");
+    private static readonly float UnpauseTime = UnpauseTimer != null ? 0.15f : 0f;
     public static bool SimulatePauses;
     public static bool PauseOnCurrentFrame;
     public static int SkipFrames;
@@ -68,15 +69,15 @@ public static class StunPauseCommand {
     }
 
     private static bool CanPause(Level level) {
-        if (unpauseTimer == null) {
+        if (UnpauseTimer == null) {
             return level.CanPause;
         } else {
-            return level.CanPause && unpauseTimer(level) <= 0f;
+            return level.CanPause && UnpauseTimer(level) <= 0f;
         }
     }
 
     private static void UpdateTime(Level level, On.Monocle.Scene.orig_BeforeUpdate orig) {
-        int gameTimeFrames = (int) Math.Ceiling(unpauseTime / Engine.RawDeltaTime) + 2;
+        int gameTimeFrames = (int) Math.Ceiling(UnpauseTime / Engine.RawDeltaTime) + 2;
         int timeActiveFrames = gameTimeFrames - 1;
 
         for (int i = 0; i < timeActiveFrames; i++) {
@@ -87,7 +88,7 @@ public static class StunPauseCommand {
             return;
         }
 
-        long ticks = TimeSpan.FromSeconds(Engine.RawDeltaTime).Ticks * ((int) Math.Ceiling(unpauseTime / Engine.RawDeltaTime) + 2);
+        long ticks = TimeSpan.FromSeconds(Engine.RawDeltaTime).Ticks * ((int) Math.Ceiling(UnpauseTime / Engine.RawDeltaTime) + 2);
         SaveData.Instance.AddTime(level.Session.Area, ticks);
 
         if (!level.Completed && level.TimerStarted) {
@@ -158,7 +159,7 @@ public static class StunPauseCommand {
     }
 
     [TasCommand("EndStunPause", ExecuteTiming = ExecuteTiming.Parse | ExecuteTiming.Runtime)]
-    private static void EndStunPause(string[] args, int __, string filePath, int fileLine) {
+    private static void EndStunPause(string[] args, int studioLine, string filePath, int fileLine) {
         if (ParsingCommand && Mode == StunPauseMode.Input) {
             AutoInputCommand.EndAutoInputImpl(filePath, fileLine, "EndStunPause", "StunPause");
         } else if (!ParsingCommand && Mode == StunPauseMode.Simulate) {

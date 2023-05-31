@@ -78,6 +78,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" />
+        <PackageReference Include="Tommy.Serializer" Version="0.1.0" />
     </ItemGroup>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Delete Files="$(TargetDir)$(AssemblyName).exe.config" />

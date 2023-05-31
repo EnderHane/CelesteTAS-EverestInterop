@@ -43,7 +43,7 @@ public static class UnloadedRoomHitbox {
     private static string lastRoom = "";
     private static string currentRoom = "";
 
-    private const float colorAlpha = 0.5f;
+    private const float ColorAlpha = 0.5f;
 
     [Load]
     private static void Load() {
@@ -125,7 +125,7 @@ public static class UnloadedRoomHitbox {
                             textureId = "objects/Bumper/idle00";
                         }
                     } else {
-                        Color spinnerColor = HitboxColor.EntityColor * colorAlpha;
+                        Color spinnerColor = HitboxColor.EntityColor * ColorAlpha;
                         actions.Add((_) => Draw.Circle(position, 6, spinnerColor, 4));
                         rect = dataName == "rotateSpinner" ? Rectangle.Empty : position.CreateRect(16, 4, -8, -3);
 
@@ -244,7 +244,7 @@ public static class UnloadedRoomHitbox {
                         MTexture texture = GFX.Game["collectables/strawberry/seed00"];
                         foreach (Vector2 node in data.Nodes) {
                             actions.Add((level) =>
-                                Draw.HollowRect(levelPosition + node - new Vector2(6, 6), 12, 12, HitboxColor.EntityColor * colorAlpha));
+                                Draw.HollowRect(levelPosition + node - new Vector2(6, 6), 12, 12, HitboxColor.EntityColor * ColorAlpha));
                             actions.Add((level) => texture.DrawCentered(levelPosition + node));
                         }
                     }
@@ -261,7 +261,7 @@ public static class UnloadedRoomHitbox {
                 } else if (type.IsSameOrSubclassOf(typeof(Lookout))) {
                     rect = position.CreateRect(4, 4, -2, -4);
                     Vector2 talkPosition = position - new Vector2(24, 8);
-                    actions.Add((level) => Draw.HollowRect(talkPosition, 48, 8, Color.Green * colorAlpha));
+                    actions.Add((level) => Draw.HollowRect(talkPosition, 48, 8, Color.Green * ColorAlpha));
                     textureId = "objects/lookout/lookout05";
                     textureOffset = new Vector2(0, -16);
                 } else if (type == typeof(BadelineOldsite)) {
@@ -285,14 +285,14 @@ public static class UnloadedRoomHitbox {
                 } else if (type.IsSameOrSubclassOf(typeof(MrOshiroDoor))) {
                     rect = position.CreateRect(32, 32, 0, 0);
                 } else if (type.IsSameOrSubclassOf(typeof(AngryOshiro))) {
-                    actions.Add((level) => Draw.Circle(position + new Vector2(3, 4), 14, HitboxColor.EntityColor * colorAlpha, 4));
+                    actions.Add((level) => Draw.Circle(position + new Vector2(3, 4), 14, HitboxColor.EntityColor * ColorAlpha, 4));
                     rect = position.CreateRect(28, 6, -11, -11);
                     color = Color.HotPink;
 
                     textureId = "characters/oshiro/boss12";
                 } else if (type.IsSameOrSubclassOf(typeof(Booster))) {
                     rect = Rectangle.Empty;
-                    actions.Add((level) => Draw.Circle(position + new Vector2(0, 2), 10, HitboxColor.EntityColor * colorAlpha, 4));
+                    actions.Add((level) => Draw.Circle(position + new Vector2(0, 2), 10, HitboxColor.EntityColor * ColorAlpha, 4));
                     if (data.Bool("red")) {
                         textureId = "objects/booster/boosterRed00";
                     } else {
@@ -310,7 +310,7 @@ public static class UnloadedRoomHitbox {
                     }
                 } else if (type.IsSameOrSubclassOf(typeof(IntroCar))) {
                     rect = position.CreateRect(25, 4, -15, -17);
-                    actions.Add((level) => Draw.HollowRect(position.CreateRect(19, 4, 8, -11), HitboxColor.PlatformColor * colorAlpha));
+                    actions.Add((level) => Draw.HollowRect(position.CreateRect(19, 4, 8, -11), HitboxColor.PlatformColor * ColorAlpha));
                     textureId = "scenery/car/wheels";
                     textureOffset = new Vector2(0, -9);
 
@@ -365,13 +365,13 @@ public static class UnloadedRoomHitbox {
                     }
                 } else if (type.IsSameOrSubclassOf(typeof(Seeker))) {
                     rect = position.CreateRect(12, 8, -6, -2);
-                    actions.Add((level) => Draw.HollowRect(position.CreateRect(12, 6, -6, -8), Color.HotPink * colorAlpha));
+                    actions.Add((level) => Draw.HollowRect(position.CreateRect(12, 6, -6, -8), Color.HotPink * ColorAlpha));
                     textureId = "characters/monsters/predator00";
                 } else if (type.IsSameOrSubclassOf(typeof(SeekerBarrier))) {
                     actions.Add((level) => Draw.Rect(rect, Color.LightBlue * 0.2f));
                 } else if (type.IsSameOrSubclassOf(typeof(TheoCrystal))) {
                     rect = position.CreateRect(8, 10, -4, -10);
-                    actions.Add((level) => Draw.HollowRect(position.CreateRect(16, 22, -8, -16), Color.Pink * colorAlpha));
+                    actions.Add((level) => Draw.HollowRect(position.CreateRect(16, 22, -8, -16), Color.Pink * ColorAlpha));
                     textureId = "characters/theoCrystal/idle00";
                     textureOffset = new Vector2(0, -10);
                 } else if (type.IsSameOrSubclassOf(typeof(TempleBigEyeball))) {
@@ -385,7 +385,7 @@ public static class UnloadedRoomHitbox {
                     }
                 } else if (type.IsSameOrSubclassOf(typeof(FinalBoss))) {
                     rect = Rectangle.Empty;
-                    actions.Add((level) => Draw.Circle(position - new Vector2(0, 6), 14, HitboxColor.EntityColor * colorAlpha, 4));
+                    actions.Add((level) => Draw.Circle(position - new Vector2(0, 6), 14, HitboxColor.EntityColor * ColorAlpha, 4));
                     textureId = "characters/badelineBoss/boss00";
                     textureOffset = new Vector2(0, -14);
                     scale = new Vector2(-1, 1);
@@ -398,7 +398,7 @@ public static class UnloadedRoomHitbox {
                         MTexture texture = GFX.Game[textureId];
                         foreach (Vector2 node in data.Nodes) {
                             actions.Insert(0, (level) => texture.DrawCentered(levelPosition + node));
-                            actions.Add((level) => Draw.Circle(levelPosition + node, 16, HitboxColor.EntityColor * colorAlpha, 4));
+                            actions.Add((level) => Draw.Circle(levelPosition + node, 16, HitboxColor.EntityColor * ColorAlpha, 4));
                         }
                     }
                 } else if (type.IsSameOrSubclassOf(typeof(SummitGem))) {
@@ -410,7 +410,7 @@ public static class UnloadedRoomHitbox {
                     color = HitboxColor.EntityColorInverselyLessAlpha;
                 } else if (type.IsSameOrSubclassOf(typeof(FireBall))) {
                     rect = Rectangle.Empty;
-                    actions.Add((level) => Draw.Circle(position, 6, Color.Goldenrod * colorAlpha, 4));
+                    actions.Add((level) => Draw.Circle(position, 6, Color.Goldenrod * ColorAlpha, 4));
                     textureId = "objects/fireball/fireball00";
                 } else if (type.IsSameOrSubclassOf(typeof(CoreModeToggle))) {
                     rect = position.CreateRect(16, 24, -8, -12);
@@ -432,19 +432,19 @@ public static class UnloadedRoomHitbox {
                 } else if (type.IsSameOrSubclassOf(typeof(Puffer))) {
                     rect = position.CreateRect(14, 12, -7, -7);
                     color = Color.HotPink;
-                    actions.Add((level) => Draw.HollowRect(position.CreateRect(12, 10, -6, -5), HitboxColor.EntityColor * colorAlpha));
+                    actions.Add((level) => Draw.HollowRect(position.CreateRect(12, 10, -6, -5), HitboxColor.EntityColor * ColorAlpha));
                     textureId = "objects/puffer/idle00";
                     if (!data.Bool("right")) {
                         scale = new Vector2(-1, 1);
                     }
                 } else if (type.IsSameOrSubclassOf(typeof(Glider))) {
                     rect = position.CreateRect(8, 10, -4, -10);
-                    actions.Add((level) => Draw.HollowRect(position.CreateRect(20, 22, -10, -16), Color.Pink * colorAlpha));
+                    actions.Add((level) => Draw.HollowRect(position.CreateRect(20, 22, -10, -16), Color.Pink * ColorAlpha));
                     textureId = "objects/glider/idle0";
                     textureOffset = new Vector2(0, -4);
                 } else if (type.IsSameOrSubclassOf(typeof(FlingBird))) {
                     rect = Rectangle.Empty;
-                    actions.Add((level) => Draw.Circle(position, 16, HitboxColor.EntityColor * colorAlpha, 4));
+                    actions.Add((level) => Draw.Circle(position, 16, HitboxColor.EntityColor * ColorAlpha, 4));
                     textureId = "characters/bird/fly03";
                     scale = new Vector2(-1, 1);
                 } else if (type.IsSameOrSubclassOf(typeof(LightningBreakerBox))) {
@@ -463,11 +463,11 @@ public static class UnloadedRoomHitbox {
                 }
 
                 if (color.A == 255) {
-                    color *= colorAlpha;
+                    color *= ColorAlpha;
                 }
 
                 if (type == typeof(ClutterBlockBase)) {
-                    color *= colorAlpha;
+                    color *= ColorAlpha;
                     actions.Add((level) => {
                         switch (dataName) {
                             case "redBlocks" when !level.Session.GetFlag("oshiro_clutter_cleared_0"):
@@ -501,10 +501,10 @@ public static class UnloadedRoomHitbox {
     }
 
     private static void DrawTriggerHitbox(LevelData levelData, List<Action<Level>> actions) {
-        Color respawnTriggerColor = HitboxColor.RespawnTriggerColor * colorAlpha;
+        Color respawnTriggerColor = HitboxColor.RespawnTriggerColor * ColorAlpha;
 
         foreach (EntityData data in levelData.Triggers) {
-            Color triggerColor = HitboxColor.TriggerColor * colorAlpha;
+            Color triggerColor = HitboxColor.TriggerColor * ColorAlpha;
             if (data.Name == "changeRespawnTrigger") {
                 triggerColor = respawnTriggerColor;
             }
@@ -529,7 +529,7 @@ public static class UnloadedRoomHitbox {
     }
 
     private static void DrawDecalHitbox(LevelData levelData, List<Action> actions) {
-        Color color = HitboxColor.PlatformColor * colorAlpha;
+        Color color = HitboxColor.PlatformColor * ColorAlpha;
 
         foreach (DecalData data in levelData.FgDecals) {
             Rectangle rect = new();

@@ -1,8 +1,9 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
 using StudioCommunication;
 using TAS.Input;
 using TAS.Input.Commands;
+using TasCommunication;
 
 namespace TAS;
 

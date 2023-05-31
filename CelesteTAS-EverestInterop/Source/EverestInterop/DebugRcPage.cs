@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
@@ -9,6 +9,7 @@ using StudioCommunication;
 using TAS.Input;
 using TAS.Module;
 using TAS.Utils;
+using TasCommunication;
 
 namespace TAS.EverestInterop;
 
@@ -75,7 +76,7 @@ public static class DebugRcPage {
         }
     };
 
-    private const string defaultCustomInfoTemplate = @"
+    private const string DefaultCustomInfoTemplate = @"
 Wind: {Level.Wind}\n
 AutoJump: {Player.AutoJump} {Player.AutoJumpTimer.toFrame()}\n
 ForceMoveX: {Player.forceMoveX} {Player.forceMoveXTimer.toFrame()}\n
@@ -85,8 +86,8 @@ TheoCantGrab: {TheoCrystal.Hold.cannotHoldTimer.toFrame()}
 
     private static readonly RCEndPoint CustomInfoPoint = new() {
         Path = "/tas/custominfo",
-        PathHelp = "/tas/custominfo?template={content} (Example: ?template=" + defaultCustomInfoTemplate,
-        PathExample = $"/tas/custominfo?template={defaultCustomInfoTemplate}",
+        PathHelp = "/tas/custominfo?template={content} (Example: ?template=" + DefaultCustomInfoTemplate,
+        PathExample = $"/tas/custominfo?template={DefaultCustomInfoTemplate}",
         Name = "CelesteTAS Custom Info Template",
         InfoHTML = "Get/Set custom info template. Please use \n for linebreaks.",
         Handle = c => {

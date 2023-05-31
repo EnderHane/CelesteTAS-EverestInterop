@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -12,14 +12,15 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using CelesteStudio.Entities;
 using StudioCommunication;
+using TasCommunication;
 
 namespace CelesteStudio.RichText;
 
 public class RichText : UserControl {
-    private const int minLeftIndent = 8;
-    private const int maxBracketSearchIterations = 1000;
-    private const int maxLinesForFolding = 3000;
-    private const int minLinesForAccuracy = 100000;
+    private const int MinLeftIndent = 8;
+    private const int MaxBracketSearchIterations = 1000;
+    private const int MaxLinesForFolding = 3000;
+    private const int MinLinesForAccuracy = 100000;
     private const int WM_IME_SETCONTEXT = 0x0281;
     private const int WM_HSCROLL = 0x114;
     private const int WM_VSCROLL = 0x115;
@@ -28,11 +29,11 @@ public class RichText : UserControl {
     private const Keys AltShift = Keys.Alt | Keys.Shift;
     private static readonly Regex AllSpaceRegex = new(@"^\s+$", RegexOptions.Compiled);
 
-    internal readonly List<LineInfo> lineInfos = new();
+    internal readonly List<LineInfo> LineInfos = new();
 
     private readonly Range selection;
     private readonly List<VisualMarker> visibleMarkers = new();
-    internal bool allowInsertRemoveLines = true;
+    internal bool AllowInsertRemoveLines = true;
     private Brush backBrush;
 
     private bool caretVisible;
@@ -57,14 +58,14 @@ public class RichText : UserControl {
     private string descriptionFile;
     private int saveStateLine = -1;
 
-    protected Dictionary<int, int> foldingPairs = new();
+    protected Dictionary<int, int> FoldingPairs = new();
     public bool InsertLocked = false;
     private Language language;
     private Keys lastModifiers;
     private DateTime lastNavigatedDateTime;
     private uint lineNumberStartValue;
     private TextSource lines;
-    private IntPtr m_hImc;
+    private IntPtr hImc;
 
     private bool mouseIsDrag,
         multiline,
@@ -118,7 +119,7 @@ public class RichText : UserControl {
         SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         SetStyle(ControlStyles.ResizeRedraw, true);
         Font = new Font(FontFamily.GenericMonospace, 9.75f);
-        InitTextSource(ts == null ? CreateTextSource() : ts);
+        InitTextSource(ts ?? CreateTextSource());
         if (lines.Count == 0) {
             lines.InsertLine(0, lines.CreateLine());
         }
@@ -176,8 +177,8 @@ public class RichText : UserControl {
 
     public string CurrentFileName { get; set; }
 
-    public string CurrentStartLineText => Lines[Selection.Start.iLine];
-    public string CurrentEndLineText => Lines[Selection.End.iLine];
+    public string CurrentStartLineText => Lines[Selection.Start.Line];
+    public string CurrentEndLineText => Lines[Selection.End.Line];
 
     /// <summary>
     /// Indicates if tab characters are accepted as input
@@ -685,7 +686,7 @@ public class RichText : UserControl {
     [Browsable(false)]
     public bool IsReplaceMode =>
         InsertLocked && Selection.IsEmpty &&
-        Selection.Start.iChar < lines[Selection.Start.iLine].Count;
+        Selection.Start.Char < lines[Selection.Start.Line].Count;
 
     /// <summary>
     /// Allows text rendering several styles same time.
@@ -960,9 +961,9 @@ public class RichText : UserControl {
     /// Gets or sets char and styleId for given place
     /// This property does not fire OnTextChanged event
     /// </summary>
-    public Char this[Place place] {
-        get => lines[place.iLine][place.iChar];
-        set => lines[place.iLine][place.iChar] = value;
+    public StudioChar this[Place place] {
+        get => lines[place.Line][place.Char];
+        set => lines[place.Line][place.Char] = value;
     }
 
     /// <summary>
@@ -1135,7 +1136,7 @@ public class RichText : UserControl {
     [Browsable(false)]
     public bool RedoEnabled => lines.Manager.RedoEnabled;
 
-    private int LeftIndentLine => LeftIndent - minLeftIndent / 2 - 3;
+    private int LeftIndentLine => LeftIndent - MinLeftIndent / 2 - 3;
 
     /// <summary>
     /// Range of all text
@@ -1189,9 +1190,7 @@ public class RichText : UserControl {
     public virtual void OnVisibleRangeChanged() {
         needRecalcFoldingLines = true;
 
-        if (VisibleRangeChanged != null) {
-            VisibleRangeChanged(this, new EventArgs());
-        }
+        VisibleRangeChanged?.Invoke(this, new EventArgs());
     }
 
     /// <summary>
@@ -1366,37 +1365,35 @@ public class RichText : UserControl {
 
     private void InitTextSource(TextSource ts) {
         if (lines != null) {
-            ts.LineInserted -= ts_LineInserted;
-            ts.LineRemoved -= ts_LineRemoved;
-            ts.TextChanged -= ts_TextChanged;
-            ts.RecalcNeeded -= ts_RecalcNeeded;
-            ts.TextChanging -= ts_TextChanging;
+            ts.LineInserted -= Ts_LineInserted;
+            ts.LineRemoved -= Ts_LineRemoved;
+            ts.TextChanged -= Ts_TextChanged;
+            ts.RecalcNeeded -= Ts_RecalcNeeded;
+            ts.TextChanging -= Ts_TextChanging;
 
-            FileTextSource fs = ts as FileTextSource;
-            if (fs != null) {
-                fs.LineNeeded -= ts_LineNeeded;
+            if (ts is FileTextSource fs) {
+                fs.LineNeeded -= Ts_LineNeeded;
             }
 
             lines.Dispose();
         }
 
-        lineInfos.Clear();
+        LineInfos.Clear();
 
         lines = ts;
 
         if (ts != null) {
-            ts.LineInserted += ts_LineInserted;
-            ts.LineRemoved += ts_LineRemoved;
-            ts.TextChanged += ts_TextChanged;
-            ts.RecalcNeeded += ts_RecalcNeeded;
-            ts.TextChanging += ts_TextChanging;
-            FileTextSource fs = ts as FileTextSource;
-            if (fs != null) {
-                fs.LineNeeded += ts_LineNeeded;
+            ts.LineInserted += Ts_LineInserted;
+            ts.LineRemoved += Ts_LineRemoved;
+            ts.TextChanged += Ts_TextChanged;
+            ts.RecalcNeeded += Ts_RecalcNeeded;
+            ts.TextChanging += Ts_TextChanging;
+            if (ts is FileTextSource fs) {
+                fs.LineNeeded += Ts_LineNeeded;
             }
 
-            while (lineInfos.Count < ts.Count) {
-                lineInfos.Add(new LineInfo(-1));
+            while (LineInfos.Count < ts.Count) {
+                LineInfos.Add(new LineInfo(-1));
             }
         }
 
@@ -1404,7 +1401,8 @@ public class RichText : UserControl {
         needRecalc = true;
     }
 
-    private void ts_TextChanging(object sender, TextChangingEventArgs e) {
+    
+    private void Ts_TextChanging(object sender, TextChangingEventArgs e) {
         if (TextSource.CurrentTB == this) {
             string text = e.InsertingText;
             OnTextChanging(ref text);
@@ -1412,9 +1410,10 @@ public class RichText : UserControl {
         }
     }
 
-    private void ts_RecalcNeeded(object sender, TextSource.TextChangedEventArgs e) {
-        if (e.iFromLine == e.iToLine && !WordWrap && lines.Count > minLinesForAccuracy) {
-            RecalcScrollByOneLine(e.iFromLine);
+    
+    private void Ts_RecalcNeeded(object sender, TextSource.TextChangedEventArgs e) {
+        if (e.FromLine == e.ToLine && !WordWrap && lines.Count > MinLinesForAccuracy) {
+            RecalcScrollByOneLine(e.FromLine);
         } else {
             needRecalc = true;
         }
@@ -1427,27 +1426,30 @@ public class RichText : UserControl {
         needRecalc = true;
     }
 
-    private void ts_TextChanged(object sender, TextSource.TextChangedEventArgs e) {
-        if (e.iFromLine == e.iToLine && !WordWrap) {
-            RecalcScrollByOneLine(e.iFromLine);
+    
+    private void Ts_TextChanged(object sender, TextSource.TextChangedEventArgs e) {
+        if (e.FromLine == e.ToLine && !WordWrap) {
+            RecalcScrollByOneLine(e.FromLine);
         } else {
             needRecalc = true;
         }
 
         Invalidate();
         if (TextSource.CurrentTB == this) {
-            OnTextChanged(e.iFromLine, e.iToLine);
+            OnTextChanged(e.FromLine, e.ToLine);
         }
     }
 
-    private void ts_LineRemoved(object sender, LineRemovedEventArgs e) {
-        lineInfos.RemoveRange(e.Index, e.Count);
+    
+    private void Ts_LineRemoved(object sender, LineRemovedEventArgs e) {
+        LineInfos.RemoveRange(e.Index, e.Count);
         OnLineRemoved(e.Index, e.Count, e.RemovedLineUniqueIds);
     }
 
-    private void ts_LineInserted(object sender, LineInsertedEventArgs e) {
+    
+    private void Ts_LineInserted(object sender, LineInsertedEventArgs e) {
         VisibleState newState = VisibleState.Visible;
-        if (e.Index >= 0 && e.Index < lineInfos.Count && lineInfos[e.Index].VisibleState == VisibleState.Hidden) {
+        if (e.Index >= 0 && e.Index < LineInfos.Count && LineInfos[e.Index].VisibleState == VisibleState.Hidden) {
             newState = VisibleState.Hidden;
         }
 
@@ -1456,12 +1458,13 @@ public class RichText : UserControl {
             temp.Add(new LineInfo(-1) {VisibleState = newState});
         }
 
-        lineInfos.InsertRange(e.Index, temp);
+        LineInfos.InsertRange(e.Index, temp);
 
         OnLineInserted(e.Index, e.Count);
     }
 
-    private void ts_LineNeeded(object sender, LineNeededEventArgs e) {
+    
+    private void Ts_LineNeeded(object sender, LineNeededEventArgs e) {
         LineNeeded?.Invoke(sender, e);
     }
 
@@ -1526,7 +1529,7 @@ public class RichText : UserControl {
 
     protected override void OnLoad(EventArgs e) {
         base.OnLoad(e);
-        m_hImc = NativeMethodsWrapper.ImmGetContext(Handle);
+        hImc = NativeMethodsWrapper.ImmGetContext(Handle);
     }
 
     public void AddVisualMarker(VisualMarker marker) {
@@ -1534,13 +1537,11 @@ public class RichText : UserControl {
     }
 
     public virtual void OnTextChangedDelayed(Range changedRange) {
-        if (TextChangedDelayed != null) {
-            TextChangedDelayed(this, new TextChangedEventArgs(changedRange));
-        }
+        TextChangedDelayed?.Invoke(this, new TextChangedEventArgs(changedRange));
     }
 
     public virtual void OnSelectionChangedDelayed() {
-        RecalcScrollByOneLine(Selection.Start.iLine);
+        RecalcScrollByOneLine(Selection.Start.Line);
         //highlight brackets
         ClearBracketsPositions();
         if (LeftBracket != '\x0' && RightBracket != '\x0') {
@@ -1552,22 +1553,18 @@ public class RichText : UserControl {
         }
 
         //remember last visit time
-        if (Selection.IsEmpty && Selection.Start.iLine < LinesCount) {
-            if (lastNavigatedDateTime != lines[Selection.Start.iLine].LastVisit) {
-                lines[Selection.Start.iLine].LastVisit = DateTime.Now;
-                lastNavigatedDateTime = lines[Selection.Start.iLine].LastVisit;
+        if (Selection.IsEmpty && Selection.Start.Line < LinesCount) {
+            if (lastNavigatedDateTime != lines[Selection.Start.Line].LastVisit) {
+                lines[Selection.Start.Line].LastVisit = DateTime.Now;
+                lastNavigatedDateTime = lines[Selection.Start.Line].LastVisit;
             }
         }
 
-        if (SelectionChangedDelayed != null) {
-            SelectionChangedDelayed(this, new EventArgs());
-        }
+        SelectionChangedDelayed?.Invoke(this, new EventArgs());
     }
 
     public virtual void OnVisibleRangeChangedDelayed() {
-        if (VisibleRangeChangedDelayed != null) {
-            VisibleRangeChangedDelayed(this, new EventArgs());
-        }
+        VisibleRangeChangedDelayed?.Invoke(this, new EventArgs());
     }
 
     /// <summary>
@@ -1785,7 +1782,7 @@ public class RichText : UserControl {
             line.ClearStyle(styleIndex);
         }
 
-        for (int i = 0; i < lineInfos.Count; i++) {
+        for (int i = 0; i < LineInfos.Count; i++) {
             SetVisibleState(i, VisibleState.Visible);
         }
 
@@ -1935,7 +1932,7 @@ public class RichText : UserControl {
 
         if (ImeAllowed) {
             if (m.Msg == WM_IME_SETCONTEXT && m.WParam.ToInt32() == 1) {
-                NativeMethodsWrapper.ImmAssociateContext(Handle, m_hImc);
+                NativeMethodsWrapper.ImmAssociateContext(Handle, hImc);
             }
         }
     }
@@ -1977,13 +1974,13 @@ public class RichText : UserControl {
     public void ClearCurrentLine() {
         Selection.Expand();
         lines.Manager.ExecuteCommand(new ClearSelectedCommand(TextSource));
-        if (Selection.Start.iLine == 0) {
+        if (Selection.Start.Line == 0) {
             if (!Selection.GoRightThroughFolded()) {
                 return;
             }
         }
 
-        if (Selection.Start.iLine > 0) {
+        if (Selection.Start.Line > 0) {
             lines.Manager.ExecuteCommand(new InsertCharCommand(TextSource, '\b')); //backspace
         }
 
@@ -2002,7 +1999,7 @@ public class RichText : UserControl {
         int charsForLineNumber = 2 + (maxLineNumber > 0 ? (int) Math.Log10(maxLineNumber) : 0);
         if (Created) {
             if (ShowLineNumbers) {
-                LeftIndent += charsForLineNumber * CharWidth + minLeftIndent + 1;
+                LeftIndent += charsForLineNumber * CharWidth + MinLeftIndent + 1;
             }
         } else {
             needRecalc = true;
@@ -2058,14 +2055,14 @@ public class RichText : UserControl {
 
         for (int i = 0; i < count; i++) {
             int lineLength = lines.GetLineLength(i);
-            LineInfo lineInfo = lineInfos[i];
+            LineInfo lineInfo = LineInfos[i];
             if (lineLength > maxLineLength && lineInfo.VisibleState == VisibleState.Visible) {
                 maxLineLength = lineLength;
             }
 
-            lineInfo.startY = wordWrapLinesCount * charHeight + topIndent;
+            lineInfo.StartY = wordWrapLinesCount * charHeight + topIndent;
             wordWrapLinesCount += lineInfo.WordWrapStringsCount;
-            lineInfos[i] = lineInfo;
+            LineInfos[i] = lineInfo;
         }
 
         return maxLineLength;
@@ -2110,11 +2107,11 @@ public class RichText : UserControl {
         for (int iLine = fromLine; iLine <= toLine; iLine++) {
             if (lines.IsLineLoaded(iLine)) {
                 if (!wordWrap) {
-                    lineInfos[iLine].CutOffPositions.Clear();
+                    LineInfos[iLine].CutOffPositions.Clear();
                 } else {
-                    LineInfo li = lineInfos[iLine];
+                    LineInfo li = LineInfos[iLine];
                     li.CalcCutOffs(maxCharsPerLine, ImeAllowed, charWrap, lines[iLine]);
-                    lineInfos[iLine] = li;
+                    LineInfos[iLine] = li;
                 }
             }
         }
@@ -2211,16 +2208,16 @@ public class RichText : UserControl {
     /// Scroll control for display selection area
     /// </summary>
     public void DoSelectionVisible() {
-        if (lineInfos[Selection.End.iLine].VisibleState != VisibleState.Visible) {
-            ExpandBlock(Selection.End.iLine);
+        if (LineInfos[Selection.End.Line].VisibleState != VisibleState.Visible) {
+            ExpandBlock(Selection.End.Line);
         }
 
-        if (lineInfos[Selection.Start.iLine].VisibleState != VisibleState.Visible) {
-            ExpandBlock(Selection.Start.iLine);
+        if (LineInfos[Selection.Start.Line].VisibleState != VisibleState.Visible) {
+            ExpandBlock(Selection.Start.Line);
         }
 
         Recalc();
-        DoVisibleRectangle(new Rectangle(PlaceToPoint(new Place(0, Selection.End.iLine)),
+        DoVisibleRectangle(new Rectangle(PlaceToPoint(new Place(0, Selection.End.Line)),
             new Size(2 * CharWidth, 2 * CharHeight)));
 
         Point car = PlaceToPoint(Selection.Start);
@@ -2237,19 +2234,19 @@ public class RichText : UserControl {
     public void DoRangeVisible(Range range) {
         range = range.Clone();
         range.Normalize();
-        range.End = new Place(range.End.iChar, Math.Min(range.End.iLine, range.Start.iLine + ClientSize.Height / CharHeight));
+        range.End = new Place(range.End.Char, Math.Min(range.End.Line, range.Start.Line + ClientSize.Height / CharHeight));
 
-        if (lineInfos[range.End.iLine].VisibleState != VisibleState.Visible) {
-            ExpandBlock(range.End.iLine);
+        if (LineInfos[range.End.Line].VisibleState != VisibleState.Visible) {
+            ExpandBlock(range.End.Line);
         }
 
-        if (lineInfos[range.Start.iLine].VisibleState != VisibleState.Visible) {
-            ExpandBlock(range.Start.iLine);
+        if (LineInfos[range.Start.Line].VisibleState != VisibleState.Visible) {
+            ExpandBlock(range.Start.Line);
         }
 
         Recalc();
-        DoVisibleRectangle(new Rectangle(PlaceToPoint(new Place(0, range.Start.iLine)),
-            new Size(2 * CharWidth, (1 + range.End.iLine - range.Start.iLine) * CharHeight)));
+        DoVisibleRectangle(new Rectangle(PlaceToPoint(new Place(0, range.Start.Line)),
+            new Size(2 * CharWidth, (1 + range.End.Line - range.Start.Line) * CharHeight)));
 
         Invalidate();
     }
@@ -2499,8 +2496,8 @@ public class RichText : UserControl {
                     } else {
                         Place start = Selection.Start;
                         List<InputRecord> inputRecords = Studio.Instance.InputRecords;
-                        if (start.iChar == 0 && start.iLine > 0 && inputRecords[start.iLine - 1].IsInput &&
-                            inputRecords[start.iLine].ToString().Trim() != string.Empty) {
+                        if (start.Char == 0 && start.Line > 0 && inputRecords[start.Line - 1].IsInput &&
+                            inputRecords[start.Line].ToString().Trim() != string.Empty) {
                             Selection.GoLeft(false);
                         } else {
                             InsertChar('\b');
@@ -2542,21 +2539,21 @@ public class RichText : UserControl {
                         Place start = Selection.Start;
 
                         //if line contains only spaces then delete line
-                        if (this[start.iLine].StartSpacesCount == this[start.iLine].Count) {
+                        if (this[start.Line].StartSpacesCount == this[start.Line].Count) {
                             RemoveSpacesAfterCaret();
                         }
 
                         List<InputRecord> inputRecords = Studio.Instance.InputRecords;
-                        if (start.iChar == this[start.iLine].Count && start.iLine < lines.Count - 1 && inputRecords[start.iLine].IsInput &&
-                            inputRecords[start.iLine + 1].ToString().Trim() != string.Empty) {
+                        if (start.Char == this[start.Line].Count && start.Line < lines.Count - 1 && inputRecords[start.Line].IsInput &&
+                            inputRecords[start.Line + 1].ToString().Trim() != string.Empty) {
                             // ignore
                         } else if (Selection.GoRightThroughFolded()) {
-                            int iLine = Selection.Start.iLine;
+                            int iLine = Selection.Start.Line;
                             InsertChar((char) 1);
 
                             //if removed \n then trim spaces
-                            if (iLine != Selection.Start.iLine && AutoIndent) {
-                                if (Selection.Start.iChar > 0) {
+                            if (iLine != Selection.Start.Line && AutoIndent) {
+                                if (Selection.Start.Char > 0) {
                                     RemoveSpacesAfterCaret();
                                 }
                             }
@@ -2589,8 +2586,8 @@ public class RichText : UserControl {
                     } else {
                         //remove current line
                         if (!ReadOnly) {
-                            if (Selection.Start.iLine >= 0 && Selection.Start.iLine < LinesCount) {
-                                int iLine = Selection.Start.iLine;
+                            if (Selection.Start.Line >= 0 && Selection.Start.Line < LinesCount) {
+                                int iLine = Selection.Start.Line;
                                 RemoveLines(new List<int>() {iLine});
                                 Selection.Start = new Place(0, Math.Max(0, Math.Min(iLine, LinesCount - 1)));
                             }
@@ -2769,14 +2766,14 @@ public class RichText : UserControl {
 
     private void ExpandLine() {
         Selection.Expand();
-        int line = Selection.End.iLine;
+        int line = Selection.End.Line;
         if (LinesCount <= 1) {
             // ignored
         } else if (line < LinesCount - 1) {
             Selection.End = new Place(0, line + 1);
         } else {
             Place end = Selection.End;
-            line = Selection.Start.iLine - 1;
+            line = Selection.Start.Line - 1;
             Selection.Start = new Place(Lines[line].Length, line);
             Selection.End = end;
         }
@@ -2788,23 +2785,23 @@ public class RichText : UserControl {
     public virtual void MoveSelectedLinesDown() {
         var prevSelection = Selection.Clone();
         Selection.Expand();
-        int iLine = Selection.Start.iLine;
-        if (Selection.End.iLine >= LinesCount - 1) {
+        int iLine = Selection.Start.Line;
+        if (Selection.End.Line >= LinesCount - 1) {
             Selection = prevSelection;
             return;
         }
 
         string text = SelectedText;
         var temp = new List<int>();
-        for (int i = Selection.Start.iLine; i <= Selection.End.iLine; i++) {
+        for (int i = Selection.Start.Line; i <= Selection.End.Line; i++) {
             temp.Add(i);
         }
 
         RemoveLines(temp);
         Selection.Start = new Place(GetLineLength(iLine), iLine);
         SelectedText = "\n" + text;
-        Selection.Start = new Place(prevSelection.Start.iChar, prevSelection.Start.iLine + 1);
-        Selection.End = new Place(prevSelection.End.iChar, prevSelection.End.iLine + 1);
+        Selection.Start = new Place(prevSelection.Start.Char, prevSelection.Start.Line + 1);
+        Selection.End = new Place(prevSelection.End.Char, prevSelection.End.Line + 1);
     }
 
     /// <summary>
@@ -2813,7 +2810,7 @@ public class RichText : UserControl {
     public virtual void MoveSelectedLinesUp() {
         var prevSelection = Selection.Clone();
         Selection.Expand();
-        int iLine = Selection.Start.iLine;
+        int iLine = Selection.Start.Line;
         if (iLine == 0) {
             Selection = prevSelection;
             return;
@@ -2821,23 +2818,23 @@ public class RichText : UserControl {
 
         string text = SelectedText;
         var temp = new List<int>();
-        for (int i = Selection.Start.iLine; i <= Selection.End.iLine; i++) {
+        for (int i = Selection.Start.Line; i <= Selection.End.Line; i++) {
             temp.Add(i);
         }
 
         RemoveLines(temp);
         Selection.Start = new Place(0, iLine - 1);
         SelectedText = text + "\n";
-        Selection.Start = new Place(prevSelection.Start.iChar, prevSelection.Start.iLine - 1);
-        Selection.End = new Place(prevSelection.End.iChar, prevSelection.End.iLine - 1);
+        Selection.Start = new Place(prevSelection.Start.Char, prevSelection.Start.Line - 1);
+        Selection.End = new Place(prevSelection.End.Char, prevSelection.End.Line - 1);
     }
 
     private void GoHome(bool shift) {
         Selection.BeginUpdate();
         try {
-            int iLine = Selection.Start.iLine;
+            int iLine = Selection.Start.Line;
             int spaces = this[iLine].StartSpacesCount;
-            if (Selection.Start.iChar <= spaces && Selection.Start.iChar > 0) {
+            if (Selection.Start.Char <= spaces && Selection.Start.Char > 0) {
                 Selection.GoHome(shift);
             } else {
                 Selection.GoHome(shift);
@@ -2886,7 +2883,7 @@ public class RichText : UserControl {
         }
 
         Selection.Normalize();
-        bool isCommented = lines[Selection.Start.iLine].Text.TrimStart().StartsWith(commentPrefix);
+        bool isCommented = lines[Selection.Start.Line].Text.TrimStart().StartsWith(commentPrefix);
         if (isCommented) {
             RemoveLinePrefix(commentPrefix);
         } else {
@@ -2895,9 +2892,7 @@ public class RichText : UserControl {
     }
 
     public void OnKeyPressing(KeyPressEventArgs args) {
-        if (KeyPressing != null) {
-            KeyPressing(this, args);
-        }
+        KeyPressing?.Invoke(this, args);
     }
 
     private bool OnKeyPressing(char c) {
@@ -2908,9 +2903,7 @@ public class RichText : UserControl {
 
     public void OnKeyPressed(char c) {
         var args = new KeyPressEventArgs(c);
-        if (KeyPressed != null) {
-            KeyPressed(this, args);
-        }
+        KeyPressed?.Invoke(this, args);
     }
 
     protected override bool ProcessMnemonic(char charCode) {
@@ -2975,7 +2968,7 @@ public class RichText : UserControl {
             if ((lastModifiers & Keys.Shift) == 0) {
                 if (Selection.IsEmpty) {
                     //ClearSelected();
-                    int spaces = TabLength - (Selection.Start.iChar % TabLength);
+                    int spaces = TabLength - (Selection.Start.Char % TabLength);
                     //replace mode? select forward chars
                     if (IsReplaceMode) {
                         for (int i = 0; i < spaces; i++) {
@@ -2990,7 +2983,7 @@ public class RichText : UserControl {
                     IncreaseIndent();
                 }
             } else if (Selection.IsEmpty) {
-                int spaces = Selection.Start.iChar % TabLength;
+                int spaces = Selection.Start.Char % TabLength;
                 spaces = spaces == 0 ? TabLength : spaces;
 
                 for (int i = 0; i < spaces; i++) {
@@ -3020,8 +3013,8 @@ public class RichText : UserControl {
             //insert char
             if (c == '\n') {
                 string line = CurrentStartLineText;
-                if (Selection.Start.iChar > 0) {
-                    if (AllSpaceRegex.IsMatch(line.Substring(0, Math.Max(line.Length, Selection.Start.iChar)))) {
+                if (Selection.Start.Char > 0) {
+                    if (AllSpaceRegex.IsMatch(line.Substring(0, Math.Max(line.Length, Selection.Start.Char)))) {
                         Selection.GoHome(false);
                     } else {
                         Selection.GoEnd(false);
@@ -3049,10 +3042,10 @@ public class RichText : UserControl {
 
         if (AutoIndent) {
             DoCaretVisible();
-            int needSpaces = CalcAutoIndent(Selection.Start.iLine);
-            if (this[Selection.Start.iLine].AutoIndentSpacesNeededCount != needSpaces) {
-                DoAutoIndent(Selection.Start.iLine);
-                this[Selection.Start.iLine].AutoIndentSpacesNeededCount = needSpaces;
+            int needSpaces = CalcAutoIndent(Selection.Start.Line);
+            if (this[Selection.Start.Line].AutoIndentSpacesNeededCount != needSpaces) {
+                DoAutoIndent(Selection.Start.Line);
+                this[Selection.Start.Line].AutoIndentSpacesNeededCount = needSpaces;
             }
         }
     }
@@ -3101,7 +3094,7 @@ public class RichText : UserControl {
             ClearSelected();
         }
 
-        Selection.Start = new Place(Math.Min(lines[iLine].Count, Math.Max(0, oldStart.iChar + needToInsert)), iLine);
+        Selection.Start = new Place(Math.Min(lines[iLine].Count, Math.Max(0, oldStart.Char + needToInsert)), iLine);
     }
 
     /// <summary>
@@ -3151,15 +3144,15 @@ public class RichText : UserControl {
 
     internal virtual void CalcAutoIndentShiftByCodeFolding(object sender, AutoIndentEventArgs args) {
         //inset TAB after start folding marker
-        if (string.IsNullOrEmpty(lines[args.iLine].FoldingEndMarker) &&
-            !string.IsNullOrEmpty(lines[args.iLine].FoldingStartMarker)) {
+        if (string.IsNullOrEmpty(lines[args.Line].FoldingEndMarker) &&
+            !string.IsNullOrEmpty(lines[args.Line].FoldingStartMarker)) {
             args.ShiftNextLines = TabLength;
             return;
         }
 
         //remove TAB before end folding marker
-        if (!string.IsNullOrEmpty(lines[args.iLine].FoldingEndMarker) &&
-            string.IsNullOrEmpty(lines[args.iLine].FoldingStartMarker)) {
+        if (!string.IsNullOrEmpty(lines[args.Line].FoldingEndMarker) &&
+            string.IsNullOrEmpty(lines[args.Line].FoldingStartMarker)) {
             args.Shift = -TabLength;
             args.ShiftNextLines = -TabLength;
             return;
@@ -3288,7 +3281,7 @@ public class RichText : UserControl {
         int textWidth = rightPaddingStartX - HorizontalScroll.Value - leftTextIndent;
         //draw indent area
         e.Graphics.FillRectangle(indentBrush, 0, 0, LeftIndentLine, ClientSize.Height);
-        if (LeftIndent > minLeftIndent) {
+        if (LeftIndent > MinLeftIndent) {
             e.Graphics.DrawLine(servicePen, LeftIndentLine, 0, LeftIndentLine, ClientSize.Height);
         }
 
@@ -3306,13 +3299,13 @@ public class RichText : UserControl {
         int iLine;
         for (iLine = startLine; iLine < lines.Count; iLine++) {
             Line line = lines[iLine];
-            LineInfo lineInfo = lineInfos[iLine];
+            LineInfo lineInfo = LineInfos[iLine];
 
-            if (lineInfo.startY > VerticalScroll.Value + ClientSize.Height) {
+            if (lineInfo.StartY > VerticalScroll.Value + ClientSize.Height) {
                 break;
             }
 
-            if (lineInfo.startY + lineInfo.WordWrapStringsCount * CharHeight < VerticalScroll.Value) {
+            if (lineInfo.StartY + lineInfo.WordWrapStringsCount * CharHeight < VerticalScroll.Value) {
                 continue;
             }
 
@@ -3320,7 +3313,7 @@ public class RichText : UserControl {
                 continue;
             }
 
-            int y = lineInfo.startY - VerticalScroll.Value;
+            int y = lineInfo.StartY - VerticalScroll.Value;
 
             e.Graphics.SmoothingMode = SmoothingMode.None;
             //draw line background
@@ -3332,17 +3325,17 @@ public class RichText : UserControl {
             }
 
             //draw current line background
-            if (CurrentLineColor != Color.Transparent && iLine == Selection.Start.iLine) {
+            if (CurrentLineColor != Color.Transparent && iLine == Selection.Start.Line) {
                 e.Graphics.FillRectangle(currentLineBrush, new Rectangle(leftTextIndent, y, ClientSize.Width, CharHeight));
             }
 
             //draw changed line marker
             if (ChangedLineBgColor != Color.Transparent && line.IsChanged) {
-                e.Graphics.FillRectangle(changedLineBrush, new RectangleF(-10, y, LeftIndent - minLeftIndent - 2 + 10, CharHeight + 1));
+                e.Graphics.FillRectangle(changedLineBrush, new RectangleF(-10, y, LeftIndent - MinLeftIndent - 2 + 10, CharHeight + 1));
             }
 
             if (PlayingLineBgColor != Color.Transparent && iLine == PlayingLine) {
-                e.Graphics.FillRectangle(activeLineBrush, new RectangleF(-10, y, LeftIndent - minLeftIndent - 2 + 10, CharHeight + 1));
+                e.Graphics.FillRectangle(activeLineBrush, new RectangleF(-10, y, LeftIndent - MinLeftIndent - 2 + 10, CharHeight + 1));
             }
 
             //draw savestate line background
@@ -3350,7 +3343,7 @@ public class RichText : UserControl {
                 if (SaveStateLine == PlayingLine) {
                     e.Graphics.FillRectangle(saveStateLineBrush, new RectangleF(-10, y, 15, CharHeight + 1));
                 } else {
-                    e.Graphics.FillRectangle(saveStateLineBrush, new RectangleF(-10, y, LeftIndent - minLeftIndent - 2 + 10, CharHeight + 1));
+                    e.Graphics.FillRectangle(saveStateLineBrush, new RectangleF(-10, y, LeftIndent - MinLeftIndent - 2 + 10, CharHeight + 1));
                 }
             }
 
@@ -3387,7 +3380,7 @@ public class RichText : UserControl {
                         new StringFormat(StringFormatFlags.DirectionRightToLeft));
                 } else {
                     e.Graphics.DrawString((iLine + lineNumberStartValue).ToString(), Font, lineNumberBrush,
-                        new RectangleF(-10, y, LeftIndent - minLeftIndent - 2 + 10, CharHeight),
+                        new RectangleF(-10, y, LeftIndent - MinLeftIndent - 2 + 10, CharHeight),
                         new StringFormat(StringFormatFlags.DirectionRightToLeft));
                 }
             }
@@ -3410,7 +3403,7 @@ public class RichText : UserControl {
 
             //draw wordwrap strings of line
             for (int iWordWrapLine = 0; iWordWrapLine < lineInfo.WordWrapStringsCount; iWordWrapLine++) {
-                y = lineInfo.startY + iWordWrapLine * CharHeight - VerticalScroll.Value;
+                y = lineInfo.StartY + iWordWrapLine * CharHeight - VerticalScroll.Value;
                 try {
                     //draw chars
                     DrawLineChars(e, firstChar, lastChar, iLine, iWordWrapLine, LeftIndent + Paddings.Left - HorizontalScroll.Value, y);
@@ -3429,8 +3422,8 @@ public class RichText : UserControl {
 
         //draw column selection
         if (Selection.ColumnSelectionMode) {
-            if (SelectionStyle.BackgroundBrush is SolidBrush) {
-                var color = ((SolidBrush) SelectionStyle.BackgroundBrush).Color;
+            if (SelectionStyle.BackgroundBrush is SolidBrush brush) {
+                var color = brush.Color;
                 var p1 = PlaceToPoint(Selection.Start);
                 var p2 = PlaceToPoint(Selection.End);
                 using (var pen = new Pen(color)) {
@@ -3455,13 +3448,13 @@ public class RichText : UserControl {
         e.Graphics.SmoothingMode = SmoothingMode.None;
         //draw folding indicator
         if ((startFoldingLine >= 0 || endFoldingLine >= 0) && Selection.Start == Selection.End) {
-            if (endFoldingLine < lineInfos.Count) {
+            if (endFoldingLine < LineInfos.Count) {
                 //folding indicator
-                int startFoldingY = (startFoldingLine >= 0 ? lineInfos[startFoldingLine].startY : 0) -
+                int startFoldingY = (startFoldingLine >= 0 ? LineInfos[startFoldingLine].StartY : 0) -
                     VerticalScroll.Value + CharHeight / 2;
                 int endFoldingY = (endFoldingLine >= 0
-                    ? lineInfos[endFoldingLine].startY +
-                      (lineInfos[endFoldingLine].WordWrapStringsCount - 1) * CharHeight
+                    ? LineInfos[endFoldingLine].StartY +
+                      (LineInfos[endFoldingLine].WordWrapStringsCount - 1) * CharHeight
                     : (WordWrapLinesCount + 1) * CharHeight) - VerticalScroll.Value + CharHeight;
 
                 using (var indicatorPen = new Pen(Color.FromArgb(100, FoldingIndicatorColor), 4)) {
@@ -3511,24 +3504,24 @@ public class RichText : UserControl {
     protected virtual void DrawFoldingLines(PaintEventArgs e, int startLine, int endLine) {
         e.Graphics.SmoothingMode = SmoothingMode.None;
         using (var pen = new Pen(Color.FromArgb(200, ServiceLinesColor)) {DashStyle = DashStyle.Dot}) {
-            foreach (var iLine in foldingPairs) {
+            foreach (var iLine in FoldingPairs) {
                 if (iLine.Key < endLine && iLine.Value > startLine) {
                     var line = lines[iLine.Key];
-                    int y = lineInfos[iLine.Key].startY - VerticalScroll.Value + CharHeight;
+                    int y = LineInfos[iLine.Key].StartY - VerticalScroll.Value + CharHeight;
                     y += y % 2;
 
                     int y2;
 
                     if (iLine.Value >= LinesCount) {
-                        y2 = lineInfos[LinesCount - 1].startY + CharHeight - VerticalScroll.Value;
-                    } else if (lineInfos[iLine.Value].VisibleState == VisibleState.Visible) {
+                        y2 = LineInfos[LinesCount - 1].StartY + CharHeight - VerticalScroll.Value;
+                    } else if (LineInfos[iLine.Value].VisibleState == VisibleState.Visible) {
                         int d = 0;
                         int spaceCount = line.StartSpacesCount;
-                        if (lines[iLine.Value].Count <= spaceCount || lines[iLine.Value][spaceCount].c == ' ') {
+                        if (lines[iLine.Value].Count <= spaceCount || lines[iLine.Value][spaceCount].Char_ == ' ') {
                             d = CharHeight;
                         }
 
-                        y2 = lineInfos[iLine.Value].startY - VerticalScroll.Value + d;
+                        y2 = LineInfos[iLine.Value].StartY - VerticalScroll.Value + d;
                     } else {
                         continue;
                     }
@@ -3544,14 +3537,14 @@ public class RichText : UserControl {
 
     private void TryMoveCursorBehindFrame() {
         Place start = Selection.Start;
-        if (Selection.IsEmpty && InputRecord.InputFrameRegex.IsMatch(Lines[start.iLine])) {
-            Selection.Start = new Place(4, start.iLine);
+        if (Selection.IsEmpty && InputRecord.InputFrameRegex.IsMatch(Lines[start.Line])) {
+            Selection.Start = new Place(4, start.Line);
         }
     }
 
     private void DrawLineChars(PaintEventArgs e, int firstChar, int lastChar, int iLine, int iWordWrapLine, int x, int y) {
         Line line = lines[iLine];
-        LineInfo lineInfo = lineInfos[iLine];
+        LineInfo lineInfo = LineInfos[iLine];
         int from = lineInfo.GetWordWrapStringStartPosition(iWordWrapLine);
         int to = lineInfo.GetWordWrapStringFinishPosition(iWordWrapLine, line);
 
@@ -3575,7 +3568,7 @@ public class RichText : UserControl {
             int iLastFlushedChar = firstChar - 1;
 
             for (int iChar = firstChar; iChar <= lastChar; iChar++) {
-                StyleIndex style = line[from + iChar].style;
+                StyleIndex style = line[from + iChar].Style;
                 if (currentStyleIndex != style) {
                     FlushRendering(e.Graphics, currentStyleIndex,
                         new Point(startX + (iLastFlushedChar + 1) * CharWidth, y),
@@ -3595,7 +3588,7 @@ public class RichText : UserControl {
             var textRange = new Range(this, from + firstChar, iLine, from + lastChar + 1, iLine);
             textRange = Selection.GetIntersectionWith(textRange);
             if (textRange != null && SelectionStyle != null) {
-                SelectionStyle.Draw(e.Graphics, new Point(startX + (textRange.Start.iChar - from) * CharWidth, y),
+                SelectionStyle.Draw(e.Graphics, new Point(startX + (textRange.Start.Char - from) * CharWidth, y),
                     textRange);
             }
         }
@@ -3708,14 +3701,14 @@ public class RichText : UserControl {
     }
 
     private void TweakFrames(bool up, MouseEventArgs e = null) {
-        if (selection.Start.iLine != selection.End.iLine) {
+        if (selection.Start.Line != selection.End.Line) {
             e = null;
         }
 
         Range origSelection = selection.Clone();
 
-        int startLine = selection.Start.iLine;
-        int endLine = e == null ? selection.End.iLine : PointToPlace(e.Location).iLine;
+        int startLine = selection.Start.Line;
+        int endLine = e == null ? selection.End.Line : PointToPlace(e.Location).Line;
         if (startLine > endLine) {
             int temp = startLine;
             startLine = endLine;
@@ -3810,11 +3803,11 @@ public class RichText : UserControl {
         }
 
         Place p = PointToPlace(e.Location);
-        int fromX = p.iChar;
-        int toX = p.iChar;
+        int fromX = p.Char;
+        int toX = p.Char;
 
-        for (int i = p.iChar; i < lines[p.iLine].Count; i++) {
-            char c = lines[p.iLine][i].c;
+        for (int i = p.Char; i < lines[p.Line].Count; i++) {
+            char c = lines[p.Line][i].Char_;
             if (char.IsLetterOrDigit(c) || c == '_') {
                 toX = i + 1;
             } else {
@@ -3822,8 +3815,8 @@ public class RichText : UserControl {
             }
         }
 
-        for (int i = p.iChar - 1; i >= 0; i--) {
-            char c = lines[p.iLine][i].c;
+        for (int i = p.Char - 1; i >= 0; i--) {
+            char c = lines[p.Line][i].Char_;
             if (char.IsLetterOrDigit(c) || c == '_') {
                 fromX = i;
             } else {
@@ -3831,14 +3824,14 @@ public class RichText : UserControl {
             }
         }
 
-        Selection.Start = new Place(toX, p.iLine);
-        Selection.End = new Place(fromX, p.iLine);
+        Selection.Start = new Place(toX, p.Line);
+        Selection.End = new Place(fromX, p.Line);
 
         Invalidate();
     }
 
     private int YtoLineIndex(int y) {
-        int i = lineInfos.BinarySearch(new LineInfo(-10), new LineYComparer(y));
+        int i = LineInfos.BinarySearch(new LineInfo(-10), new LineYComparer(y));
         i = i < 0 ? -i - 2 : i;
         if (i < 0) {
             return 0;
@@ -3863,8 +3856,8 @@ public class RichText : UserControl {
         int y = 0;
 
         for (; iLine < lines.Count; iLine++) {
-            y = lineInfos[iLine].startY + lineInfos[iLine].WordWrapStringsCount * CharHeight;
-            if (y > point.Y && lineInfos[iLine].VisibleState == VisibleState.Visible) {
+            y = LineInfos[iLine].StartY + LineInfos[iLine].WordWrapStringsCount * CharHeight;
+            if (y > point.Y && LineInfos[iLine].VisibleState == VisibleState.Visible) {
                 break;
             }
         }
@@ -3873,12 +3866,12 @@ public class RichText : UserControl {
             iLine = lines.Count - 1;
         }
 
-        if (lineInfos[iLine].VisibleState != VisibleState.Visible) {
+        if (LineInfos[iLine].VisibleState != VisibleState.Visible) {
             iLine = FindPrevVisibleLine(iLine);
         }
 
         //
-        int iWordWrapLine = lineInfos[iLine].WordWrapStringsCount;
+        int iWordWrapLine = LineInfos[iLine].WordWrapStringsCount;
         do {
             iWordWrapLine--;
             y -= CharHeight;
@@ -3889,8 +3882,8 @@ public class RichText : UserControl {
         }
 
         //
-        int start = lineInfos[iLine].GetWordWrapStringStartPosition(iWordWrapLine);
-        int finish = lineInfos[iLine].GetWordWrapStringFinishPosition(iWordWrapLine, lines[iLine]);
+        int start = LineInfos[iLine].GetWordWrapStringStartPosition(iWordWrapLine);
+        int finish = LineInfos[iLine].GetWordWrapStringFinishPosition(iWordWrapLine, lines[iLine]);
         int x = (int) Math.Round((float) point.X / CharWidth);
         x = x < 0 ? start : start + x;
         if (x > finish) {
@@ -4005,13 +3998,13 @@ public class RichText : UserControl {
             if (updatingRange == null) {
                 updatingRange = args.ChangedRange.Clone();
             } else {
-                if (updatingRange.Start.iLine > args.ChangedRange.Start.iLine) {
-                    updatingRange.Start = new Place(0, args.ChangedRange.Start.iLine);
+                if (updatingRange.Start.Line > args.ChangedRange.Start.Line) {
+                    updatingRange.Start = new Place(0, args.ChangedRange.Start.Line);
                 }
 
-                if (updatingRange.End.iLine < args.ChangedRange.End.iLine) {
-                    updatingRange.End = new Place(lines[args.ChangedRange.End.iLine].Count,
-                        args.ChangedRange.End.iLine);
+                if (updatingRange.End.Line < args.ChangedRange.End.Line) {
+                    updatingRange.End = new Place(lines[args.ChangedRange.End.Line].Count,
+                        args.ChangedRange.End.Line);
                 }
 
                 updatingRange = updatingRange.GetIntersectionWith(Range);
@@ -4025,7 +4018,7 @@ public class RichText : UserControl {
         MarkLinesAsChanged(args.ChangedRange);
         //
         if (wordWrap) {
-            RecalcWordWrap(args.ChangedRange.Start.iLine, args.ChangedRange.End.iLine);
+            RecalcWordWrap(args.ChangedRange.Start.Line, args.ChangedRange.End.Line);
         }
 
         //
@@ -4040,9 +4033,7 @@ public class RichText : UserControl {
 
         OnSyntaxHighlight(args);
 
-        if (TextChanged != null) {
-            TextChanged(this, args);
-        }
+        TextChanged?.Invoke(this, args);
 
         base.OnTextChanged(EventArgs.Empty);
 
@@ -4050,7 +4041,7 @@ public class RichText : UserControl {
     }
 
     private void MarkLinesAsChanged(Range range) {
-        for (int iLine = range.Start.iLine; iLine <= range.End.iLine; iLine++) {
+        for (int iLine = range.Start.Line; iLine <= range.End.Line; iLine++) {
             if (iLine >= 0 && iLine < lines.Count) {
                 lines[iLine].IsChanged = true;
             }
@@ -4066,9 +4057,7 @@ public class RichText : UserControl {
             HighlightFoldings();
         }
 
-        if (SelectionChanged != null) {
-            SelectionChanged(this, new EventArgs());
-        }
+        SelectionChanged?.Invoke(this, new EventArgs());
     }
 
     //find folding markers for highlighting
@@ -4086,7 +4075,7 @@ public class RichText : UserControl {
         //
         string marker = null;
         int counter = 0;
-        for (int i = Selection.Start.iLine; i >= Math.Max(Selection.Start.iLine - maxLinesForFolding, 0); i--) {
+        for (int i = Selection.Start.Line; i >= Math.Max(Selection.Start.Line - MaxLinesForFolding, 0); i--) {
             bool hasStartMarker = lines.LineHasFoldingStartMarker(i);
             bool hasEndMarker = lines.LineHasFoldingEndMarker(i);
 
@@ -4104,14 +4093,14 @@ public class RichText : UserControl {
                 }
             }
 
-            if (hasEndMarker && i != Selection.Start.iLine) {
+            if (hasEndMarker && i != Selection.Start.Line) {
                 counter++;
             }
         }
 
         if (startFoldingLine >= 0) {
             //find end of block
-            endFoldingLine = FindEndOfFoldingBlock(startFoldingLine, maxLinesForFolding);
+            endFoldingLine = FindEndOfFoldingBlock(startFoldingLine, MaxLinesForFolding);
             if (endFoldingLine == startFoldingLine) {
                 endFoldingLine = -1;
             }
@@ -4123,9 +4112,7 @@ public class RichText : UserControl {
     }
 
     protected virtual void OnFoldingHighlightChanged() {
-        if (FoldingHighlightChanged != null) {
-            FoldingHighlightChanged(this, EventArgs.Empty);
-        }
+        FoldingHighlightChanged?.Invoke(this, EventArgs.Empty);
     }
 
     protected override void OnGotFocus(EventArgs e) {
@@ -4147,17 +4134,17 @@ public class RichText : UserControl {
     /// <param name="point">Line and char position</param>
     /// <returns>Point of char</returns>
     public int PlaceToPosition(Place point) {
-        if (point.iLine < 0 || point.iLine >= lines.Count ||
-            point.iChar >= lines[point.iLine].Count + Environment.NewLine.Length) {
+        if (point.Line < 0 || point.Line >= lines.Count ||
+            point.Char >= lines[point.Line].Count + Environment.NewLine.Length) {
             return -1;
         }
 
         int result = 0;
-        for (int i = 0; i < point.iLine; i++) {
+        for (int i = 0; i < point.Line; i++) {
             result += lines[i].Count + Environment.NewLine.Length;
         }
 
-        result += point.iChar;
+        result += point.Char;
 
         return result;
     }
@@ -4207,15 +4194,15 @@ public class RichText : UserControl {
     /// <param name="place">Line and char position</param>
     /// <returns>Coordiantes</returns>
     public Point PlaceToPoint(Place place) {
-        if (place.iLine >= lineInfos.Count) {
+        if (place.Line >= LineInfos.Count) {
             return new Point();
         }
 
-        int y = lineInfos[place.iLine].startY;
+        int y = LineInfos[place.Line].StartY;
         //
-        int iWordWrapIndex = lineInfos[place.iLine].GetWordWrapStringIndex(place.iChar);
+        int iWordWrapIndex = LineInfos[place.Line].GetWordWrapStringIndex(place.Char);
         y += iWordWrapIndex * CharHeight;
-        int x = (place.iChar - lineInfos[place.iLine].GetWordWrapStringStartPosition(iWordWrapIndex)) * CharWidth;
+        int x = (place.Char - LineInfos[place.Line].GetWordWrapStringStartPosition(iWordWrapIndex)) * CharWidth;
         //
         y = y - VerticalScroll.Value;
         x = LeftIndent + Paddings.Left + x - HorizontalScroll.Value;
@@ -4285,8 +4272,8 @@ public class RichText : UserControl {
         }
 
         var sb = new StringBuilder(lines[iLine].Count);
-        foreach (Char c in lines[iLine]) {
-            sb.Append(c.c);
+        foreach (StudioChar c in lines[iLine]) {
+            sb.Append(c.Char_);
         }
 
         return sb.ToString();
@@ -4304,7 +4291,7 @@ public class RichText : UserControl {
         //find all hidden lines afetr iLine
         int end = iLine;
         for (; end < LinesCount - 1; end++) {
-            if (lineInfos[end + 1].VisibleState != VisibleState.Hidden) {
+            if (LineInfos[end + 1].VisibleState != VisibleState.Hidden) {
                 break;
             }
         }
@@ -4331,12 +4318,12 @@ public class RichText : UserControl {
     /// </summary>
     /// <param name="iLine">Any line inside collapsed block</param>
     public void ExpandBlock(int iLine) {
-        if (lineInfos[iLine].VisibleState == VisibleState.Visible) {
+        if (LineInfos[iLine].VisibleState == VisibleState.Visible) {
             return;
         }
 
         for (int i = iLine; i < LinesCount; i++) {
-            if (lineInfos[i].VisibleState == VisibleState.Visible) {
+            if (LineInfos[i].VisibleState == VisibleState.Visible) {
                 break;
             } else {
                 SetVisibleState(i, VisibleState.Visible);
@@ -4345,7 +4332,7 @@ public class RichText : UserControl {
         }
 
         for (int i = iLine - 1; i >= 0; i--) {
-            if (lineInfos[i].VisibleState == VisibleState.Visible) {
+            if (LineInfos[i].VisibleState == VisibleState.Visible) {
                 break;
             } else {
                 SetVisibleState(i, VisibleState.Visible);
@@ -4475,11 +4462,11 @@ public class RichText : UserControl {
             return;
         }
 
-        foldingPairs.Clear();
+        FoldingPairs.Clear();
         //
         var range = VisibleRange;
-        int startLine = Math.Max(range.Start.iLine - maxLinesForFolding, 0);
-        int endLine = Math.Min(range.End.iLine + maxLinesForFolding, Math.Max(range.End.iLine, LinesCount - 1));
+        int startLine = Math.Max(range.Start.Line - MaxLinesForFolding, 0);
+        int endLine = Math.Min(range.End.Line + MaxLinesForFolding, Math.Max(range.End.Line, LinesCount - 1));
         var stack = new Stack<int>();
         for (int i = startLine; i <= endLine; i++) {
             bool hasStartMarker = lines.LineHasFoldingStartMarker(i);
@@ -4497,7 +4484,7 @@ public class RichText : UserControl {
                 string m = lines[i].FoldingEndMarker;
                 while (stack.Count > 0) {
                     int iStartLine = stack.Pop();
-                    foldingPairs[iStartLine] = i;
+                    FoldingPairs[iStartLine] = i;
                     if (m == lines[iStartLine].FoldingStartMarker) {
                         break;
                     }
@@ -4506,7 +4493,7 @@ public class RichText : UserControl {
         }
 
         while (stack.Count > 0) {
-            foldingPairs[stack.Pop()] = endLine + 1;
+            FoldingPairs[stack.Pop()] = endLine + 1;
         }
     }
 
@@ -4557,9 +4544,9 @@ public class RichText : UserControl {
         int old = iLine;
         do {
             iLine++;
-        } while (iLine < lines.Count - 1 && lineInfos[iLine].VisibleState != VisibleState.Visible);
+        } while (iLine < lines.Count - 1 && LineInfos[iLine].VisibleState != VisibleState.Visible);
 
-        if (lineInfos[iLine].VisibleState != VisibleState.Visible) {
+        if (LineInfos[iLine].VisibleState != VisibleState.Visible) {
             return old;
         } else {
             return iLine;
@@ -4575,9 +4562,9 @@ public class RichText : UserControl {
         int old = iLine;
         do {
             iLine--;
-        } while (iLine > 0 && lineInfos[iLine].VisibleState != VisibleState.Visible);
+        } while (iLine > 0 && LineInfos[iLine].VisibleState != VisibleState.Visible);
 
-        if (lineInfos[iLine].VisibleState != VisibleState.Visible) {
+        if (LineInfos[iLine].VisibleState != VisibleState.Visible) {
             return old;
         } else {
             return iLine;
@@ -4586,7 +4573,7 @@ public class RichText : UserControl {
 
     private VisualMarker FindVisualMarkerForPoint(Point p) {
         foreach (VisualMarker m in visibleMarkers) {
-            if (m.rectangle.Contains(p)) {
+            if (m.Rectangle.Contains(p)) {
                 return m;
             }
         }
@@ -4603,8 +4590,8 @@ public class RichText : UserControl {
         }
 
         Range old = Selection.Clone();
-        int from = Math.Min(Selection.Start.iLine, Selection.End.iLine);
-        int to = Math.Max(Selection.Start.iLine, Selection.End.iLine);
+        int from = Math.Min(Selection.Start.Line, Selection.End.Line);
+        int to = Math.Max(Selection.Start.Line, Selection.End.Line);
         BeginUpdate();
         Selection.BeginUpdate();
         lines.Manager.BeginAutoUndoCommands();
@@ -4635,8 +4622,8 @@ public class RichText : UserControl {
         }
 
         Range old = Selection.Clone();
-        int from = Math.Min(Selection.Start.iLine, Selection.End.iLine);
-        int to = Math.Max(Selection.Start.iLine, Selection.End.iLine);
+        int from = Math.Min(Selection.Start.Line, Selection.End.Line);
+        int to = Math.Max(Selection.Start.Line, Selection.End.Line);
         BeginUpdate();
         Selection.BeginUpdate();
         lines.Manager.BeginAutoUndoCommands();
@@ -4671,7 +4658,7 @@ public class RichText : UserControl {
         Selection.BeginUpdate();
         lines.Manager.BeginAutoUndoCommands();
         //
-        for (int i = r.Start.iLine; i <= r.End.iLine; i++) {
+        for (int i = r.Start.Line; i <= r.End.Line; i++) {
             DoAutoIndent(i);
         }
 
@@ -4690,8 +4677,8 @@ public class RichText : UserControl {
     /// </summary>
     public void InsertLinePrefix(string prefix) {
         Range old = Selection.Clone();
-        int from = Math.Min(Selection.Start.iLine, Selection.End.iLine);
-        int to = Math.Max(Selection.Start.iLine, Selection.End.iLine);
+        int from = Math.Min(Selection.Start.Line, Selection.End.Line);
+        int to = Math.Max(Selection.Start.Line, Selection.End.Line);
         BeginUpdate();
         Selection.BeginUpdate();
         lines.Manager.BeginAutoUndoCommands();
@@ -4715,8 +4702,8 @@ public class RichText : UserControl {
     /// </summary>
     public void RemoveLinePrefix(string prefix) {
         Range old = Selection.Clone();
-        int from = Math.Min(Selection.Start.iLine, Selection.End.iLine);
-        int to = Math.Max(Selection.Start.iLine, Selection.End.iLine);
+        int from = Math.Min(Selection.Start.Line, Selection.End.Line);
+        int to = Math.Max(Selection.Start.Line, Selection.End.Line);
         BeginUpdate();
         Selection.BeginUpdate();
         lines.Manager.BeginAutoUndoCommands();
@@ -4756,9 +4743,7 @@ public class RichText : UserControl {
     }
 
     public virtual void OnVisualMarkerClick(MouseEventArgs args, StyleVisualMarker marker) {
-        if (VisualMarkerClick != null) {
-            VisualMarkerClick(this, new VisualMarkerEventArgs(marker.Style, marker, args));
-        }
+        VisualMarkerClick?.Invoke(this, new VisualMarkerEventArgs(marker.Style, marker, args));
     }
 
     protected virtual void OnMarkerClick(MouseEventArgs args, VisualMarker marker) {
@@ -4768,14 +4753,14 @@ public class RichText : UserControl {
         }
 
         if (marker is CollapseFoldingMarker) {
-            CollapseFoldingBlock((marker as CollapseFoldingMarker).iLine);
+            CollapseFoldingBlock((marker as CollapseFoldingMarker).Line);
             OnVisibleRangeChanged();
             Invalidate();
             return;
         }
 
         if (marker is ExpandFoldingMarker) {
-            ExpandFoldedBlock((marker as ExpandFoldingMarker).iLine);
+            ExpandFoldedBlock((marker as ExpandFoldingMarker).Line);
             OnVisibleRangeChanged();
             Invalidate();
             return;
@@ -4783,7 +4768,7 @@ public class RichText : UserControl {
 
         if (marker is FoldedAreaMarker) {
             //select folded block
-            int iStart = (marker as FoldedAreaMarker).iLine;
+            int iStart = (marker as FoldedAreaMarker).Line;
             int iEnd = FindEndOfFoldingBlock(iStart);
             if (iEnd < 0) {
                 return;
@@ -4800,7 +4785,7 @@ public class RichText : UserControl {
 
     protected virtual void OnMarkerDoubleClick(VisualMarker marker) {
         if (marker is FoldedAreaMarker) {
-            ExpandFoldedBlock((marker as FoldedAreaMarker).iLine);
+            ExpandFoldedBlock((marker as FoldedAreaMarker).Line);
             Invalidate();
             return;
         }
@@ -4813,7 +4798,7 @@ public class RichText : UserControl {
         rightBracketPosition2 = null;
     }
 
-    private void HighlightBrackets(char LeftBracket, char RightBracket, ref Range leftBracketPosition,
+    private void HighlightBrackets(char leftBracket, char rightBracket, ref Range leftBracketPosition,
         ref Range rightBracketPosition) {
         if (!Selection.IsEmpty) {
             return;
@@ -4828,20 +4813,20 @@ public class RichText : UserControl {
         Range oldRightBracketPosition = rightBracketPosition;
         Range range = Selection.Clone(); //need clone because we will move caret
         int counter = 0;
-        int maxIterations = maxBracketSearchIterations;
+        int maxIterations = MaxBracketSearchIterations;
         while (range.GoLeftThroughFolded()) //move caret left
         {
-            if (range.CharAfterStart == LeftBracket) {
+            if (range.CharAfterStart == leftBracket) {
                 counter++;
             }
 
-            if (range.CharAfterStart == RightBracket) {
+            if (range.CharAfterStart == rightBracket) {
                 counter--;
             }
 
             if (counter == 1) {
                 //highlighting
-                range.End = new Place(range.Start.iChar + 1, range.Start.iLine);
+                range.End = new Place(range.Start.Char + 1, range.Start.Line);
                 leftBracketPosition = range;
                 break;
             }
@@ -4856,19 +4841,19 @@ public class RichText : UserControl {
         //
         range = Selection.Clone(); //need clone because we will move caret
         counter = 0;
-        maxIterations = maxBracketSearchIterations;
+        maxIterations = MaxBracketSearchIterations;
         do {
-            if (range.CharAfterStart == LeftBracket) {
+            if (range.CharAfterStart == leftBracket) {
                 counter++;
             }
 
-            if (range.CharAfterStart == RightBracket) {
+            if (range.CharAfterStart == rightBracket) {
                 counter--;
             }
 
             if (counter == -1) {
                 //highlighting
-                range.End = new Place(range.Start.iChar + 1, range.Start.iLine);
+                range.End = new Place(range.Start.Char + 1, range.Start.Line);
                 rightBracketPosition = range;
                 break;
             }
@@ -4940,11 +4925,11 @@ public class RichText : UserControl {
         }
 
         //generate HTML
-        string HTML = exporter.GetHtml(range);
-        HTML = "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UTF-8\"><head><title>" + PrepareHtmlText(settings.Title) +
-               "</title></head>" + HTML + SelectHTMLRangeScript();
+        string html = exporter.GetHtml(range);
+        html = "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UTF-8\"><head><title>" + PrepareHtmlText(settings.Title) +
+               "</title></head>" + html + SelectHTMLRangeScript();
         string tempFile = Path.GetTempPath() + "fctb.html";
-        File.WriteAllText(tempFile, HTML);
+        File.WriteAllText(tempFile, html);
 
         //create wb
         var wb = new WebBrowser();
@@ -4952,7 +4937,7 @@ public class RichText : UserControl {
         wb.Visible = false;
         wb.Location = new Point(-1000, -1000);
         wb.Parent = this;
-        wb.StatusTextChanged += new EventHandler(wb_StatusTextChanged);
+        wb.StatusTextChanged += new EventHandler(Wb_StatusTextChanged);
         wb.Navigate(tempFile);
     }
 
@@ -4960,7 +4945,7 @@ public class RichText : UserControl {
         return s.Replace("<", "&lt;").Replace(">", "&gt;").Replace("&", "&amp;");
     }
 
-    void wb_StatusTextChanged(object sender, EventArgs e) {
+    private void Wb_StatusTextChanged(object sender, EventArgs e) {
         var wb = sender as WebBrowser;
         if (wb.StatusText.Contains("#print")) {
             var settings = wb.Tag as PrintDialogSettings;
@@ -5004,8 +4989,8 @@ public class RichText : UserControl {
     private string SelectHTMLRangeScript() {
         var sel = Selection.Clone();
         sel.Normalize();
-        int start = PlaceToPosition(sel.Start) - sel.Start.iLine;
-        int len = sel.Text.Length - (sel.End.iLine - sel.Start.iLine);
+        int start = PlaceToPosition(sel.Start) - sel.Start.Line;
+        int len = sel.Text.Length - (sel.End.Line - sel.Start.Line);
         return string.Format(
             @"<script type=""text/javascript"">
 try{{
@@ -5112,9 +5097,9 @@ window.status = ""#print"";
     /// Set VisibleState of line
     /// </summary>
     public void SetVisibleState(int iLine, VisibleState state) {
-        LineInfo li = lineInfos[iLine];
+        LineInfo li = LineInfos[iLine];
         li.VisibleState = state;
-        lineInfos[iLine] = li;
+        LineInfos[iLine] = li;
         needRecalc = true;
     }
 
@@ -5122,7 +5107,7 @@ window.status = ""#print"";
     /// Returns VisibleState of the line
     /// </summary>
     public VisibleState GetVisibleState(int iLine) {
-        return lineInfos[iLine].VisibleState;
+        return LineInfos[iLine].VisibleState;
     }
 
     /// <summary>
@@ -5132,7 +5117,7 @@ window.status = ""#print"";
         lastModifiers = Keys.None;
         var form = new GoToForm();
         form.TotalLineCount = LinesCount;
-        form.SelectedLineNumber = Selection.Start.iLine + 1;
+        form.SelectedLineNumber = Selection.Start.Line + 1;
 
         if (form.ShowDialog() == DialogResult.OK) {
             int line = Math.Min(LinesCount - 1, Math.Max(0, form.SelectedLineNumber - 1));
@@ -5145,9 +5130,7 @@ window.status = ""#print"";
     /// Occurs when undo/redo stack is changed
     /// </summary>
     public void OnUndoRedoStateChanged() {
-        if (UndoRedoStateChanged != null) {
-            UndoRedoStateChanged(this, EventArgs.Empty);
-        }
+        UndoRedoStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -5156,7 +5139,7 @@ window.status = ""#print"";
     public List<int> FindLines(string searchPattern, RegexOptions options = RegexOptions.None) {
         List<int> iLines = new();
         foreach (var r in Range.GetRangesByLines(searchPattern, options)) {
-            iLines.Add(r.Start.iLine);
+            iLines.Add(r.Start.Line);
         }
 
         return iLines;
@@ -5190,19 +5173,19 @@ window.status = ""#print"";
     #region Nested type: LineYComparer
 
     private class LineYComparer : IComparer<LineInfo> {
-        private readonly int Y;
+        private readonly int y;
 
-        public LineYComparer(int Y) {
-            this.Y = Y;
+        public LineYComparer(int y) {
+            this.y = y;
         }
 
         #region IComparer<LineInfo> Members
 
         public int Compare(LineInfo x, LineInfo y) {
-            if (x.startY == -10) {
-                return -y.startY.CompareTo(Y);
+            if (x.StartY == -10) {
+                return -y.StartY.CompareTo(this.y);
             } else {
-                return x.startY.CompareTo(Y);
+                return x.StartY.CompareTo(this.y);
             }
         }
 
@@ -5397,14 +5380,14 @@ public class PrintDialogSettings {
 }
 
 public class AutoIndentEventArgs : EventArgs {
-    public AutoIndentEventArgs(int iLine, string lineText, string prevLineText, int tabLength) {
-        this.iLine = iLine;
+    public AutoIndentEventArgs(int line, string lineText, string prevLineText, int tabLength) {
+        Line = line;
         LineText = lineText;
         PrevLineText = prevLineText;
         TabLength = tabLength;
     }
 
-    public int iLine { get; internal set; }
+    public int Line { get; internal set; }
     public int TabLength { get; internal set; }
     public string LineText { get; internal set; }
     public string PrevLineText { get; internal set; }

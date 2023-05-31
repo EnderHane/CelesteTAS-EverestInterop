@@ -17,7 +17,7 @@ namespace TAS.Input.Commands;
 // ReSharper disable once UnusedType.Global
 public static class SetCommand {
     private static bool consolePrintLog;
-    private const string logPrefix = "Set Command Failed: ";
+    private const string LogPrefix = "Set Command Failed: ";
 
     [Monocle.Command("set", "Set settings/level/session/entity field. eg set DashMode Infinite; set Player.Speed 325 -52.5 (CelesteTAS)")]
     private static void ConsoleSet(string arg1, string arg2, string arg3, string arg4, string arg5, string arg6, string arg7, string arg8,
@@ -345,7 +345,7 @@ public static class SetCommand {
 
     private static void Log(string text) {
         if (!consolePrintLog) {
-            text = $"{logPrefix}{text}";
+            text = $"{LogPrefix}{text}";
         }
 
         text.Log(consolePrintLog, LogLevel.Warn);

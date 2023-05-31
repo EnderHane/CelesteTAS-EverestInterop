@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -14,7 +14,7 @@ namespace CelesteStudio.RichText;
 [Browsable(false)]
 public class AutocompleteMenu : ToolStripDropDown {
     readonly AutocompleteListView listView;
-    public ToolStripControlHost host;
+    public ToolStripControlHost Host;
 
     public AutocompleteMenu(RichText tb) {
         // create a new popup and add the list view to it 
@@ -23,13 +23,13 @@ public class AutocompleteMenu : ToolStripDropDown {
         Margin = Padding.Empty;
         Padding = Padding.Empty;
         listView = new AutocompleteListView(tb);
-        host = new ToolStripControlHost(listView);
-        host.Margin = new Padding(2, 2, 2, 2);
-        host.Padding = Padding.Empty;
-        host.AutoSize = false;
-        host.AutoToolTip = false;
+        Host = new ToolStripControlHost(listView);
+        Host.Margin = new Padding(2, 2, 2, 2);
+        Host.Padding = Padding.Empty;
+        Host.AutoSize = false;
+        Host.AutoToolTip = false;
         CalcSize();
-        base.Items.Add(host);
+        base.Items.Add(Host);
         listView.Parent = this;
         SearchPattern = @"[\w\.]";
         MinFragmentLength = 2;
@@ -81,18 +81,16 @@ public class AutocompleteMenu : ToolStripDropDown {
     public new event EventHandler<CancelEventArgs> Opening;
 
     internal new void OnOpening(CancelEventArgs args) {
-        if (Opening != null) {
-            Opening(this, args);
-        }
+        Opening?.Invoke(this, args);
     }
 
     public new void Close() {
-        listView.toolTip.Hide(listView);
+        listView.ToolTip.Hide(listView);
         base.Close();
     }
 
     internal void CalcSize() {
-        host.Size = listView.Size;
+        Host.Size = listView.Size;
         Size = new Size(listView.Size.Width + 4, listView.Size.Height + 4);
     }
 
@@ -105,15 +103,11 @@ public class AutocompleteMenu : ToolStripDropDown {
     }
 
     internal void OnSelecting(SelectingEventArgs args) {
-        if (Selecting != null) {
-            Selecting(this, args);
-        }
+        Selecting?.Invoke(this, args);
     }
 
     public void OnSelected(SelectedEventArgs args) {
-        if (Selected != null) {
-            Selected(this, args);
-        }
+        Selected?.Invoke(this, args);
     }
 
     /// <summary>
@@ -134,26 +128,26 @@ public class AutocompleteListView : UserControl {
     int oldItemCount = 0;
     int selectedItemIndex = 0;
     IEnumerable<AutocompleteItem> sourceItems = new List<AutocompleteItem>();
-    internal ToolTip toolTip = new();
-    internal List<AutocompleteItem> visibleItems;
+    internal ToolTip ToolTip = new();
+    internal List<AutocompleteItem> VisibleItems;
 
     internal AutocompleteListView(RichText tb) {
         SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
         base.Font = new Font(FontFamily.GenericSansSerif, 9);
-        visibleItems = new List<AutocompleteItem>();
+        VisibleItems = new List<AutocompleteItem>();
         itemHeight = Font.Height + 2;
         VerticalScroll.SmallChange = itemHeight;
         BackColor = Color.White;
         MaximumSize = new Size(Size.Width, 180);
-        toolTip.ShowAlways = false;
+        ToolTip.ShowAlways = false;
         AppearInterval = 500;
-        timer.Tick += new EventHandler(timer_Tick);
+        timer.Tick += new EventHandler(Timer_Tick);
 
         this.tb = tb;
 
-        tb.KeyDown += new KeyEventHandler(tb_KeyDown);
-        tb.SelectionChanged += new EventHandler(tb_SelectionChanged);
-        tb.KeyPressed += new KeyPressEventHandler(tb_KeyPressed);
+        tb.KeyDown += new KeyEventHandler(Tb_KeyDown);
+        tb.SelectionChanged += new EventHandler(Tb_SelectionChanged);
+        tb.KeyPressed += new KeyPressEventHandler(Tb_KeyPressed);
 
         Form form = tb.FindForm();
         if (form != null) {
@@ -182,9 +176,9 @@ public class AutocompleteListView : UserControl {
         set => timer.Interval = value;
     }
 
-    public int Count => visibleItems.Count;
+    public int Count => VisibleItems.Count;
 
-    void tb_KeyPressed(object sender, KeyPressEventArgs e) {
+    private void Tb_KeyPressed(object sender, KeyPressEventArgs e) {
         bool backspaceORdel = e.KeyChar == '\b' || e.KeyChar == 0xff;
 
         /*
@@ -198,12 +192,12 @@ public class AutocompleteListView : UserControl {
         }
     }
 
-    void timer_Tick(object sender, EventArgs e) {
+    private void Timer_Tick(object sender, EventArgs e) {
         timer.Stop();
         DoAutocomplete(false);
     }
 
-    void ResetTimer(Timer timer) {
+    private void ResetTimer(Timer timer) {
         timer.Stop();
         timer.Start();
     }
@@ -218,7 +212,7 @@ public class AutocompleteListView : UserControl {
             return;
         }
 
-        visibleItems.Clear();
+        VisibleItems.Clear();
         selectedItemIndex = 0;
         VerticalScroll.Value = 0;
         //get fragment around caret
@@ -243,12 +237,12 @@ public class AutocompleteListView : UserControl {
                         tb.TextSource.Manager.EndAutoUndoCommands();
                     }
                 } else if (res != CompareResult.Hidden) {
-                    visibleItems.Add(item);
+                    VisibleItems.Add(item);
                 }
 
                 if (res == CompareResult.VisibleAndSelected && !foundSelected) {
                     foundSelected = true;
-                    selectedItemIndex = visibleItems.Count - 1;
+                    selectedItemIndex = VisibleItems.Count - 1;
                 }
             }
 
@@ -279,7 +273,7 @@ public class AutocompleteListView : UserControl {
     }
 
     public AutocompleteItem GetItem(string text, Type itemType = null) {
-        itemType = itemType == null ? typeof(AutocompleteItem) : itemType;
+        itemType ??= typeof(AutocompleteItem);
         if (!typeof(AutocompleteItem).IsAssignableFrom(itemType)) {
             throw new Exception("Type must be of AutocompleteItem");
         }
@@ -293,7 +287,7 @@ public class AutocompleteListView : UserControl {
         return null;
     }
 
-    void tb_SelectionChanged(object sender, EventArgs e) {
+    private void Tb_SelectionChanged(object sender, EventArgs e) {
         /*
         FastColoredTextBox tb = sender as FastColoredTextBox;
         
@@ -307,7 +301,7 @@ public class AutocompleteListView : UserControl {
             if (!tb.Selection.IsEmpty) {
                 needClose = true;
             } else if (!Menu.Fragment.Contains(tb.Selection.Start)) {
-                if (tb.Selection.Start.iLine == Menu.Fragment.End.iLine && tb.Selection.Start.iChar == Menu.Fragment.End.iChar + 1) {
+                if (tb.Selection.Start.Line == Menu.Fragment.End.Line && tb.Selection.Start.Char == Menu.Fragment.End.Char + 1) {
                     //user press key at end of fragment
                     char c = tb.Selection.CharBeforeStart;
                     if (!Regex.IsMatch(c.ToString(), Menu.SearchPattern)) //check char
@@ -325,7 +319,7 @@ public class AutocompleteListView : UserControl {
         }
     }
 
-    void tb_KeyDown(object sender, KeyEventArgs e) {
+    private void Tb_KeyDown(object sender, KeyEventArgs e) {
         if (Menu.Visible) {
             if (ProcessKey(e.KeyCode, e.Modifiers)) {
                 e.Handled = true;
@@ -341,16 +335,16 @@ public class AutocompleteListView : UserControl {
     }
 
     void AdjustScroll() {
-        if (oldItemCount == visibleItems.Count) {
+        if (oldItemCount == VisibleItems.Count) {
             return;
         }
 
-        int needHeight = itemHeight * visibleItems.Count + 1;
+        int needHeight = itemHeight * VisibleItems.Count + 1;
         Height = Math.Min(needHeight, MaximumSize.Height);
         Menu.CalcSize();
 
         AutoScrollMinSize = new Size(0, needHeight);
-        oldItemCount = visibleItems.Count;
+        oldItemCount = VisibleItems.Count;
     }
 
     protected override void OnPaint(PaintEventArgs e) {
@@ -358,14 +352,14 @@ public class AutocompleteListView : UserControl {
         int startI = VerticalScroll.Value / itemHeight - 1;
         int finishI = (VerticalScroll.Value + ClientSize.Height) / itemHeight + 1;
         startI = Math.Max(startI, 0);
-        finishI = Math.Min(finishI, visibleItems.Count);
+        finishI = Math.Min(finishI, VisibleItems.Count);
         int y = 0;
         int leftPadding = 18;
         for (int i = startI; i < finishI; i++) {
             y = i * itemHeight - VerticalScroll.Value;
 
-            if (ImageList != null && visibleItems[i].ImageIndex >= 0) {
-                e.Graphics.DrawImage(ImageList.Images[visibleItems[i].ImageIndex], 1, y);
+            if (ImageList != null && VisibleItems[i].ImageIndex >= 0) {
+                e.Graphics.DrawImage(ImageList.Images[VisibleItems[i].ImageIndex], 1, y);
             }
 
             if (i == selectedItemIndex) {
@@ -378,7 +372,7 @@ public class AutocompleteListView : UserControl {
                 e.Graphics.DrawRectangle(Pens.Red, leftPadding, y, ClientSize.Width - 1 - leftPadding, itemHeight - 1);
             }
 
-            e.Graphics.DrawString(visibleItems[i].ToString(), Font, Brushes.Black, leftPadding, y);
+            e.Graphics.DrawString(VisibleItems[i].ToString(), Font, Brushes.Black, leftPadding, y);
         }
     }
 
@@ -405,13 +399,13 @@ public class AutocompleteListView : UserControl {
     }
 
     internal virtual void OnSelecting() {
-        if (selectedItemIndex < 0 || selectedItemIndex >= visibleItems.Count) {
+        if (selectedItemIndex < 0 || selectedItemIndex >= VisibleItems.Count) {
             return;
         }
 
         tb.TextSource.Manager.BeginAutoUndoCommands();
         try {
-            AutocompleteItem item = visibleItems[selectedItemIndex];
+            AutocompleteItem item = VisibleItems[selectedItemIndex];
             SelectingEventArgs args = new() {Item = item, SelectedIndex = selectedItemIndex};
 
             Menu.OnSelecting(args);
@@ -429,7 +423,7 @@ public class AutocompleteListView : UserControl {
 
             Menu.Close();
             //
-            SelectedEventArgs args2 = new() {Item = item, Tb = Menu.Fragment.tb};
+            SelectedEventArgs args2 = new() {Item = item, Tb = Menu.Fragment.Tb};
             item.OnSelected(Menu, args2);
             Menu.OnSelected(args2);
         } finally {
@@ -440,12 +434,12 @@ public class AutocompleteListView : UserControl {
     private void DoAutocomplete(AutocompleteItem item, Range fragment) {
         string newText = item.GetTextForReplace();
         //replace text of fragment
-        var tb = fragment.tb;
+        var tb = fragment.Tb;
         if (tb.Selection.ColumnSelectionMode) {
             var start = tb.Selection.Start;
             var end = tb.Selection.End;
-            start.iChar = fragment.Start.iChar;
-            end.iChar = fragment.End.iChar;
+            start.Char = fragment.Start.Char;
+            end.Char = fragment.End.Char;
             tb.Selection.Start = start;
             tb.Selection.End = end;
         } else {
@@ -502,15 +496,15 @@ public class AutocompleteListView : UserControl {
     }
 
     public void SelectNext(int shift) {
-        selectedItemIndex = Math.Max(0, Math.Min(selectedItemIndex + shift, visibleItems.Count - 1));
+        selectedItemIndex = Math.Max(0, Math.Min(selectedItemIndex + shift, VisibleItems.Count - 1));
         DoSelectedVisible();
         //
         Invalidate();
     }
 
     private void DoSelectedVisible() {
-        if (selectedItemIndex >= 0 && selectedItemIndex < visibleItems.Count) {
-            SetToolTip(visibleItems[selectedItemIndex]);
+        if (selectedItemIndex >= 0 && selectedItemIndex < VisibleItems.Count) {
+            SetToolTip(VisibleItems[selectedItemIndex]);
         }
 
         int y = selectedItemIndex * itemHeight - VerticalScroll.Value;
@@ -528,21 +522,21 @@ public class AutocompleteListView : UserControl {
     }
 
     private void SetToolTip(AutocompleteItem autocompleteItem) {
-        string title = visibleItems[selectedItemIndex].ToolTipTitle;
-        string text = visibleItems[selectedItemIndex].ToolTipText;
+        string title = VisibleItems[selectedItemIndex].ToolTipTitle;
+        string text = VisibleItems[selectedItemIndex].ToolTipText;
 
         if (string.IsNullOrEmpty(title)) {
-            toolTip.ToolTipTitle = null;
-            toolTip.SetToolTip(this, null);
+            ToolTip.ToolTipTitle = null;
+            ToolTip.SetToolTip(this, null);
             return;
         }
 
         if (string.IsNullOrEmpty(text)) {
-            toolTip.ToolTipTitle = null;
-            toolTip.Show(title, this, Width + 3, 0, 3000);
+            ToolTip.ToolTipTitle = null;
+            ToolTip.Show(title, this, Width + 3, 0, 3000);
         } else {
-            toolTip.ToolTipTitle = title;
-            toolTip.Show(text, this, Width + 3, 0, 3000);
+            ToolTip.ToolTipTitle = title;
+            ToolTip.Show(text, this, Width + 3, 0, 3000);
         }
     }
 

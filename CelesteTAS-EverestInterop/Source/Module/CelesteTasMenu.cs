@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -237,7 +237,7 @@ internal static class CelesteTasMenu {
 public class EaseInSubMenu : TextMenuExt.SubMenu {
     private readonly MTexture icon;
     private float alpha;
-    private float ease;
+    private new float ease;
     private float unEasedAlpha;
 
     public EaseInSubMenu(string label, bool enterOnSelect) : base(label, enterOnSelect) {

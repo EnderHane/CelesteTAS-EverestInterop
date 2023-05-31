@@ -147,11 +147,11 @@ public static class DialogUtils {
         int startLine;
         int? startIndex;
         if (next) {
-            startLine = selection.Start.iLine;
-            startIndex = selection.Start.iChar + selection.Text.Length;
+            startLine = selection.Start.Line;
+            startIndex = selection.Start.Char + selection.Text.Length;
         } else {
-            startLine = selection.End.iLine;
-            startIndex = selection.End.iChar - selection.Text.Length;
+            startLine = selection.End.Line;
+            startIndex = selection.End.Char - selection.Text.Length;
         }
 
         if (fromStart) {
@@ -242,7 +242,7 @@ public static class DialogUtils {
         inputBox.Controls.Add(lineNumberLabel);
 
         richText.Selection.Normalize();
-        int currentLine = richText.Selection.Start.iLine;
+        int currentLine = richText.Selection.Start.Line;
 
         TextBox lineNumberTextBox = new();
         lineNumberTextBox.AutoSize = true;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -52,6 +52,7 @@ public static class NativeMethods {
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006")]
     public struct TRACK_MOUSE_EVENT {
         public uint cbSize;
         public uint dwFlags;
@@ -61,6 +62,7 @@ public static class NativeMethods {
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006")]
     public struct TITLEBARINFO {
         public const int CCHILDREN_TITLEBAR = 5;
         public uint cbSize;

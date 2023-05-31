@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Celeste;
 using Celeste.Mod.UI;
@@ -146,7 +146,7 @@ public static class CycleHitboxColor {
             0 => TasSettings.CycleHitboxColor1,
             1 => TasSettings.CycleHitboxColor2,
             2 => TasSettings.CycleHitboxColor3,
-            3 => TasSettings.OtherCyclesHitboxColor,
+            _ => TasSettings.OtherCyclesHitboxColor,
         };
     }
 

@@ -1,45 +1,41 @@
-﻿namespace CelesteStudio.RichText;
+namespace CelesteStudio.RichText;
 
 public struct Place {
-    public int iChar;
-    public int iLine;
+    public int Char;
+    public int Line;
 
-    public Place(int iChar, int iLine) {
-        this.iChar = iChar;
-        this.iLine = iLine;
+    public Place(int char_, int line) {
+        Char = char_;
+        Line = line;
     }
 
     public void Offset(int dx, int dy) {
-        iChar += dx;
-        iLine += dy;
+        Char += dx;
+        Line += dy;
     }
 
     public override int GetHashCode() {
-        return iChar ^ iLine;
+        return Char ^ Line;
     }
 
     public override bool Equals(object obj) {
-        return obj is Place && ((Place) obj).iLine == iLine && ((Place) obj).iChar == iChar;
+        return obj is Place place && place.Line == Line && place.Char == Char;
     }
 
-    public static bool operator !=(Place p1, Place p2) {
-        return !p1.Equals(p2);
-    }
+    public static bool operator !=(Place p1, Place p2) => !p1.Equals(p2);
 
-    public static bool operator ==(Place p1, Place p2) {
-        return p1.Equals(p2);
-    }
+    public static bool operator ==(Place p1, Place p2) => p1.Equals(p2);
 
     public static bool operator <(Place p1, Place p2) {
-        if (p1.iLine < p2.iLine) {
+        if (p1.Line < p2.Line) {
             return true;
         }
 
-        if (p1.iLine > p2.iLine) {
+        if (p1.Line > p2.Line) {
             return false;
         }
 
-        if (p1.iChar < p2.iChar) {
+        if (p1.Char < p2.Char) {
             return true;
         }
 
@@ -51,15 +47,15 @@ public struct Place {
             return true;
         }
 
-        if (p1.iLine < p2.iLine) {
+        if (p1.Line < p2.Line) {
             return true;
         }
 
-        if (p1.iLine > p2.iLine) {
+        if (p1.Line > p2.Line) {
             return false;
         }
 
-        if (p1.iChar < p2.iChar) {
+        if (p1.Char < p2.Char) {
             return true;
         }
 
@@ -67,15 +63,15 @@ public struct Place {
     }
 
     public static bool operator >(Place p1, Place p2) {
-        if (p1.iLine > p2.iLine) {
+        if (p1.Line > p2.Line) {
             return true;
         }
 
-        if (p1.iLine < p2.iLine) {
+        if (p1.Line < p2.Line) {
             return false;
         }
 
-        if (p1.iChar > p2.iChar) {
+        if (p1.Char > p2.Char) {
             return true;
         }
 
@@ -87,15 +83,15 @@ public struct Place {
             return true;
         }
 
-        if (p1.iLine > p2.iLine) {
+        if (p1.Line > p2.Line) {
             return true;
         }
 
-        if (p1.iLine < p2.iLine) {
+        if (p1.Line < p2.Line) {
             return false;
         }
 
-        if (p1.iChar > p2.iChar) {
+        if (p1.Char > p2.Char) {
             return true;
         }
 
@@ -105,6 +101,6 @@ public struct Place {
     public static Place Empty => new();
 
     public override string ToString() {
-        return "(" + iChar + "," + iLine + ")";
+        return "(" + Char + "," + Line + ")";
     }
 }

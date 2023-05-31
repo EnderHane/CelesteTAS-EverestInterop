@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 
 namespace CelesteStudio.RichText;
 
-public struct Char {
-    public char c;
-    public StyleIndex style;
+public struct StudioChar {
+    public char Char_;
+    public StyleIndex Style;
 
-    public Char(char c) {
-        this.c = c;
-        style = StyleIndex.None;
+    public StudioChar(char c) {
+        Char_ = c;
+        Style = StyleIndex.None;
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace CelesteStudio.RichText;
@@ -42,6 +42,7 @@ public static class PlatformType {
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006")]
     struct SYSTEM_INFO {
         public readonly ushort wProcessorArchitecture;
         public readonly ushort wReserved;

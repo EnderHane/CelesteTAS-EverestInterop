@@ -9,7 +9,7 @@ namespace CelesteStudio;
 
 [TommyTableName("Settings")]
 public class Settings {
-    private const string path = "Celeste Studio.toml";
+    private const string Path = "Celeste Studio.toml";
     public static Settings Instance { get; private set; } = new();
     private static bool saving;
     private static FileSystemWatcher watcher;
@@ -94,9 +94,9 @@ public class Settings {
     public static void StartWatcher() {
         watcher = new();
         watcher.Path = Directory.GetCurrentDirectory();
-        watcher.Filter = Path.GetFileName(path);
+        watcher.Filter = System.IO.Path.GetFileName(Path);
         watcher.Changed += (_, _) => {
-            if (!saving && File.Exists(path)) {
+            if (!saving && File.Exists(Path)) {
                 Thread.Sleep(100);
                 try {
                     Studio.Instance.Invoke(Load);
@@ -120,17 +120,17 @@ public class Settings {
     }
 
     public static void Load() {
-        if (File.Exists(path)) {
+        if (File.Exists(Path)) {
             try {
-                Instance = TommySerializer.FromTomlFile<Settings>(path);
+                Instance = TommySerializer.FromTomlFile<Settings>(Path);
             } catch {
                 // ignore
             }
         }
 
-        Themes.Load(path);
+        Themes.Load(Path);
 
-        if (!File.Exists(path)) {
+        if (!File.Exists(Path)) {
             Save();
         }
     }
@@ -139,7 +139,7 @@ public class Settings {
         saving = true;
 
         try {
-            TommySerializer.ToTomlFile(new object[] {Instance, Themes.Light, Themes.Dark, Themes.Custom}, path);
+            TommySerializer.ToTomlFile(new object[] {Instance, Themes.Light, Themes.Dark, Themes.Custom}, Path);
         } catch {
             // ignore
         }

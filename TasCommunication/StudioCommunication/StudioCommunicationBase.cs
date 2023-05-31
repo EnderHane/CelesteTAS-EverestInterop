@@ -30,7 +30,7 @@ public class StudioCommunicationBase : ICommunicationBase {
     private int timeoutCount;
     private bool waiting;
 
-    private static readonly bool runningOnMono = Type.GetType("Mono.Runtime") != null;
+    private static readonly bool RunningOnMono = Type.GetType("Mono.Runtime") != null;
 
     public bool IsInitialized { get; protected set; }
 

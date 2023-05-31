@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -448,10 +448,10 @@ internal static class DictionaryExtensions {
 }
 
 internal static class DynamicDataExtensions {
-    private static readonly ConditionalWeakTable<object, DynamicData> cached = new();
+    private static readonly ConditionalWeakTable<object, DynamicData> Cached = new();
 
     public static DynamicData GetDynamicDataInstance(this object obj) {
-        return cached.GetValue(obj, key => new DynamicData(key));
+        return Cached.GetValue(obj, key => new DynamicData(key));
     }
 }
 
@@ -490,11 +490,11 @@ internal static class Vector2DoubleExtension {
 }
 
 internal static class NumberExtensions {
-    private static readonly string format = "0.".PadRight(339, '#');
+    private static readonly string Format = "0.".PadRight(339, '#');
 
     public static string ToFormattedString(this float value, int decimals) {
         if (decimals == 0) {
-            return value.ToString(format);
+            return value.ToString(Format);
         } else {
             return ((double) value).ToFormattedString(decimals);
         }
@@ -502,7 +502,7 @@ internal static class NumberExtensions {
 
     public static string ToFormattedString(this double value, int decimals) {
         if (decimals == 0) {
-            return value.ToString(format);
+            return value.ToString(Format);
         } else {
             return value.ToString($"F{decimals}");
         }

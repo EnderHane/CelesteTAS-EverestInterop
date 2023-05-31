@@ -195,7 +195,7 @@ namespace CelesteStudio {
             this.copyGameDataMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) | System.Windows.Forms.Keys.C)));
             this.copyGameDataMenuItem.Size = new System.Drawing.Size(329, 22);
             this.copyGameDataMenuItem.Text = "Copy Game Info to Clipboard";
-            this.copyGameDataMenuItem.Click += new System.EventHandler(this.copyGamerDataMenuItem_Click);
+            this.copyGameDataMenuItem.Click += new System.EventHandler(this.CopyGamerDataMenuItem_Click);
             // 
             // reconnectStudioAndCelesteToolStripMenuItem
             // 
@@ -203,7 +203,7 @@ namespace CelesteStudio {
             this.reconnectStudioAndCelesteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) | System.Windows.Forms.Keys.D)));
             this.reconnectStudioAndCelesteToolStripMenuItem.Size = new System.Drawing.Size(329, 22);
             this.reconnectStudioAndCelesteToolStripMenuItem.Text = "Reconnect Studio and Celeste";
-            this.reconnectStudioAndCelesteToolStripMenuItem.Click += new System.EventHandler(this.reconnectStudioAndCelesteToolStripMenuItem_Click);
+            this.reconnectStudioAndCelesteToolStripMenuItem.Click += new System.EventHandler(this.ReconnectStudioAndCelesteToolStripMenuItem_Click);
             // 
             // toolStripSeparator11
             // 
@@ -215,21 +215,21 @@ namespace CelesteStudio {
             this.copyCustomInfoTemplateToClipboardToolStripMenuItem.Name = "copyCustomInfoTemplateToClipboardToolStripMenuItem";
             this.copyCustomInfoTemplateToClipboardToolStripMenuItem.Size = new System.Drawing.Size(329, 22);
             this.copyCustomInfoTemplateToClipboardToolStripMenuItem.Text = "Copy Custom Info Template to Clipboard";
-            this.copyCustomInfoTemplateToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyCustomInfoTemplateToClipboardToolStripMenuItem_Click);
+            this.copyCustomInfoTemplateToClipboardToolStripMenuItem.Click += new System.EventHandler(this.CopyCustomInfoTemplateToClipboardToolStripMenuItem_Click);
             // 
             // setCustomInfoTemplateFromClipboardToolStripMenuItem
             // 
             this.setCustomInfoTemplateFromClipboardToolStripMenuItem.Name = "setCustomInfoTemplateFromClipboardToolStripMenuItem";
             this.setCustomInfoTemplateFromClipboardToolStripMenuItem.Size = new System.Drawing.Size(329, 22);
             this.setCustomInfoTemplateFromClipboardToolStripMenuItem.Text = "Set Custom Info Template From Clipboard";
-            this.setCustomInfoTemplateFromClipboardToolStripMenuItem.Click += new System.EventHandler(this.setCustomInfoTemplateFromClipboardToolStripMenuItem_Click);
+            this.setCustomInfoTemplateFromClipboardToolStripMenuItem.Click += new System.EventHandler(this.SetCustomInfoTemplateFromClipboardToolStripMenuItem_Click);
             // 
             // clearCustomInfoTemplateToolStripMenuItem
             // 
             this.clearCustomInfoTemplateToolStripMenuItem.Name = "clearCustomInfoTemplateToolStripMenuItem";
             this.clearCustomInfoTemplateToolStripMenuItem.Size = new System.Drawing.Size(329, 22);
             this.clearCustomInfoTemplateToolStripMenuItem.Text = "Clear Custom Info Template";
-            this.clearCustomInfoTemplateToolStripMenuItem.Click += new System.EventHandler(this.clearCustomInfoTemplateToolStripMenuItem_Click);
+            this.clearCustomInfoTemplateToolStripMenuItem.Click += new System.EventHandler(this.ClearCustomInfoTemplateToolStripMenuItem_Click);
             // 
             // toolStripSeparator20
             // 
@@ -241,7 +241,7 @@ namespace CelesteStudio {
             this.clearWatchEntityInfoToolStripMenuItem.Name = "clearWatchEntityInfoToolStripMenuItem";
             this.clearWatchEntityInfoToolStripMenuItem.Size = new System.Drawing.Size(329, 22);
             this.clearWatchEntityInfoToolStripMenuItem.Text = "Clear Watch Entity Info";
-            this.clearWatchEntityInfoToolStripMenuItem.Click += new System.EventHandler(this.clearWatchEntityInfoToolStripMenuItem_Click);
+            this.clearWatchEntityInfoToolStripMenuItem.Click += new System.EventHandler(this.ClearWatchEntityInfoToolStripMenuItem_Click);
             // 
             // menuStrip
             // 
@@ -260,14 +260,14 @@ namespace CelesteStudio {
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.fileToolStripMenuItem.Text = "&File";
-            this.fileToolStripMenuItem.DropDownOpened += new System.EventHandler(this.fileToolStripMenuItem_DropDownOpened);
+            this.fileToolStripMenuItem.DropDownOpened += new System.EventHandler(this.FileToolStripMenuItem_DropDownOpened);
             // 
             // newFileToolStripMenuItem
             // 
             this.newFileToolStripMenuItem.Name = "newFileToolStripMenuItem";
             this.newFileToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.newFileToolStripMenuItem.Text = "&New File";
-            this.newFileToolStripMenuItem.Click += new System.EventHandler(this.newFileToolStripMenuItem_Click);
+            this.newFileToolStripMenuItem.Click += new System.EventHandler(this.NewFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
@@ -280,7 +280,7 @@ namespace CelesteStudio {
             this.openFileMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openFileMenuItem.Size = new System.Drawing.Size(292, 22);
             this.openFileMenuItem.Text = "&Open File...";
-            this.openFileMenuItem.Click += new System.EventHandler(this.openFileMenuItem_Click);
+            this.openFileMenuItem.Click += new System.EventHandler(this.OpenFileMenuItem_Click);
             // 
             // openPreviousFileToolStripMenuItem
             // 
@@ -288,7 +288,7 @@ namespace CelesteStudio {
             this.openPreviousFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Left)));
             this.openPreviousFileToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.openPreviousFileToolStripMenuItem.Text = "Open &Previous File";
-            this.openPreviousFileToolStripMenuItem.Click += new System.EventHandler(this.openPreviousFileToolStripMenuItem_Click);
+            this.openPreviousFileToolStripMenuItem.Click += new System.EventHandler(this.OpenPreviousFileToolStripMenuItem_Click);
             // 
             // openRecentMenuItem
             // 
@@ -313,14 +313,14 @@ namespace CelesteStudio {
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) | System.Windows.Forms.Keys.S)));
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.saveAsToolStripMenuItem.Text = "&Save As...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveAsToolStripMenuItem_Click);
             // 
             // convertToLibTASInputsToolStripMenuItem
             // 
             this.convertToLibTASInputsToolStripMenuItem.Name = "convertToLibTASInputsToolStripMenuItem";
             this.convertToLibTASInputsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.convertToLibTASInputsToolStripMenuItem.Text = "&Convert to LibTAS Inputs...";
-            this.convertToLibTASInputsToolStripMenuItem.Click += new System.EventHandler(this.convertToLibTASInputsToolStripMenuItem_Click);
+            this.convertToLibTASInputsToolStripMenuItem.Click += new System.EventHandler(this.ConvertToLibTASInputsToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -328,7 +328,7 @@ namespace CelesteStudio {
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.settingsToolStripMenuItem.Text = "&Settings";
-            this.settingsToolStripMenuItem.DropDownOpened += new System.EventHandler(this.settingsToolStripMenuItem_Opened);
+            this.settingsToolStripMenuItem.DropDownOpened += new System.EventHandler(this.SettingsToolStripMenuItem_Opened);
             // 
             // sendInputsToCelesteMenuItem
             // 
@@ -336,28 +336,28 @@ namespace CelesteStudio {
             this.sendInputsToCelesteMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
             this.sendInputsToCelesteMenuItem.Size = new System.Drawing.Size(380, 22);
             this.sendInputsToCelesteMenuItem.Text = "&Send Inputs to Celeste";
-            this.sendInputsToCelesteMenuItem.Click += new System.EventHandler(this.sendInputsToCelesteMenuItem_Click);
+            this.sendInputsToCelesteMenuItem.Click += new System.EventHandler(this.SendInputsToCelesteMenuItem_Click);
             // 
             // autoRemoveExclusiveActionsToolStripMenuItem
             // 
             this.autoRemoveExclusiveActionsToolStripMenuItem.Name = "autoRemoveExclusiveActionsToolStripMenuItem";
             this.autoRemoveExclusiveActionsToolStripMenuItem.Size = new System.Drawing.Size(380, 22);
             this.autoRemoveExclusiveActionsToolStripMenuItem.Text = "Auto Remove Mutually Exclusive Actions";
-            this.autoRemoveExclusiveActionsToolStripMenuItem.Click += new System.EventHandler(this.autoRemoveExclusiveActionsToolStripMenuItem_Click);
+            this.autoRemoveExclusiveActionsToolStripMenuItem.Click += new System.EventHandler(this.AutoRemoveExclusiveActionsToolStripMenuItem_Click);
             // 
             // showGameInfoToolStripMenuItem
             // 
             this.showGameInfoToolStripMenuItem.Name = "showGameInfoToolStripMenuItem";
             this.showGameInfoToolStripMenuItem.Size = new System.Drawing.Size(380, 22);
             this.showGameInfoToolStripMenuItem.Text = "Show Game Info";
-            this.showGameInfoToolStripMenuItem.Click += new System.EventHandler(this.showGameInfoToolStripMenuItem_Click);
+            this.showGameInfoToolStripMenuItem.Click += new System.EventHandler(this.ShowGameInfoToolStripMenuItem_Click);
             // 
             // alwaysOnTopToolStripMenuItem
             // 
             this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
             this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(380, 22);
             this.alwaysOnTopToolStripMenuItem.Text = "Always on Top";
-            this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_Click);
+            this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.AlwaysOnTopToolStripMenuItem_Click);
             // 
             // autoBackupToolStripMenuItem
             // 
@@ -373,7 +373,7 @@ namespace CelesteStudio {
             this.enabledAutoBackupToolStripMenuItem.Name = "enabledAutoBackupToolStripMenuItem";
             this.enabledAutoBackupToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
             this.enabledAutoBackupToolStripMenuItem.Text = "Enabled";
-            this.enabledAutoBackupToolStripMenuItem.Click += new System.EventHandler(this.enabledAutoBackupToolStripMenuItem_Click);
+            this.enabledAutoBackupToolStripMenuItem.Click += new System.EventHandler(this.EnabledAutoBackupToolStripMenuItem_Click);
             // 
             // backupRateToolStripMenuItem
             // 
@@ -381,7 +381,7 @@ namespace CelesteStudio {
             this.backupRateToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
             this.backupRateToolStripMenuItem.Text = "Backup Rate (minutes)";
             this.backupRateToolStripMenuItem.ToolTipText = "0 means the file will be backed up every time it is modified";
-            this.backupRateToolStripMenuItem.Click += new System.EventHandler(this.backupRateToolStripMenuItem_Click);
+            this.backupRateToolStripMenuItem.Click += new System.EventHandler(this.BackupRateToolStripMenuItem_Click);
             // 
             // backupFileCountsToolStripMenuItem
             // 
@@ -389,14 +389,14 @@ namespace CelesteStudio {
             this.backupFileCountsToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
             this.backupFileCountsToolStripMenuItem.Text = "Backup File Count";
             this.backupFileCountsToolStripMenuItem.ToolTipText = "0 means no limit";
-            this.backupFileCountsToolStripMenuItem.Click += new System.EventHandler(this.backupFileCountsToolStripMenuItem_Click);
+            this.backupFileCountsToolStripMenuItem.Click += new System.EventHandler(this.BackupFileCountsToolStripMenuItem_Click);
             // 
             // fontToolStripMenuItem
             // 
             this.fontToolStripMenuItem.Name = "fontToolStripMenuItem";
             this.fontToolStripMenuItem.Size = new System.Drawing.Size(380, 22);
             this.fontToolStripMenuItem.Text = "Font...";
-            this.fontToolStripMenuItem.Click += new System.EventHandler(this.fontToolStripMenuItem_Click);
+            this.fontToolStripMenuItem.Click += new System.EventHandler(this.FontToolStripMenuItem_Click);
             // 
             // themesToolStripMenuItem
             // 
@@ -404,28 +404,28 @@ namespace CelesteStudio {
             this.themesToolStripMenuItem.Name = "themesToolStripMenuItem";
             this.themesToolStripMenuItem.Size = new System.Drawing.Size(380, 22);
             this.themesToolStripMenuItem.Text = "Themes";
-            this.themesToolStripMenuItem.DropDownOpened += new System.EventHandler(this.themesToolStripMenuItem_DropDownOpened);
+            this.themesToolStripMenuItem.DropDownOpened += new System.EventHandler(this.ThemesToolStripMenuItem_DropDownOpened);
             // 
             // lightToolStripMenuItem
             // 
             this.lightToolStripMenuItem.Name = "lightToolStripMenuItem";
             this.lightToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.lightToolStripMenuItem.Text = "Light";
-            this.lightToolStripMenuItem.Click += new System.EventHandler(this.lightToolStripMenuItem_Click);
+            this.lightToolStripMenuItem.Click += new System.EventHandler(this.LightToolStripMenuItem_Click);
             // 
             // darkToolStripMenuItem
             // 
             this.darkToolStripMenuItem.Name = "darkToolStripMenuItem";
             this.darkToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.darkToolStripMenuItem.Text = "Dark";
-            this.darkToolStripMenuItem.Click += new System.EventHandler(this.darkToolStripMenuItem_Click);
+            this.darkToolStripMenuItem.Click += new System.EventHandler(this.DarkToolStripMenuItem_Click);
             // 
             // customToolStripMenuItem
             // 
             this.customToolStripMenuItem.Name = "customToolStripMenuItem";
             this.customToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.customToolStripMenuItem.Text = "Custom";
-            this.customToolStripMenuItem.Click += new System.EventHandler(this.customToolStripMenuItem_Click);
+            this.customToolStripMenuItem.Click += new System.EventHandler(this.CustomToolStripMenuItem_Click);
             // 
             // toggleToolStripMenuItem
             // 
@@ -439,42 +439,42 @@ namespace CelesteStudio {
             this.toggleHitboxesToolStripMenuItem.Name = "toggleHitboxesToolStripMenuItem";
             this.toggleHitboxesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.toggleHitboxesToolStripMenuItem.Text = "&Hitboxes";
-            this.toggleHitboxesToolStripMenuItem.Click += new System.EventHandler(this.toggleHitboxesToolStripMenuItem_Click);
+            this.toggleHitboxesToolStripMenuItem.Click += new System.EventHandler(this.ToggleHitboxesToolStripMenuItem_Click);
             // 
             // toggleTriggerHitboxesToolStripMenuItem
             // 
             this.toggleTriggerHitboxesToolStripMenuItem.Name = "toggleTriggerHitboxesToolStripMenuItem";
             this.toggleTriggerHitboxesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.toggleTriggerHitboxesToolStripMenuItem.Text = "&Trigger Hitboxes";
-            this.toggleTriggerHitboxesToolStripMenuItem.Click += new System.EventHandler(this.toggleTriggerHitboxesToolStripMenuItem_Click);
+            this.toggleTriggerHitboxesToolStripMenuItem.Click += new System.EventHandler(this.ToggleTriggerHitboxesToolStripMenuItem_Click);
             // 
             // unloadedRoomsHitboxesToolStripMenuItem
             // 
             this.unloadedRoomsHitboxesToolStripMenuItem.Name = "unloadedRoomsHitboxesToolStripMenuItem";
             this.unloadedRoomsHitboxesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.unloadedRoomsHitboxesToolStripMenuItem.Text = "Unloaded Rooms Hitboxes";
-            this.unloadedRoomsHitboxesToolStripMenuItem.Click += new System.EventHandler(this.unloadedRoomsHitboxesToolStripMenuItem_Click);
+            this.unloadedRoomsHitboxesToolStripMenuItem.Click += new System.EventHandler(this.UnloadedRoomsHitboxesToolStripMenuItem_Click);
             // 
             // cameraHitboxesToolStripMenuItem
             // 
             this.cameraHitboxesToolStripMenuItem.Name = "cameraHitboxesToolStripMenuItem";
             this.cameraHitboxesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.cameraHitboxesToolStripMenuItem.Text = "Camera Hitboxes";
-            this.cameraHitboxesToolStripMenuItem.Click += new System.EventHandler(this.cameraHitboxesToolStripMenuItem_Click);
+            this.cameraHitboxesToolStripMenuItem.Click += new System.EventHandler(this.CameraHitboxesToolStripMenuItem_Click);
             // 
             // toggleSimplifiedHitboxesToolStripMenuItem
             // 
             this.toggleSimplifiedHitboxesToolStripMenuItem.Name = "toggleSimplifiedHitboxesToolStripMenuItem";
             this.toggleSimplifiedHitboxesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.toggleSimplifiedHitboxesToolStripMenuItem.Text = "&Simplified Hitboxes";
-            this.toggleSimplifiedHitboxesToolStripMenuItem.Click += new System.EventHandler(this.toggleSimplifiedHitboxesToolStripMenuItem_Click);
+            this.toggleSimplifiedHitboxesToolStripMenuItem.Click += new System.EventHandler(this.ToggleSimplifiedHitboxesToolStripMenuItem_Click);
             // 
             // switchActualCollideHitboxesToolStripMenuItem
             // 
             this.switchActualCollideHitboxesToolStripMenuItem.Name = "switchActualCollideHitboxesToolStripMenuItem";
             this.switchActualCollideHitboxesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.switchActualCollideHitboxesToolStripMenuItem.Text = "&Actual Collide Hitboxes";
-            this.switchActualCollideHitboxesToolStripMenuItem.Click += new System.EventHandler(this.switchActualCollideHitboxesToolStripMenuItem_Click);
+            this.switchActualCollideHitboxesToolStripMenuItem.Click += new System.EventHandler(this.SwitchActualCollideHitboxesToolStripMenuItem_Click);
             // 
             // toolStripSeparator8
             // 
@@ -486,14 +486,14 @@ namespace CelesteStudio {
             this.toggleSimplifiedGraphicsToolStripMenuItem.Name = "toggleSimplifiedGraphicsToolStripMenuItem";
             this.toggleSimplifiedGraphicsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.toggleSimplifiedGraphicsToolStripMenuItem.Text = "Simplified &Graphics";
-            this.toggleSimplifiedGraphicsToolStripMenuItem.Click += new System.EventHandler(this.toggleSimplifiedGraphicsToolStripMenuItem_Click);
+            this.toggleSimplifiedGraphicsToolStripMenuItem.Click += new System.EventHandler(this.ToggleSimplifiedGraphicsToolStripMenuItem_Click);
             // 
             // toggleGameplayToolStripMenuItem
             // 
             this.toggleGameplayToolStripMenuItem.Name = "toggleGameplayToolStripMenuItem";
             this.toggleGameplayToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.toggleGameplayToolStripMenuItem.Text = "Game&play";
-            this.toggleGameplayToolStripMenuItem.Click += new System.EventHandler(this.toggleGameplayToolStripMenuItem_Click);
+            this.toggleGameplayToolStripMenuItem.Click += new System.EventHandler(this.ToggleGameplayToolStripMenuItem_Click);
             // 
             // toolStripSeparator10
             // 
@@ -505,7 +505,7 @@ namespace CelesteStudio {
             this.toggleCenterCameraToolStripMenuItem.Name = "toggleCenterCameraToolStripMenuItem";
             this.toggleCenterCameraToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.toggleCenterCameraToolStripMenuItem.Text = "&Center Camera";
-            this.toggleCenterCameraToolStripMenuItem.Click += new System.EventHandler(this.toggleCenterCameraToolStripMenuItem_Click);
+            this.toggleCenterCameraToolStripMenuItem.Click += new System.EventHandler(this.ToggleCenterCameraToolStripMenuItem_Click);
             // 
             // toolStripSeparator9
             // 
@@ -517,42 +517,42 @@ namespace CelesteStudio {
             this.switchInfoHUDToolStripMenuItem.Name = "switchInfoHUDToolStripMenuItem";
             this.switchInfoHUDToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.switchInfoHUDToolStripMenuItem.Text = "&Info HUD";
-            this.switchInfoHUDToolStripMenuItem.Click += new System.EventHandler(this.switchInfoHUDToolStripMenuItem_Click);
+            this.switchInfoHUDToolStripMenuItem.Click += new System.EventHandler(this.SwitchInfoHUDToolStripMenuItem_Click);
             // 
             // tASInputInfoToolStripMenuItem
             // 
             this.tASInputInfoToolStripMenuItem.Name = "tASInputInfoToolStripMenuItem";
             this.tASInputInfoToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.tASInputInfoToolStripMenuItem.Text = "TAS Input Info";
-            this.tASInputInfoToolStripMenuItem.Click += new System.EventHandler(this.tASInputInfoToolStripMenuItem_Click);
+            this.tASInputInfoToolStripMenuItem.Click += new System.EventHandler(this.TASInputInfoToolStripMenuItem_Click);
             // 
             // gameInfoToolStripMenuItem
             // 
             this.gameInfoToolStripMenuItem.Name = "gameInfoToolStripMenuItem";
             this.gameInfoToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.gameInfoToolStripMenuItem.Text = "Game Info";
-            this.gameInfoToolStripMenuItem.Click += new System.EventHandler(this.gameInfoToolStripMenuItem_Click);
+            this.gameInfoToolStripMenuItem.Click += new System.EventHandler(this.GameInfoToolStripMenuItem_Click);
             // 
             // watchEntityInfoToolStripMenuItem
             // 
             this.watchEntityInfoToolStripMenuItem.Name = "watchEntityInfoToolStripMenuItem";
             this.watchEntityInfoToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.watchEntityInfoToolStripMenuItem.Text = "Watch Entity Info";
-            this.watchEntityInfoToolStripMenuItem.Click += new System.EventHandler(this.watchEntityInfoToolStripMenuItem_Click);
+            this.watchEntityInfoToolStripMenuItem.Click += new System.EventHandler(this.WatchEntityInfoToolStripMenuItem_Click);
             // 
             // customInfoToolStripMenuItem
             // 
             this.customInfoToolStripMenuItem.Name = "customInfoToolStripMenuItem";
             this.customInfoToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.customInfoToolStripMenuItem.Text = "Custom Info";
-            this.customInfoToolStripMenuItem.Click += new System.EventHandler(this.customInfoToolStripMenuItem_Click);
+            this.customInfoToolStripMenuItem.Click += new System.EventHandler(this.CustomInfoToolStripMenuItem_Click);
             // 
             // subpixelIndicatorToolStripMenuItem
             // 
             this.subpixelIndicatorToolStripMenuItem.Name = "subpixelIndicatorToolStripMenuItem";
             this.subpixelIndicatorToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.subpixelIndicatorToolStripMenuItem.Text = "Subpixel Indicator";
-            this.subpixelIndicatorToolStripMenuItem.Click += new System.EventHandler(this.subpixelIndicatorToolStripMenuItem_Click);
+            this.subpixelIndicatorToolStripMenuItem.Click += new System.EventHandler(this.SubpixelIndicatorToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -564,49 +564,49 @@ namespace CelesteStudio {
             this.positionDecimalsToolStripMenuItem.Name = "positionDecimalsToolStripMenuItem";
             this.positionDecimalsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.positionDecimalsToolStripMenuItem.Text = "Position Decimals";
-            this.positionDecimalsToolStripMenuItem.Click += new System.EventHandler(this.positionDecimalsToolStripMenuItem_Click);
+            this.positionDecimalsToolStripMenuItem.Click += new System.EventHandler(this.PositionDecimalsToolStripMenuItem_Click);
             // 
             // speedDecimalsToolStripMenuItem
             // 
             this.speedDecimalsToolStripMenuItem.Name = "speedDecimalsToolStripMenuItem";
             this.speedDecimalsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.speedDecimalsToolStripMenuItem.Text = "Speed Decimals";
-            this.speedDecimalsToolStripMenuItem.Click += new System.EventHandler(this.speedDecimalsToolStripMenuItem_Click);
+            this.speedDecimalsToolStripMenuItem.Click += new System.EventHandler(this.SpeedDecimalsToolStripMenuItem_Click);
             // 
             // velocityDecimalsToolStripMenuItem
             // 
             this.velocityDecimalsToolStripMenuItem.Name = "velocityDecimalsToolStripMenuItem";
             this.velocityDecimalsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.velocityDecimalsToolStripMenuItem.Text = "Velocity Decimals";
-            this.velocityDecimalsToolStripMenuItem.Click += new System.EventHandler(this.velocityDecimalsToolStripMenuItem_Click);
+            this.velocityDecimalsToolStripMenuItem.Click += new System.EventHandler(this.VelocityDecimalsToolStripMenuItem_Click);
             // 
             // angleDecimalsToolStripMenuItem
             // 
             this.angleDecimalsToolStripMenuItem.Name = "angleDecimalsToolStripMenuItem";
             this.angleDecimalsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.angleDecimalsToolStripMenuItem.Text = "Angle Decimals";
-            this.angleDecimalsToolStripMenuItem.Click += new System.EventHandler(this.angleDecimalsToolStripMenuItem_Click);
+            this.angleDecimalsToolStripMenuItem.Click += new System.EventHandler(this.AngleDecimalsToolStripMenuItem_Click);
             // 
             // customInfoDecimalsToolStripMenuItem
             // 
             this.customInfoDecimalsToolStripMenuItem.Name = "customInfoDecimalsToolStripMenuItem";
             this.customInfoDecimalsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.customInfoDecimalsToolStripMenuItem.Text = "Custom Info Decimals";
-            this.customInfoDecimalsToolStripMenuItem.Click += new System.EventHandler(this.customInfoDecimalsToolStripMenuItem_Click);
+            this.customInfoDecimalsToolStripMenuItem.Click += new System.EventHandler(this.CustomInfoDecimalsToolStripMenuItem_Click);
             // 
             // subpixelIndicatorDecimalsToolStripMenuItem
             // 
             this.subpixelIndicatorDecimalsToolStripMenuItem.Name = "subpixelIndicatorDecimalsToolStripMenuItem";
             this.subpixelIndicatorDecimalsToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.subpixelIndicatorDecimalsToolStripMenuItem.Text = "Subpixel Indicator Decimals";
-            this.subpixelIndicatorDecimalsToolStripMenuItem.Click += new System.EventHandler(this.subpixelIndicatorDecimalsToolStripMenuItem_Click);
+            this.subpixelIndicatorDecimalsToolStripMenuItem.Click += new System.EventHandler(this.SubpixelIndicatorDecimalsToolStripMenuItem_Click);
             // 
             // unitOfSpeedToolStripMenuItem
             // 
             this.unitOfSpeedToolStripMenuItem.Name = "unitOfSpeedToolStripMenuItem";
             this.unitOfSpeedToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.unitOfSpeedToolStripMenuItem.Text = "Unit of Speed";
-            this.unitOfSpeedToolStripMenuItem.Click += new System.EventHandler(this.unitOfSpeedToolStripMenuItem_Click);
+            this.unitOfSpeedToolStripMenuItem.Click += new System.EventHandler(this.UnitOfSpeedToolStripMenuItem_Click);
             // 
             // toolStripSeparator19
             // 
@@ -618,14 +618,14 @@ namespace CelesteStudio {
             this.fastForwardSpeedToolStripMenuItem.Name = "fastForwardSpeedToolStripMenuItem";
             this.fastForwardSpeedToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.fastForwardSpeedToolStripMenuItem.Text = "Fast Forward Speed";
-            this.fastForwardSpeedToolStripMenuItem.Click += new System.EventHandler(this.fastForwardSpeedToolStripMenuItem_Click);
+            this.fastForwardSpeedToolStripMenuItem.Click += new System.EventHandler(this.FastForwardSpeedToolStripMenuItem_Click);
             // 
             // slowForwardSpeedToolStripMenuItem
             // 
             this.slowForwardSpeedToolStripMenuItem.Name = "slowForwardSpeedToolStripMenuItem";
             this.slowForwardSpeedToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
             this.slowForwardSpeedToolStripMenuItem.Text = "Slow Forward Speed";
-            this.slowForwardSpeedToolStripMenuItem.Click += new System.EventHandler(this.slowForwardSpeedToolStripMenuItem_Click);
+            this.slowForwardSpeedToolStripMenuItem.Click += new System.EventHandler(this.SlowForwardSpeedToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -639,7 +639,7 @@ namespace CelesteStudio {
             this.homeMenuItem.Name = "homeMenuItem";
             this.homeMenuItem.Size = new System.Drawing.Size(108, 22);
             this.homeMenuItem.Text = "&Home";
-            this.homeMenuItem.Click += new System.EventHandler(this.homeMenuItem_Click);
+            this.homeMenuItem.Click += new System.EventHandler(this.HomeMenuItem_Click);
             // 
             // dividerLabel
             // 
@@ -662,7 +662,7 @@ namespace CelesteStudio {
             this.insertRemoveBreakPointToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.OemPeriod)));
             this.insertRemoveBreakPointToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.insertRemoveBreakPointToolStripMenuItem.Text = "Insert/Remove Breakpoint";
-            this.insertRemoveBreakPointToolStripMenuItem.Click += new System.EventHandler(this.insertRemoveBreakPointToolStripMenuItem_Click);
+            this.insertRemoveBreakPointToolStripMenuItem.Click += new System.EventHandler(this.InsertRemoveBreakPointToolStripMenuItem_Click);
             // 
             // insertRemoveSavestateBreakPointToolStripMenuItem
             // 
@@ -670,7 +670,7 @@ namespace CelesteStudio {
             this.insertRemoveSavestateBreakPointToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) | System.Windows.Forms.Keys.OemPeriod)));
             this.insertRemoveSavestateBreakPointToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.insertRemoveSavestateBreakPointToolStripMenuItem.Text = "Insert/Remove Savestate Breakpoint";
-            this.insertRemoveSavestateBreakPointToolStripMenuItem.Click += new System.EventHandler(this.insertRemoveSavestateBreakPointToolStripMenuItem_Click);
+            this.insertRemoveSavestateBreakPointToolStripMenuItem.Click += new System.EventHandler(this.InsertRemoveSavestateBreakPointToolStripMenuItem_Click);
             // 
             // removeAllUncommentedBreakpointsToolStripMenuItem
             // 
@@ -678,7 +678,7 @@ namespace CelesteStudio {
             this.removeAllUncommentedBreakpointsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
             this.removeAllUncommentedBreakpointsToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.removeAllUncommentedBreakpointsToolStripMenuItem.Text = "Remove All Uncommented Breakpoints";
-            this.removeAllUncommentedBreakpointsToolStripMenuItem.Click += new System.EventHandler(this.removeAllUncommentedBreakpointsToolStripMenuItem_Click);
+            this.removeAllUncommentedBreakpointsToolStripMenuItem.Click += new System.EventHandler(this.RemoveAllUncommentedBreakpointsToolStripMenuItem_Click);
             // 
             // removeAllBreakpointsToolStripMenuItem
             // 
@@ -686,7 +686,7 @@ namespace CelesteStudio {
             this.removeAllBreakpointsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) | System.Windows.Forms.Keys.P)));
             this.removeAllBreakpointsToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.removeAllBreakpointsToolStripMenuItem.Text = "Remove All Breakpoints";
-            this.removeAllBreakpointsToolStripMenuItem.Click += new System.EventHandler(this.removeAllBreakpointsToolStripMenuItem_Click);
+            this.removeAllBreakpointsToolStripMenuItem.Click += new System.EventHandler(this.RemoveAllBreakpointsToolStripMenuItem_Click);
             // 
             // commentUncommentAllBreakpointsToolStripMenuItem
             // 
@@ -694,7 +694,7 @@ namespace CelesteStudio {
             this.commentUncommentAllBreakpointsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) | System.Windows.Forms.Keys.P)));
             this.commentUncommentAllBreakpointsToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.commentUncommentAllBreakpointsToolStripMenuItem.Text = "Comment/Uncomment All Breakpoints";
-            this.commentUncommentAllBreakpointsToolStripMenuItem.Click += new System.EventHandler(this.commentUncommentAllBreakpointsToolStripMenuItem_Click);
+            this.commentUncommentAllBreakpointsToolStripMenuItem.Click += new System.EventHandler(this.CommentUncommentAllBreakpointsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -707,7 +707,7 @@ namespace CelesteStudio {
             this.commentUncommentTextToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
             this.commentUncommentTextToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.commentUncommentTextToolStripMenuItem.Text = "Comment/Uncomment Text";
-            this.commentUncommentTextToolStripMenuItem.Click += new System.EventHandler(this.commentUncommentTextToolStripMenuItem_Click);
+            this.commentUncommentTextToolStripMenuItem.Click += new System.EventHandler(this.CommentUncommentTextToolStripMenuItem_Click);
             // 
             // insertRoomNameToolStripMenuItem
             // 
@@ -715,7 +715,7 @@ namespace CelesteStudio {
             this.insertRoomNameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
             this.insertRoomNameToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.insertRoomNameToolStripMenuItem.Text = "Insert Room Name";
-            this.insertRoomNameToolStripMenuItem.Click += new System.EventHandler(this.insertRoomNameToolStripMenuItem_Click);
+            this.insertRoomNameToolStripMenuItem.Click += new System.EventHandler(this.InsertRoomNameToolStripMenuItem_Click);
             // 
             // insertCurrentInGameTimeToolStripMenuItem
             // 
@@ -723,14 +723,14 @@ namespace CelesteStudio {
             this.insertCurrentInGameTimeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
             this.insertCurrentInGameTimeToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.insertCurrentInGameTimeToolStripMenuItem.Text = "Insert Current In-Game Time";
-            this.insertCurrentInGameTimeToolStripMenuItem.Click += new System.EventHandler(this.insertCurrentInGameTimeToolStripMenuItem_Click);
+            this.insertCurrentInGameTimeToolStripMenuItem.Click += new System.EventHandler(this.InsertCurrentInGameTimeToolStripMenuItem_Click);
             // 
             // insertModInfoStripMenuItem1
             // 
             this.insertModInfoStripMenuItem1.Name = "insertModInfoStripMenuItem1";
             this.insertModInfoStripMenuItem1.Size = new System.Drawing.Size(425, 22);
             this.insertModInfoStripMenuItem1.Text = "Insert Mod Info";
-            this.insertModInfoStripMenuItem1.Click += new System.EventHandler(this.insertModInfoStripMenuItem1_Click);
+            this.insertModInfoStripMenuItem1.Click += new System.EventHandler(this.InsertModInfoStripMenuItem1_Click);
             // 
             // insertConsoleLoadCommandToolStripMenuItem
             // 
@@ -738,7 +738,7 @@ namespace CelesteStudio {
             this.insertConsoleLoadCommandToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) | System.Windows.Forms.Keys.R)));
             this.insertConsoleLoadCommandToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.insertConsoleLoadCommandToolStripMenuItem.Text = "Insert Console Load Command";
-            this.insertConsoleLoadCommandToolStripMenuItem.Click += new System.EventHandler(this.insertConsoleLoadCommandToolStripMenuItem_Click);
+            this.insertConsoleLoadCommandToolStripMenuItem.Click += new System.EventHandler(this.InsertConsoleLoadCommandToolStripMenuItem_Click);
             // 
             // insertSimpleConsoleLoadCommandToolStripMenuItem
             // 
@@ -746,7 +746,7 @@ namespace CelesteStudio {
             this.insertSimpleConsoleLoadCommandToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) | System.Windows.Forms.Keys.R)));
             this.insertSimpleConsoleLoadCommandToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.insertSimpleConsoleLoadCommandToolStripMenuItem.Text = "Insert Simple Console Load Command";
-            this.insertSimpleConsoleLoadCommandToolStripMenuItem.Click += new System.EventHandler(this.insertSimpleConsoleLoadCommandToolStripMenuItem_Click);
+            this.insertSimpleConsoleLoadCommandToolStripMenuItem.Click += new System.EventHandler(this.InsertSimpleConsoleLoadCommandToolStripMenuItem_Click);
             // 
             // insertOtherCommandToolStripMenuItem
             // 
@@ -761,7 +761,7 @@ namespace CelesteStudio {
             this.enforceLegalToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.enforceLegalToolStripMenuItem.Text = "EnforceLegal";
             this.enforceLegalToolStripMenuItem.ToolTipText = "This is used at the start of fullgame files.\r\nIt prevents the use of commands whi" + "ch would not be legal in a run.";
-            this.enforceLegalToolStripMenuItem.Click += new System.EventHandler(this.enforceLegalToolStripMenuItem_Click);
+            this.enforceLegalToolStripMenuItem.Click += new System.EventHandler(this.EnforceLegalToolStripMenuItem_Click);
             // 
             // unsafeToolStripMenuItem
             // 
@@ -769,7 +769,7 @@ namespace CelesteStudio {
             this.unsafeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.unsafeToolStripMenuItem.Text = "Unsafe";
             this.unsafeToolStripMenuItem.ToolTipText = "The TAS will normally only run inside levels.\r\nConsole load normally forces the T" + "AS to load the debug save.\r\nUnsafe allows the TAS to run anywhere, on any save.";
-            this.unsafeToolStripMenuItem.Click += new System.EventHandler(this.unsafeToolStripMenuItem_Click);
+            this.unsafeToolStripMenuItem.Click += new System.EventHandler(this.UnsafeToolStripMenuItem_Click);
             // 
             // safeToolStripMenuItem
             // 
@@ -777,7 +777,7 @@ namespace CelesteStudio {
             this.safeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.safeToolStripMenuItem.Text = "Safe";
             this.safeToolStripMenuItem.ToolTipText = "The TAS will only run inside levels.\r\nConsole load forces the TAS to load the deb" + "ug save.";
-            this.safeToolStripMenuItem.Click += new System.EventHandler(this.safeToolStripMenuItem_Click);
+            this.safeToolStripMenuItem.Click += new System.EventHandler(this.SafeToolStripMenuItem_Click);
             // 
             // toolStripSeparator18
             // 
@@ -790,7 +790,7 @@ namespace CelesteStudio {
             this.readToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.readToolStripMenuItem.Text = "Read";
             this.readToolStripMenuItem.ToolTipText = "Will read inputs from the specified file.";
-            this.readToolStripMenuItem.Click += new System.EventHandler(this.readToolStripMenuItem_Click);
+            this.readToolStripMenuItem.Click += new System.EventHandler(this.ReadToolStripMenuItem_Click);
             // 
             // playToolStripMenuItem
             // 
@@ -798,7 +798,7 @@ namespace CelesteStudio {
             this.playToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.playToolStripMenuItem.Text = "Play";
             this.playToolStripMenuItem.ToolTipText = "A simplified Read command which skips to the starting line in the current file.\r\n" + "Useful for splitting a large level into larger chunks.";
-            this.playToolStripMenuItem.Click += new System.EventHandler(this.playToolStripMenuItem_Click);
+            this.playToolStripMenuItem.Click += new System.EventHandler(this.PlayToolStripMenuItem_Click);
             // 
             // toolStripSeparator17
             // 
@@ -811,7 +811,7 @@ namespace CelesteStudio {
             this.repeatToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.repeatToolStripMenuItem.Text = "Repeat";
             this.repeatToolStripMenuItem.ToolTipText = "Repeat the inputs between \"Repeat\" and \"EndRepeat\" several times, nesting is not " + "supported.";
-            this.repeatToolStripMenuItem.Click += new System.EventHandler(this.repeatToolStripMenuItem_Click);
+            this.repeatToolStripMenuItem.Click += new System.EventHandler(this.RepeatToolStripMenuItem_Click);
             // 
             // endRepeatToolStripMenuItem
             // 
@@ -819,7 +819,7 @@ namespace CelesteStudio {
             this.endRepeatToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.endRepeatToolStripMenuItem.Text = "EndRepeat";
             this.endRepeatToolStripMenuItem.ToolTipText = "Repeat the inputs between \"Repeat\" and \"EndRepeat\" several times, nesting is not " + "supported.";
-            this.endRepeatToolStripMenuItem.Click += new System.EventHandler(this.endRepeatToolStripMenuItem_Click);
+            this.endRepeatToolStripMenuItem.Click += new System.EventHandler(this.EndRepeatToolStripMenuItem_Click);
             // 
             // toolStripSeparator16
             // 
@@ -832,7 +832,7 @@ namespace CelesteStudio {
             this.setToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.setToolStripMenuItem.Text = "Set";
             this.setToolStripMenuItem.ToolTipText = "Sets the specified setting to the specified value.";
-            this.setToolStripMenuItem.Click += new System.EventHandler(this.setToolStripMenuItem_Click);
+            this.setToolStripMenuItem.Click += new System.EventHandler(this.SetToolStripMenuItem_Click);
             // 
             // invokeToolStripMenuItem
             // 
@@ -840,7 +840,7 @@ namespace CelesteStudio {
             this.invokeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.invokeToolStripMenuItem.Text = "Invoke";
             this.invokeToolStripMenuItem.ToolTipText = "Similar to the set command, but used to invoke the method";
-            this.invokeToolStripMenuItem.Click += new System.EventHandler(this.invokeToolStripMenuItem_Click);
+            this.invokeToolStripMenuItem.Click += new System.EventHandler(this.InvokeToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -853,7 +853,7 @@ namespace CelesteStudio {
             this.pressToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.pressToolStripMenuItem.Text = "Press";
             this.pressToolStripMenuItem.ToolTipText = "Press the specified keys with the next input.";
-            this.pressToolStripMenuItem.Click += new System.EventHandler(this.pressToolStripMenuItem_Click);
+            this.pressToolStripMenuItem.Click += new System.EventHandler(this.PressToolStripMenuItem_Click);
             // 
             // toolStripSeparator24
             // 
@@ -866,7 +866,7 @@ namespace CelesteStudio {
             this.analogueModeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.analogueModeToolStripMenuItem.Text = "AnalogMode";
             this.analogueModeToolStripMenuItem.ToolTipText = resources.GetString("analogueModeToolStripMenuItem.ToolTipText");
-            this.analogueModeToolStripMenuItem.Click += new System.EventHandler(this.analogueModeToolStripMenuItem_Click);
+            this.analogueModeToolStripMenuItem.Click += new System.EventHandler(this.AnalogueModeToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -879,7 +879,7 @@ namespace CelesteStudio {
             this.stunPauseToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.stunPauseToolStripMenuItem.Text = "StunPause";
             this.stunPauseToolStripMenuItem.ToolTipText = "Simulate pausing every other frame without doing the actual pause inputs.\r\nThese " + "commands should only be used to test routes, to simplify the stunning pause inpu" + "ts use the AutoInput command.";
-            this.stunPauseToolStripMenuItem.Click += new System.EventHandler(this.stunPauseToolStripMenuItem_Click);
+            this.stunPauseToolStripMenuItem.Click += new System.EventHandler(this.StunPauseToolStripMenuItem_Click);
             // 
             // endStunPauseToolStripMenuItem
             // 
@@ -887,7 +887,7 @@ namespace CelesteStudio {
             this.endStunPauseToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.endStunPauseToolStripMenuItem.Text = "EndStunPause";
             this.endStunPauseToolStripMenuItem.ToolTipText = "Simulate pausing every other frame without doing the actual pause inputs.\r\nThese " + "commands should only be used to test routes, to simplify the stunning pause inpu" + "ts use the AutoInput command.";
-            this.endStunPauseToolStripMenuItem.Click += new System.EventHandler(this.endStunPauseToolStripMenuItem_Click);
+            this.endStunPauseToolStripMenuItem.Click += new System.EventHandler(this.EndStunPauseToolStripMenuItem_Click);
             // 
             // stunPauseModeToolStripMenuItem
             // 
@@ -895,7 +895,7 @@ namespace CelesteStudio {
             this.stunPauseModeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.stunPauseModeToolStripMenuItem.Text = "StunPauseMode";
             this.stunPauseModeToolStripMenuItem.ToolTipText = "Specify the default mode for StunPause command.\r\n";
-            this.stunPauseModeToolStripMenuItem.Click += new System.EventHandler(this.stunPauseModeToolStripMenuItem_Click);
+            this.stunPauseModeToolStripMenuItem.Click += new System.EventHandler(this.StunPauseModeToolStripMenuItem_Click);
             // 
             // toolStripSeparator23
             // 
@@ -908,7 +908,7 @@ namespace CelesteStudio {
             this.autoInputToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.autoInputToolStripMenuItem.Text = "AutoInput";
             this.autoInputToolStripMenuItem.ToolTipText = "Inserts the auto inputs every cycle length frames that is played through inputs.\r" + "\n";
-            this.autoInputToolStripMenuItem.Click += new System.EventHandler(this.autoInputToolStripMenuItem_Click);
+            this.autoInputToolStripMenuItem.Click += new System.EventHandler(this.AutoInputToolStripMenuItem_Click);
             // 
             // startAutoInputToolStripMenuItem
             // 
@@ -916,7 +916,7 @@ namespace CelesteStudio {
             this.startAutoInputToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.startAutoInputToolStripMenuItem.Text = "StartAutoInput";
             this.startAutoInputToolStripMenuItem.ToolTipText = "Inserts the auto inputs every cycle length frames that is played through inputs.";
-            this.startAutoInputToolStripMenuItem.Click += new System.EventHandler(this.startAutoInputToolStripMenuItem_Click);
+            this.startAutoInputToolStripMenuItem.Click += new System.EventHandler(this.StartAutoInputToolStripMenuItem_Click);
             // 
             // endAutoInputToolStripMenuItem
             // 
@@ -924,7 +924,7 @@ namespace CelesteStudio {
             this.endAutoInputToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.endAutoInputToolStripMenuItem.Text = "EndAutoInput";
             this.endAutoInputToolStripMenuItem.ToolTipText = "Inserts the auto inputs every cycle length frames that is played through inputs.";
-            this.endAutoInputToolStripMenuItem.Click += new System.EventHandler(this.endAutoInputToolStripMenuItem_Click);
+            this.endAutoInputToolStripMenuItem.Click += new System.EventHandler(this.EndAutoInputToolStripMenuItem_Click);
             // 
             // skipAutoInputToolStripMenuItem
             // 
@@ -932,7 +932,7 @@ namespace CelesteStudio {
             this.skipAutoInputToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.skipAutoInputToolStripMenuItem.Text = "SkipInput";
             this.skipAutoInputToolStripMenuItem.ToolTipText = "Prevents the next input from being calculated in the AutoInput cycle. Usually use" + "d to mark the freeze frames.";
-            this.skipAutoInputToolStripMenuItem.Click += new System.EventHandler(this.skipAutoInputToolStripMenuItem_Click);
+            this.skipAutoInputToolStripMenuItem.Click += new System.EventHandler(this.SkipAutoInputToolStripMenuItem_Click);
             // 
             // toolStripSeparator22
             // 
@@ -945,7 +945,7 @@ namespace CelesteStudio {
             this.startExportToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.startExportToolStripMenuItem.Text = "ExportGameInfo";
             this.startExportToolStripMenuItem.ToolTipText = "Dumps data to a file, which can be used to analyze desyncs.";
-            this.startExportToolStripMenuItem.Click += new System.EventHandler(this.startExportToolStripMenuItem_Click);
+            this.startExportToolStripMenuItem.Click += new System.EventHandler(this.StartExportToolStripMenuItem_Click);
             // 
             // finishExportToolStripMenuItem
             // 
@@ -953,7 +953,7 @@ namespace CelesteStudio {
             this.finishExportToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.finishExportToolStripMenuItem.Text = "EndExportGameInfo";
             this.finishExportToolStripMenuItem.ToolTipText = "Dumps data to a file, which can be used to analyze desyncs.";
-            this.finishExportToolStripMenuItem.Click += new System.EventHandler(this.finishExportToolStripMenuItem_Click);
+            this.finishExportToolStripMenuItem.Click += new System.EventHandler(this.FinishExportToolStripMenuItem_Click);
             // 
             // toolStripSeparator14
             // 
@@ -966,7 +966,7 @@ namespace CelesteStudio {
             this.startExportRoomInfoToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.startExportRoomInfoToolStripMenuItem.Text = "ExportRoomInfo";
             this.startExportRoomInfoToolStripMenuItem.ToolTipText = "Dumps the elapsed time of each room to a file. which can be used to compare impro" + "vements.\r\n";
-            this.startExportRoomInfoToolStripMenuItem.Click += new System.EventHandler(this.startExportRoomInfoToolStripMenuItem_Click);
+            this.startExportRoomInfoToolStripMenuItem.Click += new System.EventHandler(this.StartExportRoomInfoToolStripMenuItem_Click);
             // 
             // finishExportRoomInfoToolStripMenuItem
             // 
@@ -974,7 +974,7 @@ namespace CelesteStudio {
             this.finishExportRoomInfoToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.finishExportRoomInfoToolStripMenuItem.Text = "EndExportRoomInfo";
             this.finishExportRoomInfoToolStripMenuItem.ToolTipText = "Dumps the elapsed time of each room to a file. which can be used to compare impro" + "vements.\r\n";
-            this.finishExportRoomInfoToolStripMenuItem.Click += new System.EventHandler(this.finishExportRoomInfoToolStripMenuItem_Click);
+            this.finishExportRoomInfoToolStripMenuItem.Click += new System.EventHandler(this.FinishExportRoomInfoToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
@@ -987,7 +987,7 @@ namespace CelesteStudio {
             this.addToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.addToolStripMenuItem.Text = "Add";
             this.addToolStripMenuItem.ToolTipText = "Serve as instructions to the libTAS converter.\r\nOdds are you don\'t need to worry " + "about this.";
-            this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
+            this.addToolStripMenuItem.Click += new System.EventHandler(this.AddToolStripMenuItem_Click);
             // 
             // skipToolStripMenuItem
             // 
@@ -995,7 +995,7 @@ namespace CelesteStudio {
             this.skipToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.skipToolStripMenuItem.Text = "Skip";
             this.skipToolStripMenuItem.ToolTipText = "Serve as instructions to the libTAS converter.\r\nOdds are you don\'t need to worry " + "about this.";
-            this.skipToolStripMenuItem.Click += new System.EventHandler(this.skipToolStripMenuItem_Click);
+            this.skipToolStripMenuItem.Click += new System.EventHandler(this.SkipToolStripMenuItem_Click);
             // 
             // startExportLibTASToolStripMenuItem
             // 
@@ -1003,7 +1003,7 @@ namespace CelesteStudio {
             this.startExportLibTASToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.startExportLibTASToolStripMenuItem.Text = "ExportLibTAS";
             this.startExportLibTASToolStripMenuItem.ToolTipText = "Converts the TAS to the inputs portion of a LibTAS movie file.\r\n";
-            this.startExportLibTASToolStripMenuItem.Click += new System.EventHandler(this.startExportLibTASToolStripMenuItem_Click);
+            this.startExportLibTASToolStripMenuItem.Click += new System.EventHandler(this.StartExportLibTASToolStripMenuItem_Click);
             // 
             // finishExportLibTASToolStripMenuItem
             // 
@@ -1011,7 +1011,7 @@ namespace CelesteStudio {
             this.finishExportLibTASToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.finishExportLibTASToolStripMenuItem.Text = "EndExportLibTAS";
             this.finishExportLibTASToolStripMenuItem.ToolTipText = "Converts the TAS to the inputs portion of a LibTAS movie file.\r\n";
-            this.finishExportLibTASToolStripMenuItem.Click += new System.EventHandler(this.finishExportLibTASToolStripMenuItem_Click);
+            this.finishExportLibTASToolStripMenuItem.Click += new System.EventHandler(this.FinishExportLibTASToolStripMenuItem_Click);
             // 
             // toolStripSeparator13
             // 
@@ -1024,7 +1024,7 @@ namespace CelesteStudio {
             this.completeInfoToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.completeInfoToolStripMenuItem.Text = "CompleteInfo";
             this.completeInfoToolStripMenuItem.ToolTipText = "The successive comments immediately following this command will be displayed to t" + "he specified chapter complete screen.";
-            this.completeInfoToolStripMenuItem.Click += new System.EventHandler(this.completeInfoToolStripMenuItem_Click);
+            this.completeInfoToolStripMenuItem.Click += new System.EventHandler(this.CompleteInfoToolStripMenuItem_Click);
             // 
             // recordCountToolStripMenuItem
             // 
@@ -1032,7 +1032,7 @@ namespace CelesteStudio {
             this.recordCountToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.recordCountToolStripMenuItem.Text = "Record Count";
             this.recordCountToolStripMenuItem.ToolTipText = "Every time you run tas after modifying the current input file, the record count a" + "uto increases by one.";
-            this.recordCountToolStripMenuItem.Click += new System.EventHandler(this.recordCountToolStripMenuItem_Click);
+            this.recordCountToolStripMenuItem.Click += new System.EventHandler(this.RecordCountToolStripMenuItem_Click);
             // 
             // fileTimeToolStripMenuItem
             // 
@@ -1040,7 +1040,7 @@ namespace CelesteStudio {
             this.fileTimeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.fileTimeToolStripMenuItem.Text = "File Time";
             this.fileTimeToolStripMenuItem.ToolTipText = "Auto update the file time when TAS has finished running, the file time is equal t" + "o the elapsed time during the TAS run.\r\n";
-            this.fileTimeToolStripMenuItem.Click += new System.EventHandler(this.fileTimeToolStripMenuItem_Click);
+            this.fileTimeToolStripMenuItem.Click += new System.EventHandler(this.FileTimeToolStripMenuItem_Click);
             // 
             // chapterTimeToolStripMenuItem
             // 
@@ -1048,7 +1048,7 @@ namespace CelesteStudio {
             this.chapterTimeToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.chapterTimeToolStripMenuItem.Text = "Chapter Time";
             this.chapterTimeToolStripMenuItem.ToolTipText = "After completing the whole level from the beginning, auto updating the chapter ti" + "me.\r\n";
-            this.chapterTimeToolStripMenuItem.Click += new System.EventHandler(this.chapterTimeToolStripMenuItem_Click);
+            this.chapterTimeToolStripMenuItem.Click += new System.EventHandler(this.ChapterTimeToolStripMenuItem_Click);
             // 
             // toolStripSeparator21
             // 
@@ -1061,7 +1061,7 @@ namespace CelesteStudio {
             this.exitGameToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.exitGameToolStripMenuItem.Text = "Exit Game";
             this.exitGameToolStripMenuItem.ToolTipText = "Used to force the game when recording video with .kkapture to finish recording.";
-            this.exitGameToolStripMenuItem.Click += new System.EventHandler(this.exitGameToolStripMenuItem_Click);
+            this.exitGameToolStripMenuItem.Click += new System.EventHandler(this.ExitGameToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
@@ -1073,21 +1073,21 @@ namespace CelesteStudio {
             this.swapDashKeysStripMenuItem.Name = "swapDashKeysStripMenuItem";
             this.swapDashKeysStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.swapDashKeysStripMenuItem.Text = "Swap Selected C and X";
-            this.swapDashKeysStripMenuItem.Click += new System.EventHandler(this.swapDashKeysStripMenuItem_Click);
+            this.swapDashKeysStripMenuItem.Click += new System.EventHandler(this.SwapDashKeysStripMenuItem_Click);
             // 
             // swapJumpKeysToolStripMenuItem
             // 
             this.swapJumpKeysToolStripMenuItem.Name = "swapJumpKeysToolStripMenuItem";
             this.swapJumpKeysToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.swapJumpKeysToolStripMenuItem.Text = "Swap Selected J and K";
-            this.swapJumpKeysToolStripMenuItem.Click += new System.EventHandler(this.swapJumpKeysToolStripMenuItem_Click);
+            this.swapJumpKeysToolStripMenuItem.Click += new System.EventHandler(this.SwapJumpKeysToolStripMenuItem_Click);
             // 
             // swapSelectedLAndRToolStripMenuItem
             // 
             this.swapSelectedLAndRToolStripMenuItem.Name = "swapSelectedLAndRToolStripMenuItem";
             this.swapSelectedLAndRToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.swapSelectedLAndRToolStripMenuItem.Text = "Swap Selected L and R";
-            this.swapSelectedLAndRToolStripMenuItem.Click += new System.EventHandler(this.swapSelectedLAndRToolStripMenuItem_Click);
+            this.swapSelectedLAndRToolStripMenuItem.Click += new System.EventHandler(this.SwapSelectedLAndRToolStripMenuItem_Click);
             // 
             // combineConsecutiveSameInputsToolStripMenuItem
             // 
@@ -1095,7 +1095,7 @@ namespace CelesteStudio {
             this.combineConsecutiveSameInputsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.combineConsecutiveSameInputsToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.combineConsecutiveSameInputsToolStripMenuItem.Text = "Combine Consecutive Same Inputs";
-            this.combineConsecutiveSameInputsToolStripMenuItem.Click += new System.EventHandler(this.combineConsecutiveSameInputsToolStripMenuItem_Click);
+            this.combineConsecutiveSameInputsToolStripMenuItem.Click += new System.EventHandler(this.CombineConsecutiveSameInputsToolStripMenuItem_Click);
             // 
             // forceCombineInputsToolStripMenuItem
             // 
@@ -1103,14 +1103,14 @@ namespace CelesteStudio {
             this.forceCombineInputsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) (((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) | System.Windows.Forms.Keys.L)));
             this.forceCombineInputsToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.forceCombineInputsToolStripMenuItem.Text = "Force Combine Inputs Frames";
-            this.forceCombineInputsToolStripMenuItem.Click += new System.EventHandler(this.forceCombineInputsToolStripMenuItem_Click);
+            this.forceCombineInputsToolStripMenuItem.Click += new System.EventHandler(this.ForceCombineInputsToolStripMenuItem_Click);
             // 
             // convertDashToDemoDashToolStripMenuItem
             // 
             this.convertDashToDemoDashToolStripMenuItem.Name = "convertDashToDemoDashToolStripMenuItem";
             this.convertDashToDemoDashToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.convertDashToDemoDashToolStripMenuItem.Text = "Convert Dash to Demo Dash";
-            this.convertDashToDemoDashToolStripMenuItem.Click += new System.EventHandler(this.convertDashToDemoDashToolStripMenuItem_Click);
+            this.convertDashToDemoDashToolStripMenuItem.Click += new System.EventHandler(this.ConvertDashToDemoDashToolStripMenuItem_Click);
             // 
             // toolStripSeparator12
             // 
@@ -1122,7 +1122,7 @@ namespace CelesteStudio {
             this.openReadFileToolStripMenuItem.Name = "openReadFileToolStripMenuItem";
             this.openReadFileToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
             this.openReadFileToolStripMenuItem.Text = "Open Read File / Go to Play Line";
-            this.openReadFileToolStripMenuItem.Click += new System.EventHandler(this.openReadFileToolStripMenuItem_Click);
+            this.openReadFileToolStripMenuItem.Click += new System.EventHandler(this.OpenReadFileToolStripMenuItem_Click);
             // 
             // richText
             // 
@@ -1155,12 +1155,12 @@ namespace CelesteStudio {
             this.richText.Size = new System.Drawing.Size(286, 496);
             this.richText.TabIndex = 0;
             this.richText.TabLength = 0;
-            this.richText.TextChanged += new System.EventHandler<CelesteStudio.RichText.TextChangedEventArgs>(this.tasText_TextChanged);
-            this.richText.NoChanges += new System.EventHandler(this.tasText_NoChanges);
-            this.richText.FileOpening += new System.EventHandler(this.tasText_FileOpening);
-            this.richText.LineInserted += new System.EventHandler<CelesteStudio.RichText.LineInsertedEventArgs>(this.tasText_LineInserted);
-            this.richText.LineNeeded += new System.EventHandler<CelesteStudio.RichText.LineNeededEventArgs>(this.tasText_LineNeeded);
-            this.richText.LineRemoved += new System.EventHandler<CelesteStudio.RichText.LineRemovedEventArgs>(this.tasText_LineRemoved);
+            this.richText.TextChanged += new System.EventHandler<CelesteStudio.RichText.TextChangedEventArgs>(this.TasText_TextChanged);
+            this.richText.NoChanges += new System.EventHandler(this.TasText_NoChanges);
+            this.richText.FileOpening += new System.EventHandler(this.TasText_FileOpening);
+            this.richText.LineInserted += new System.EventHandler<CelesteStudio.RichText.LineInsertedEventArgs>(this.TasText_LineInserted);
+            this.richText.LineNeeded += new System.EventHandler<CelesteStudio.RichText.LineNeededEventArgs>(this.TasText_LineNeeded);
+            this.richText.LineRemoved += new System.EventHandler<CelesteStudio.RichText.LineRemovedEventArgs>(this.TasText_LineRemoved);
             // 
             // fontDialog
             // 

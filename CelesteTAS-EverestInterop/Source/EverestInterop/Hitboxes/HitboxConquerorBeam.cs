@@ -7,10 +7,10 @@ using TAS.Utils;
 namespace TAS.EverestInterop.Hitboxes;
 
 public static class HitboxConquerorBeam {
-    private static GetDelegate<Entity, float> GetChargeTimer;
-    private static GetDelegate<Entity, float> GetActiveTimer;
-    private static GetDelegate<Entity, float> GetAngle;
-    private static GetDelegate<Entity, Entity> GetBoss;
+    private static GetDelegate<Entity, float> getChargeTimer;
+    private static GetDelegate<Entity, float> getActiveTimer;
+    private static GetDelegate<Entity, float> getAngle;
+    private static GetDelegate<Entity, Entity> getBoss;
     private static Type conquerorBeamType;
 
     [Initialize]
@@ -18,10 +18,10 @@ public static class HitboxConquerorBeam {
         conquerorBeamType = ModUtils.GetType("Conqueror's Peak", "Celeste.Mod.ricky06ModPack.Entities.ConquerorBeam");
 
         if (conquerorBeamType != null) {
-            GetChargeTimer = conquerorBeamType.CreateGetDelegate<Entity, float>("chargeTimer");
-            GetActiveTimer = conquerorBeamType.CreateGetDelegate<Entity, float>("activeTimer");
-            GetAngle = conquerorBeamType.CreateGetDelegate<Entity, float>("angle");
-            GetBoss = conquerorBeamType.CreateGetDelegate<Entity, Entity>("boss");
+            getChargeTimer = conquerorBeamType.CreateGetDelegate<Entity, float>("chargeTimer");
+            getActiveTimer = conquerorBeamType.CreateGetDelegate<Entity, float>("activeTimer");
+            getAngle = conquerorBeamType.CreateGetDelegate<Entity, float>("angle");
+            getBoss = conquerorBeamType.CreateGetDelegate<Entity, Entity>("boss");
             On.Monocle.Entity.DebugRender += ModHitbox;
         }
     }
@@ -39,9 +39,9 @@ public static class HitboxConquerorBeam {
 
         orig(self, camera);
 
-        if (self.GetType() == conquerorBeamType && GetChargeTimer(self) <= 0f && GetActiveTimer(self) > 0f) {
-            float angle = GetAngle(self);
-            Entity boss = GetBoss(self);
+        if (self.GetType() == conquerorBeamType && getChargeTimer(self) <= 0f && getActiveTimer(self) > 0f) {
+            float angle = getAngle(self);
+            Entity boss = getBoss(self);
             Vector2 vector = boss.Center + Calc.AngleToVector(angle, 12f);
             Vector2 vector2 = boss.Center + Calc.AngleToVector(angle, 2000f);
             Vector2 value = (vector2 - vector).Perpendicular().SafeNormalize(2f);

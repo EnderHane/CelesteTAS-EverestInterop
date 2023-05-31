@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -13,7 +13,7 @@ namespace CelesteStudio.RichText;
 public class FileTextSource : TextSource, IDisposable {
     readonly List<int> sourceFileLinePositions = new();
     readonly System.Windows.Forms.Timer timer = new();
-    FileStream _fs;
+    private FileStream fs;
 
     Encoding fileEncoding;
     string path;
@@ -26,29 +26,29 @@ public class FileTextSource : TextSource, IDisposable {
     public FileTextSource(RichText currentTB)
         : base(currentTB) {
         timer.Interval = 10000;
-        timer.Tick += new EventHandler(timer_Tick);
+        timer.Tick += new EventHandler(Timer_Tick);
         timer.Enabled = true;
     }
 
-    FileStream fs {
+    private FileStream Fs {
         get {
             int retry = 0;
             while (retry++ < 10) {
                 try {
-                    return _fs ??= new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+                    return fs ??= new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
                 } catch (IOException) {
                     Thread.Sleep(50);
                 }
             }
 
-            return _fs;
+            return fs;
         }
     }
 
     public override Line this[int i] {
         get {
-            if (lines[i] != null) {
-                return lines[i];
+            if (LineList[i] != null) {
+                return LineList[i];
             } else {
                 for (int j = 0;; j++) {
                     try {
@@ -65,14 +65,14 @@ public class FileTextSource : TextSource, IDisposable {
                 }
             }
 
-            return lines[i];
+            return LineList[i];
         }
         set => throw new NotImplementedException();
     }
 
     public override void Dispose() {
-        if (fs != null) {
-            fs.Dispose();
+        if (Fs != null) {
+            Fs.Dispose();
         }
 
         timer.Dispose();
@@ -83,7 +83,7 @@ public class FileTextSource : TextSource, IDisposable {
     /// </summary>
     public event EventHandler<LineNeededEventArgs> LineNeeded;
 
-    void timer_Tick(object sender, EventArgs e) {
+    void Timer_Tick(object sender, EventArgs e) {
         timer.Enabled = false;
         try {
             //UnloadUnusedLines();
@@ -94,13 +94,13 @@ public class FileTextSource : TextSource, IDisposable {
 
     private void UnloadUnusedLines() {
         const int margin = 2000;
-        int iStartVisibleLine = CurrentTB.VisibleRange.Start.iLine;
-        int iFinishVisibleLine = CurrentTB.VisibleRange.End.iLine;
+        int iStartVisibleLine = CurrentTB.VisibleRange.Start.Line;
+        int iFinishVisibleLine = CurrentTB.VisibleRange.End.Line;
 
         int count = 0;
         for (int i = 0; i < Count; i++) {
-            if (lines[i] != null && !lines[i].IsChanged && Math.Abs(i - iFinishVisibleLine) > margin) {
-                lines[i] = null;
+            if (LineList[i] != null && !LineList[i].IsChanged && Math.Abs(i - iFinishVisibleLine) > margin) {
+                LineList[i] = null;
                 count++;
             }
         }
@@ -112,32 +112,32 @@ public class FileTextSource : TextSource, IDisposable {
         CloseFile();
 
         path = fileName;
-        long length = fs.Length;
+        long length = Fs.Length;
         //read signature
-        enc = DefineEncoding(enc, fs);
+        enc = DefineEncoding(enc, Fs);
         int shift = DefineShift(enc);
         //first line
-        sourceFileLinePositions.Add((int) fs.Position);
-        lines.Add(null);
+        sourceFileLinePositions.Add((int) Fs.Position);
+        LineList.Add(null);
         //other lines
-        while (fs.Position < length) {
-            int b = fs.ReadByte();
+        while (Fs.Position < length) {
+            int b = Fs.ReadByte();
             if (b == 10) // char \n
             {
-                sourceFileLinePositions.Add((int) (fs.Position) + shift);
-                lines.Add(null);
+                sourceFileLinePositions.Add((int) (Fs.Position) + shift);
+                LineList.Add(null);
             }
         }
 
         Line[] temp = new Line[100];
-        int c = lines.Count;
-        lines.AddRange(temp);
-        lines.TrimExcess();
-        lines.RemoveRange(c, temp.Length);
+        int c = LineList.Count;
+        LineList.AddRange(temp);
+        LineList.TrimExcess();
+        LineList.RemoveRange(c, temp.Length);
 
 
         int[] temp2 = new int[100];
-        c = lines.Count;
+        c = LineList.Count;
         sourceFileLinePositions.AddRange(temp2);
         sourceFileLinePositions.TrimExcess();
         sourceFileLinePositions.RemoveRange(c, temp.Length);
@@ -147,7 +147,7 @@ public class FileTextSource : TextSource, IDisposable {
 
         OnLineInserted(0, Count);
         //load first lines for calc width of the text
-        int linesCount = Math.Min(lines.Count, CurrentTB.Height / CurrentTB.CharHeight);
+        int linesCount = Math.Min(LineList.Count, CurrentTB.Height / CurrentTB.CharHeight);
         for (int i = 0; i < linesCount; i++) {
             LoadLineFromSourceFile(i);
         }
@@ -207,15 +207,15 @@ public class FileTextSource : TextSource, IDisposable {
     }
 
     public void CloseFile() {
-        if (_fs != null) {
-            _fs.Dispose();
+        if (fs != null) {
+            fs.Dispose();
         }
 
-        _fs = null;
+        fs = null;
     }
 
     public override void ClearIsChanged() {
-        foreach (var line in lines) {
+        foreach (var line in LineList) {
             if (line != null) {
                 line.IsChanged = false;
             }
@@ -224,13 +224,11 @@ public class FileTextSource : TextSource, IDisposable {
 
     private void LoadLineFromSourceFile(int i) {
         var line = CreateLine();
-        fs.Seek(sourceFileLinePositions[i], SeekOrigin.Begin);
-        StreamReader sr = new(fs, fileEncoding);
+        Fs.Seek(sourceFileLinePositions[i], SeekOrigin.Begin);
+        StreamReader sr = new(Fs, fileEncoding);
 
         string s = sr.ReadLine();
-        if (s == null) {
-            s = "";
-        }
+        s ??= "";
 
         //call event handler
         if (LineNeeded != null) {
@@ -243,10 +241,10 @@ public class FileTextSource : TextSource, IDisposable {
         }
 
         foreach (char c in s) {
-            line.Add(new Char(c));
+            line.Add(new StudioChar(c));
         }
 
-        lines[i] = line;
+        LineList[i] = line;
     }
 
     public override void InsertLine(int index, Line line) {
@@ -260,26 +258,26 @@ public class FileTextSource : TextSource, IDisposable {
     }
 
     public override int GetLineLength(int i) {
-        if (lines[i] == null) {
+        if (LineList[i] == null) {
             return 0;
         } else {
-            return lines[i].Count;
+            return LineList[i].Count;
         }
     }
 
     public override bool LineHasFoldingStartMarker(int iLine) {
-        if (lines[iLine] == null) {
+        if (LineList[iLine] == null) {
             return false;
         } else {
-            return !string.IsNullOrEmpty(lines[iLine].FoldingStartMarker);
+            return !string.IsNullOrEmpty(LineList[iLine].FoldingStartMarker);
         }
     }
 
     public override bool LineHasFoldingEndMarker(int iLine) {
-        if (lines[iLine] == null) {
+        if (LineList[iLine] == null) {
             return false;
         } else {
-            return !string.IsNullOrEmpty(lines[iLine].FoldingEndMarker);
+            return !string.IsNullOrEmpty(LineList[iLine].FoldingEndMarker);
         }
     }
 

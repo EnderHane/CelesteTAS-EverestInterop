@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,17 +12,16 @@ namespace CelesteStudio.RichText;
 /// It stores a text lines, the manager of commands, undo/redo stack, styles.
 /// </summary>
 public class TextSource : IList<Line>, IDisposable {
-    readonly protected List<Line> lines = new();
-    readonly LinesAccessor linesAccessor;
+    readonly protected List<Line> LineList = new();
+    private readonly LinesAccessor linesAccessor;
 
     /// <summary>
     /// Styles
     /// Maximum style count is 16
     /// </summary>
     public readonly Style[] Styles = new Style[sizeof(ushort) * 8];
-
-    RichText currentTB;
-    int lastLineUniqueId;
+    private RichText currentTB;
+    private int lastLineUniqueId;
 
     public TextSource(RichText currentTB) {
         CurrentTB = currentTB;
@@ -60,20 +59,20 @@ public class TextSource : IList<Line>, IDisposable {
     public virtual void Dispose() { }
 
     public virtual Line this[int i] {
-        get => lines[i];
+        get => LineList[i];
         set => throw new NotImplementedException();
     }
 
     public IEnumerator<Line> GetEnumerator() {
-        return lines.GetEnumerator();
+        return LineList.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() {
-        return (lines as IEnumerator);
+        return (LineList as IEnumerator);
     }
 
     public virtual int IndexOf(Line item) {
-        return lines.IndexOf(item);
+        return LineList.IndexOf(item);
     }
 
     public virtual void Insert(int index, Line item) {
@@ -93,17 +92,17 @@ public class TextSource : IList<Line>, IDisposable {
     }
 
     public virtual bool Contains(Line item) {
-        return lines.Contains(item);
+        return LineList.Contains(item);
     }
 
     public virtual void CopyTo(Line[] array, int arrayIndex) {
-        lines.CopyTo(array, arrayIndex);
+        LineList.CopyTo(array, arrayIndex);
     }
 
     /// <summary>
     /// Lines count
     /// </summary>
-    public virtual int Count => lines.Count;
+    public virtual int Count => LineList.Count;
 
     public virtual bool IsReadOnly => false;
 
@@ -148,7 +147,7 @@ public class TextSource : IList<Line>, IDisposable {
     public event EventHandler CurrentTBChanged;
 
     public virtual void ClearIsChanged() {
-        foreach (var line in lines) {
+        foreach (var line in LineList) {
             line.IsChanged = false;
         }
     }
@@ -158,9 +157,7 @@ public class TextSource : IList<Line>, IDisposable {
     }
 
     private void OnCurrentTBChanged() {
-        if (CurrentTBChanged != null) {
-            CurrentTBChanged(this, EventArgs.Empty);
-        }
+        CurrentTBChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public void InitDefaultStyle() {
@@ -168,11 +165,11 @@ public class TextSource : IList<Line>, IDisposable {
     }
 
     public virtual bool IsLineLoaded(int iLine) {
-        return lines[iLine] != null;
+        return LineList[iLine] != null;
     }
 
     public int BinarySearch(Line item, IComparer<Line> comparer) {
-        return lines.BinarySearch(item, comparer);
+        return LineList.BinarySearch(item, comparer);
     }
 
     public int GenerateUniqueLineId() {
@@ -180,7 +177,7 @@ public class TextSource : IList<Line>, IDisposable {
     }
 
     public virtual void InsertLine(int index, Line line) {
-        lines.Insert(index, line);
+        LineList.Insert(index, line);
         OnLineInserted(index);
     }
 
@@ -189,9 +186,7 @@ public class TextSource : IList<Line>, IDisposable {
     }
 
     public void OnLineInserted(int index, int count) {
-        if (LineInserted != null) {
-            LineInserted(this, new LineInsertedEventArgs(index, count));
-        }
+        LineInserted?.Invoke(this, new LineInsertedEventArgs(index, count));
     }
 
     public virtual void RemoveLine(int index) {
@@ -210,29 +205,23 @@ public class TextSource : IList<Line>, IDisposable {
         }
 
         //
-        lines.RemoveRange(index, count);
+        LineList.RemoveRange(index, count);
 
         OnLineRemoved(index, count, removedLineIds);
     }
 
     public void OnLineRemoved(int index, int count, List<int> removedLineIds) {
         if (count > 0) {
-            if (LineRemoved != null) {
-                LineRemoved(this, new LineRemovedEventArgs(index, count, removedLineIds));
-            }
+            LineRemoved?.Invoke(this, new LineRemovedEventArgs(index, count, removedLineIds));
         }
     }
 
     public void OnTextChanged(int fromLine, int toLine) {
-        if (TextChanged != null) {
-            TextChanged(this, new TextChangedEventArgs(Math.Min(fromLine, toLine), Math.Max(fromLine, toLine)));
-        }
+        TextChanged?.Invoke(this, new TextChangedEventArgs(Math.Min(fromLine, toLine), Math.Max(fromLine, toLine)));
     }
 
     internal void NeedRecalc(TextChangedEventArgs args) {
-        if (RecalcNeeded != null) {
-            RecalcNeeded(this, args);
-        }
+        RecalcNeeded?.Invoke(this, args);
     }
 
     internal void OnTextChanging() {
@@ -254,34 +243,34 @@ public class TextSource : IList<Line>, IDisposable {
     }
 
     public virtual int GetLineLength(int i) {
-        return lines[i].Count;
+        return LineList[i].Count;
     }
 
     public virtual bool LineHasFoldingStartMarker(int iLine) {
-        return !string.IsNullOrEmpty(lines[iLine].FoldingStartMarker);
+        return !string.IsNullOrEmpty(LineList[iLine].FoldingStartMarker);
     }
 
     public virtual bool LineHasFoldingEndMarker(int iLine) {
-        return !string.IsNullOrEmpty(lines[iLine].FoldingEndMarker);
+        return !string.IsNullOrEmpty(LineList[iLine].FoldingEndMarker);
     }
 
     public virtual void SaveToFile(string fileName, Encoding enc) {
         using (StreamWriter sw = new(fileName, false, enc)) {
             for (int i = 0; i < Count - 1; i++) {
-                sw.WriteLine(lines[i].Text);
+                sw.WriteLine(LineList[i].Text);
             }
 
-            sw.Write(lines[Count - 1].Text);
+            sw.Write(LineList[Count - 1].Text);
         }
     }
 
     public class TextChangedEventArgs : EventArgs {
-        public int iFromLine;
-        public int iToLine;
+        public int FromLine;
+        public int ToLine;
 
-        public TextChangedEventArgs(int iFromLine, int iToLine) {
-            this.iFromLine = iFromLine;
-            this.iToLine = iToLine;
+        public TextChangedEventArgs(int fromLine, int toLine) {
+            FromLine = fromLine;
+            ToLine = toLine;
         }
     }
 }

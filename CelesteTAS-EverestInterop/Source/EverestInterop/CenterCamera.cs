@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -10,7 +10,7 @@ namespace TAS.EverestInterop;
 
 [Tracked]
 internal class CameraHitboxEntity : Entity {
-    private static readonly Color color = Color.LightBlue * 0.75f;
+    private static readonly Color MyColor = Color.LightBlue * 0.75f;
     private Vector2 cameraTopLeft;
     private Vector2 cameraBottomRight;
     private Level level;
@@ -34,7 +34,7 @@ internal class CameraHitboxEntity : Entity {
             return;
         }
 
-        Draw.HollowRect(cameraTopLeft, cameraBottomRight.X - cameraTopLeft.X, cameraBottomRight.Y - cameraTopLeft.Y, color);
+        Draw.HollowRect(cameraTopLeft, cameraBottomRight.X - cameraTopLeft.X, cameraBottomRight.Y - cameraTopLeft.Y, MyColor);
     }
 
     [Load]

@@ -10,19 +10,19 @@ namespace TAS.Utils;
 
 // thanks JaThePlayer, copy from frost helper: https://github.com/JaThePlayer/FrostHelper/blob/master/Code/FrostHelper/TypeHelper.cs
 internal static class EntityTypeHelper {
-    private static readonly Dictionary<string, Type> vanillaEntityNameToType = new();
-    private static readonly Dictionary<string, Type> modEntityNameToType = new();
+    private static readonly Dictionary<string, Type> VanillaEntityNameToType = new();
+    private static readonly Dictionary<string, Type> ModEntityNameToType = new();
 
     public static Type NameToType(string entityName) {
-        if (vanillaEntityNameToType.IsEmpty()) {
+        if (VanillaEntityNameToType.IsEmpty()) {
             CreateCache();
         }
 
-        if (vanillaEntityNameToType.TryGetValue(entityName, out Type ret)) {
+        if (VanillaEntityNameToType.TryGetValue(entityName, out Type ret)) {
             return ret;
         }
 
-        if (modEntityNameToType.TryGetValue(entityName, out ret)) {
+        if (ModEntityNameToType.TryGetValue(entityName, out ret)) {
             return ret;
         }
 
@@ -30,7 +30,7 @@ internal static class EntityTypeHelper {
     }
 
     private static void CreateCache() {
-        MonoMod.Utils.Extensions.AddRange(vanillaEntityNameToType, new Dictionary<string, Type> {
+        MonoMod.Utils.Extensions.AddRange(VanillaEntityNameToType, new Dictionary<string, Type> {
             ["checkpoint"] = typeof(Checkpoint),
             ["jumpThru"] = typeof(JumpthruPlatform),
             ["refill"] = typeof(Refill),
@@ -224,7 +224,7 @@ internal static class EntityTypeHelper {
 
         // add from Celeste v1.4
         if (typeof(Player).Assembly.GetType("Celeste.PowerSourceNumber") is { } powerSourceNumber) {
-            vanillaEntityNameToType["powerSourceNumber"] = powerSourceNumber;
+            VanillaEntityNameToType["powerSourceNumber"] = powerSourceNumber;
         }
 
         foreach (Type type in FakeAssembly.GetFakeEntryAssembly().GetTypesSafe()) {
@@ -245,12 +245,12 @@ internal static class EntityTypeHelper {
                     }
 
                     string idTrim = id.Trim();
-                    if (vanillaEntityNameToType.TryGetValue(idTrim, out Type vanillaType)) {
+                    if (VanillaEntityNameToType.TryGetValue(idTrim, out Type vanillaType)) {
                         $"Found duplicate entity name {idTrim} - {type.FullName} vs {vanillaType.FullName}"
                             .Log(LogLevel.Warn);
                     }
 
-                    modEntityNameToType[idTrim] = type;
+                    ModEntityNameToType[idTrim] = type;
                 }
             }
         }

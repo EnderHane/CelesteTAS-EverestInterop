@@ -10,12 +10,12 @@ using Microsoft.Xna.Framework.Input;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using StudioCommunication;
 using TAS.Communication;
 using TAS.Module;
 using TAS.Utils;
 using Hud = TAS.EverestInterop.InfoHUD.InfoHud;
 using Camera = TAS.EverestInterop.CenterCamera;
+using TasCommunication;
 
 namespace TAS.EverestInterop;
 
@@ -221,17 +221,20 @@ public static class Hotkeys {
     }
 
     [DisableRun]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051")]
     private static void ReleaseAllKeys() {
         foreach (Hotkey hotkey in KeysDict.Values) {
             hotkey.OverrideCheck = false;
         }
     }
 
-#pragma warning disable CS0612
     [Load]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051")]
     private static void Load() {
         On.Celeste.Input.Initialize += InputOnInitialize;
+#pragma warning disable CS0612 // 类型或成员已过时
         Type configUiType = typeof(ModuleSettingsKeyboardConfigUI);
+#pragma warning restore CS0612 // 类型或成员已过时
         if (typeof(Everest).Assembly.GetTypesSafe()
                 .FirstOrDefault(t => t.FullName == "Celeste.Mod.ModuleSettingsKeyboardConfigUIV2") is { } typeV2
            ) {
@@ -247,9 +250,9 @@ public static class Hotkeys {
             reloadMethod.IlHook(ModReload);
         }
     }
-#pragma warning restore CS0612
 
     [Unload]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051")]
     private static void Unload() {
         On.Celeste.Input.Initialize -= InputOnInitialize;
     }
@@ -290,7 +293,7 @@ public static class Hotkeys {
     }
 
     public class Hotkey {
-        private static readonly Regex keysNameFixRegex = new(@"^D(\d)$", RegexOptions.Compiled);
+        private static readonly Regex KeysNameFixRegex = new(@"^D(\d)$", RegexOptions.Compiled);
 
         public readonly List<Buttons> Buttons;
         private readonly bool held;
@@ -359,7 +362,7 @@ public static class Hotkeys {
         public override string ToString() {
             List<string> result = new();
             if (Keys.IsNotEmpty()) {
-                result.Add(string.Join("+", Keys.Select(key => keysNameFixRegex.Replace(key.ToString(), "$1"))));
+                result.Add(string.Join("+", Keys.Select(key => KeysNameFixRegex.Replace(key.ToString(), "$1"))));
             }
 
             if (Buttons.IsNotEmpty()) {
@@ -382,11 +385,13 @@ public static class MouseButtons {
     private static int lastWheel;
 
     [Load]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051")]
     private static void Load() {
         On.Celeste.Celeste.RenderCore += CelesteOnRenderCore;
     }
 
     [Unload]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051")]
     private static void Unload() {
         On.Celeste.Celeste.RenderCore -= CelesteOnRenderCore;
     }

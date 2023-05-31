@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace CelesteStudio.RichText;
@@ -29,18 +29,17 @@ internal class CommandManager {
         }
 
         //multirange ?
-        if (cmd.ts.CurrentTB.Selection.ColumnSelectionMode) {
-            if (cmd is UndoableCommand)
+        if (cmd.Ts.CurrentTB.Selection.ColumnSelectionMode) {
+            if (cmd is UndoableCommand command) {
                 //make wrapper
-            {
-                cmd = new MultiRangeCommand((UndoableCommand) cmd);
+                cmd = new MultiRangeCommand(command);
             }
         }
 
 
         if (cmd is UndoableCommand) {
             //if range is ColumnRange, then create wrapper
-            (cmd as UndoableCommand).autoUndo = autoUndoCommands > 0;
+            (cmd as UndoableCommand).AutoUndo = autoUndoCommands > 0;
             history.Push(cmd as UndoableCommand);
         }
 
@@ -76,7 +75,7 @@ internal class CommandManager {
         //undo next autoUndo command
         if (history.Count > 0) {
             UndoableCommand cmd = history.Peek();
-            if (cmd.autoUndo || cmd is InsertCharCommand) {
+            if (cmd.AutoUndo || cmd is InsertCharCommand) {
                 Undo();
             }
         }
@@ -96,7 +95,7 @@ internal class CommandManager {
         autoUndoCommands--;
         if (autoUndoCommands == 0) {
             if (history.Count > 0) {
-                history.Peek().autoUndo = false;
+                history.Peek().AutoUndo = false;
             }
         }
     }
@@ -124,8 +123,8 @@ internal class CommandManager {
                 TextSource.CurrentTB.Selection.ColumnSelectionMode = false;
             }
 
-            TextSource.CurrentTB.Selection.Start = cmd.sel.Start;
-            TextSource.CurrentTB.Selection.End = cmd.sel.End;
+            TextSource.CurrentTB.Selection.Start = cmd.Sel.Start;
+            TextSource.CurrentTB.Selection.End = cmd.Sel.End;
             cmd.Execute();
             history.Push(cmd);
         } finally {
@@ -133,7 +132,7 @@ internal class CommandManager {
         }
 
         //redo command after autoUndoable command
-        if (cmd.autoUndo) {
+        if (cmd.AutoUndo) {
             Redo();
         }
 
@@ -142,7 +141,7 @@ internal class CommandManager {
 }
 
 internal abstract class Command {
-    internal TextSource ts;
+    internal TextSource Ts;
     public abstract void Execute();
 }
 
@@ -157,27 +156,27 @@ internal class RangeInfo {
 
     internal int FromX {
         get {
-            if (End.iLine < Start.iLine) {
-                return End.iChar;
+            if (End.Line < Start.Line) {
+                return End.Char;
             }
 
-            if (End.iLine > Start.iLine) {
-                return Start.iChar;
+            if (End.Line > Start.Line) {
+                return Start.Char;
             }
 
-            return Math.Min(End.iChar, Start.iChar);
+            return Math.Min(End.Char, Start.Char);
         }
     }
 }
 
 internal abstract class UndoableCommand : Command {
-    internal bool autoUndo;
-    internal RangeInfo lastSel;
-    internal RangeInfo sel;
+    internal bool AutoUndo;
+    internal RangeInfo LastSel;
+    internal RangeInfo Sel;
 
     public UndoableCommand(TextSource ts) {
-        this.ts = ts;
-        sel = new RangeInfo(ts.CurrentTB.Selection);
+        Ts = ts;
+        Sel = new RangeInfo(ts.CurrentTB.Selection);
     }
 
     public virtual void Undo() {
@@ -185,23 +184,23 @@ internal abstract class UndoableCommand : Command {
     }
 
     public override void Execute() {
-        lastSel = new RangeInfo(ts.CurrentTB.Selection);
+        LastSel = new RangeInfo(Ts.CurrentTB.Selection);
         OnTextChanged(false);
     }
 
     protected virtual void OnTextChanged(bool invert) {
-        bool b = sel.Start.iLine < lastSel.Start.iLine;
+        bool b = Sel.Start.Line < LastSel.Start.Line;
         if (invert) {
             if (b) {
-                ts.OnTextChanged(sel.Start.iLine, sel.Start.iLine);
+                Ts.OnTextChanged(Sel.Start.Line, Sel.Start.Line);
             } else {
-                ts.OnTextChanged(sel.Start.iLine, lastSel.Start.iLine);
+                Ts.OnTextChanged(Sel.Start.Line, LastSel.Start.Line);
             }
         } else {
             if (b) {
-                ts.OnTextChanged(sel.Start.iLine, lastSel.Start.iLine);
+                Ts.OnTextChanged(Sel.Start.Line, LastSel.Start.Line);
             } else {
-                ts.OnTextChanged(lastSel.Start.iLine, lastSel.Start.iLine);
+                Ts.OnTextChanged(LastSel.Start.Line, LastSel.Start.Line);
             }
         }
     }

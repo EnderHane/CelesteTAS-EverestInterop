@@ -18,8 +18,8 @@ public static class AreaCompleteInfo {
     private const string TasWasRun = "CelesteTAS_TAS_Was_Run";
     private const string AlwaysShowInfo = nameof(AlwaysShowInfo);
     private static string text;
-    private static readonly Dictionary<string, StringBuilder> completeInfos = new();
-    private static readonly Vector2 position = new(10, 10);
+    private static readonly Dictionary<string, StringBuilder> CompleteInfos = new();
+    private static readonly Vector2 Position = new(10, 10);
 
     [Initialize]
     private static void Initialize() {
@@ -66,8 +66,8 @@ public static class AreaCompleteInfo {
     }
 
     private static void AreaCompleteOnInfo(On.Celeste.AreaComplete.orig_Info orig, float ease, string speedrunTimerChapterString,
-        string speedrunTimerFileString, string ChapterSpeedrunText, string versiontext) {
-        orig(ease, speedrunTimerChapterString, speedrunTimerFileString, ChapterSpeedrunText, versiontext);
+        string speedrunTimerFileString, string chapterSpeedrunText, string versiontext) {
+        orig(ease, speedrunTimerChapterString, speedrunTimerFileString, chapterSpeedrunText, versiontext);
         DrawText(ease);
     }
 
@@ -104,14 +104,14 @@ public static class AreaCompleteInfo {
 
         text = $"CelesteTAS v{CelesteTasModule.Instance.Metadata.VersionString}";
 
-        if (completeInfos.TryGetValue(AlwaysShowInfo, out var builder)) {
+        if (CompleteInfos.TryGetValue(AlwaysShowInfo, out var builder)) {
             if (builder.Length > 0) {
                 text = $"{text}\n{builder}";
             }
         }
 
         string key = session.Area.ToString();
-        if (completeInfos.TryGetValue(key, out builder)) {
+        if (CompleteInfos.TryGetValue(key, out builder)) {
             if (builder.Length > 0) {
                 text = $"{text}\n{builder}";
             }
@@ -123,13 +123,13 @@ public static class AreaCompleteInfo {
             return;
         }
 
-        ActiveFont.DrawOutline(text, position, new Vector2(1f - Ease.CubeOut(ease), 0f), Vector2.One * 0.5f, Color.White, 2f, Color.Black);
+        ActiveFont.DrawOutline(text, Position, new Vector2(1f - Ease.CubeOut(ease), 0f), Vector2.One * 0.5f, Color.White, 2f, Color.Black);
     }
 
     // ReSharper disable once UnusedMember.Local
     [EnableRun]
     private static void EnableRun() {
-        completeInfos.Clear();
+        CompleteInfos.Clear();
     }
 
     // "CompleteInfo, Side, SID/ID"
@@ -168,8 +168,8 @@ public static class AreaCompleteInfo {
             key = new AreaKey(id, mode).ToString();
         }
 
-        if (!completeInfos.TryGetValue(key, out StringBuilder info)) {
-            completeInfos[key] = info = new StringBuilder();
+        if (!CompleteInfos.TryGetValue(key, out StringBuilder info)) {
+            CompleteInfos[key] = info = new StringBuilder();
         }
 
         info.Clear();

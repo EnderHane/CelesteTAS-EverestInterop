@@ -8,11 +8,11 @@ using TAS.Utils;
 namespace TAS.Input.Commands;
 
 public static class ReadCommand {
-    private static readonly List<string> readCommandStack = new();
+    private static readonly List<string> ReadCommandStack = new();
 
     [ClearInputs]
     private static void Clear() {
-        readCommandStack.Clear();
+        ReadCommandStack.Clear();
     }
 
     // "Read, Path",
@@ -65,16 +65,16 @@ public static class ReadCommand {
         }
 
         string readCommandDetail = $"Read, {string.Join(", ", args)}: line {fileLine} of the file \"{currentFilePath}\"";
-        if (readCommandStack.Contains(readCommandDetail)) {
-            $"Multiple read commands lead to dead loops:\n{string.Join("\n", readCommandStack)}".Log(LogLevel.Warn);
+        if (ReadCommandStack.Contains(readCommandDetail)) {
+            $"Multiple read commands lead to dead loops:\n{string.Join("\n", ReadCommandStack)}".Log(LogLevel.Warn);
             AbortTas("Multiple read commands lead to dead loops\nPlease check log.txt for more details");
             return;
         }
 
-        readCommandStack.Add(readCommandDetail);
+        ReadCommandStack.Add(readCommandDetail);
         Manager.Controller.ReadFile(filePath, startLine, endLine, studioLine);
-        if (readCommandStack.Count > 0) {
-            readCommandStack.RemoveAt(readCommandStack.Count - 1);
+        if (ReadCommandStack.Count > 0) {
+            ReadCommandStack.RemoveAt(ReadCommandStack.Count - 1);
         }
 
         void FindTheFile() {

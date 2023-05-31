@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -50,18 +50,17 @@ public class SyntaxHighlighter : IDisposable {
     /// <summary>
     /// Highlights syntax for given XML description file
     /// </summary>
-    public virtual void HighlightSyntax(string XMLdescriptionFile, Range range) {
-        SyntaxDescriptor desc = null;
-        if (!descByXMLfileNames.TryGetValue(XMLdescriptionFile, out desc)) {
+    public virtual void HighlightSyntax(string xmlDescriptionFile, Range range) {
+        if (!descByXMLfileNames.TryGetValue(xmlDescriptionFile, out SyntaxDescriptor desc)) {
             var doc = new XmlDocument();
-            string file = XMLdescriptionFile;
+            string file = xmlDescriptionFile;
             if (!File.Exists(file)) {
                 file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.GetFileName(file));
             }
 
             doc.LoadXml(File.ReadAllText(file));
             desc = ParseXmlDescription(doc);
-            descByXMLfileNames[XMLdescriptionFile] = desc;
+            descByXMLfileNames[xmlDescriptionFile] = desc;
         }
 
         HighlightSyntax(desc, range);
@@ -77,20 +76,20 @@ public class SyntaxHighlighter : IDisposable {
         if (brackets != null) {
             if (brackets.Attributes["left"] == null || brackets.Attributes["right"] == null || brackets.Attributes["left"].Value == "" ||
                 brackets.Attributes["right"].Value == "") {
-                desc.leftBracket = '\x0';
-                desc.rightBracket = '\x0';
+                desc.LeftBracket = '\x0';
+                desc.RightBracket = '\x0';
             } else {
-                desc.leftBracket = brackets.Attributes["left"].Value[0];
-                desc.rightBracket = brackets.Attributes["right"].Value[0];
+                desc.LeftBracket = brackets.Attributes["left"].Value[0];
+                desc.RightBracket = brackets.Attributes["right"].Value[0];
             }
 
             if (brackets.Attributes["left2"] == null || brackets.Attributes["right2"] == null || brackets.Attributes["left2"].Value == "" ||
                 brackets.Attributes["right2"].Value == "") {
-                desc.leftBracket2 = '\x0';
-                desc.rightBracket2 = '\x0';
+                desc.LeftBracket2 = '\x0';
+                desc.RightBracket2 = '\x0';
             } else {
-                desc.leftBracket2 = brackets.Attributes["left2"].Value[0];
-                desc.rightBracket2 = brackets.Attributes["right2"].Value[0];
+                desc.LeftBracket2 = brackets.Attributes["left2"].Value[0];
+                desc.RightBracket2 = brackets.Attributes["right2"].Value[0];
             }
         }
 
@@ -99,15 +98,15 @@ public class SyntaxHighlighter : IDisposable {
         foreach (XmlNode style in doc.SelectNodes("doc/style")) {
             var s = ParseStyle(style);
             styleByName[style.Attributes["name"].Value] = s;
-            desc.styles.Add(s);
+            desc.Styles.Add(s);
         }
 
         foreach (XmlNode rule in doc.SelectNodes("doc/rule")) {
-            desc.rules.Add(ParseRule(rule, styleByName));
+            desc.Rules.Add(ParseRule(rule, styleByName));
         }
 
         foreach (XmlNode folding in doc.SelectNodes("doc/folding")) {
-            desc.foldings.Add(ParseFolding(folding));
+            desc.Foldings.Add(ParseFolding(folding));
         }
 
         return desc;
@@ -116,12 +115,12 @@ public class SyntaxHighlighter : IDisposable {
     private static FoldingDesc ParseFolding(XmlNode foldingNode) {
         FoldingDesc folding = new();
         //regex
-        folding.startMarkerRegex = foldingNode.Attributes["start"].Value;
-        folding.finishMarkerRegex = foldingNode.Attributes["finish"].Value;
+        folding.StartMarkerRegex = foldingNode.Attributes["start"].Value;
+        folding.FinishMarkerRegex = foldingNode.Attributes["finish"].Value;
         //options
         var optionsA = foldingNode.Attributes["options"];
         if (optionsA != null) {
-            folding.options = (RegexOptions) Enum.Parse(typeof(RegexOptions), optionsA.Value);
+            folding.Options = (RegexOptions) Enum.Parse(typeof(RegexOptions), optionsA.Value);
         }
 
         return folding;
@@ -129,7 +128,7 @@ public class SyntaxHighlighter : IDisposable {
 
     private static RuleDesc ParseRule(XmlNode ruleNode, Dictionary<string, Style> styles) {
         RuleDesc rule = new();
-        rule.pattern = ruleNode.InnerText;
+        rule.Pattern = ruleNode.InnerText;
         var styleA = ruleNode.Attributes["style"];
         var optionsA = ruleNode.Attributes["options"];
         //Style
@@ -141,10 +140,10 @@ public class SyntaxHighlighter : IDisposable {
             throw new Exception("Style '" + styleA.Value + "' is not found.");
         }
 
-        rule.style = styles[styleA.Value];
+        rule.Style = styles[styleA.Value];
         //options
         if (optionsA != null) {
-            rule.options = (RegexOptions) Enum.Parse(typeof(RegexOptions), optionsA.Value);
+            rule.Options = (RegexOptions) Enum.Parse(typeof(RegexOptions), optionsA.Value);
         }
 
         return rule;
@@ -190,33 +189,33 @@ public class SyntaxHighlighter : IDisposable {
 
     public void HighlightSyntax(SyntaxDescriptor desc, Range range) {
         //set style order
-        range.tb.ClearStylesBuffer();
-        for (int i = 0; i < desc.styles.Count; i++) {
-            range.tb.Styles[i] = desc.styles[i];
+        range.Tb.ClearStylesBuffer();
+        for (int i = 0; i < desc.Styles.Count; i++) {
+            range.Tb.Styles[i] = desc.Styles[i];
         }
 
         //brackets
-        range.tb.LeftBracket = desc.leftBracket;
-        range.tb.RightBracket = desc.rightBracket;
-        range.tb.LeftBracket2 = desc.leftBracket2;
-        range.tb.RightBracket2 = desc.rightBracket2;
+        range.Tb.LeftBracket = desc.LeftBracket;
+        range.Tb.RightBracket = desc.RightBracket;
+        range.Tb.LeftBracket2 = desc.LeftBracket2;
+        range.Tb.RightBracket2 = desc.RightBracket2;
         //clear styles of range
-        range.ClearStyle(desc.styles.ToArray());
+        range.ClearStyle(desc.Styles.ToArray());
         //highlight syntax
-        foreach (var rule in desc.rules) {
-            range.SetStyle(rule.style, rule.Regex);
+        foreach (var rule in desc.Rules) {
+            range.SetStyle(rule.Style, rule.Regex);
         }
 
         //clear folding
         range.ClearFoldingMarkers();
         //folding markers
-        foreach (var folding in desc.foldings) {
-            range.SetFoldingMarkers(folding.startMarkerRegex, folding.finishMarkerRegex, folding.options);
+        foreach (var folding in desc.Foldings) {
+            range.SetFoldingMarkers(folding.StartMarkerRegex, folding.FinishMarkerRegex, folding.Options);
         }
     }
 
     public virtual void TASSyntaxHighlight(Range range) {
-        RichText tb = range.tb;
+        RichText tb = range.Tb;
         tb.CommentPrefix = "#";
         tb.LeftBracket = '\x0';
         tb.RightBracket = '\x0';
@@ -235,8 +234,8 @@ public class SyntaxHighlighter : IDisposable {
             FrameStyle
         );
 
-        int start = range.Start.iLine;
-        int end = range.End.iLine;
+        int start = range.Start.Line;
+        int end = range.End.Line;
         if (start > end) {
             int temp = start;
             start = end;
@@ -254,7 +253,7 @@ public class SyntaxHighlighter : IDisposable {
                 int charStart = 4;
                 while (charStart < charEnd) {
                     sub = new Range(tb, charStart, start, charStart + 1, start);
-                    char c = tb[start][charStart].c;
+                    char c = tb[start][charStart].Char_;
                     if (char.IsDigit(c) || c == '.') {
                         sub.SetStyle(AngleStyle);
                     } else if (c == ',') {
@@ -272,7 +271,7 @@ public class SyntaxHighlighter : IDisposable {
 
                 if (tb[start].Count >= index + 4) {
                     int charStart = index + 3;
-                    if (tb[start][charStart].c.ToString().ToLower() == "s") {
+                    if (tb[start][charStart].Char_.ToString().ToLower() == "s") {
                         sub = new Range(tb, charStart, start, charStart + 1, start);
                         sub.SetStyle(SaveStateStyle);
                         charStart++;

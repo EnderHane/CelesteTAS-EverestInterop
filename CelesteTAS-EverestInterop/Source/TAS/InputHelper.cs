@@ -3,9 +3,9 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using StudioCommunication;
 using TAS.Input;
 using TAS.Input.Commands;
+using TasCommunication;
 
 namespace TAS;
 

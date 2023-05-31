@@ -23,7 +23,7 @@ public class InputController {
         AttributeUtils.CollectMethods<ParseFileEndAttribute>();
     }
 
-    private static readonly Dictionary<string, FileSystemWatcher> watchers = new();
+    private static readonly Dictionary<string, FileSystemWatcher> Watchers = new();
     private static string studioTasFilePath = string.Empty;
 
     public readonly SortedDictionary<int, List<Command>> Commands = new();
@@ -31,7 +31,7 @@ public class InputController {
     public readonly SortedDictionary<int, FastForward> FastForwardComments = new();
     public readonly Dictionary<string, List<Comment>> Comments = new();
     public readonly List<InputFrame> Inputs = new();
-    private readonly Dictionary<string, byte> UsedFiles = new();
+    private readonly Dictionary<string, byte> usedFiles = new();
 
     public bool NeedsReload = true;
     public FastForward NextCommentFastForward;
@@ -119,7 +119,7 @@ public class InputController {
         }
 
         string lastChecksum = Checksum;
-        bool firstRun = UsedFiles.IsEmpty();
+        bool firstRun = usedFiles.IsEmpty();
         if (NeedsReload) {
             Clear();
             int tryCount = 5;
@@ -164,14 +164,14 @@ public class InputController {
         FastForwards.Clear();
         FastForwardComments.Clear();
         Comments.Clear();
-        UsedFiles.Clear();
+        usedFiles.Clear();
         NeedsReload = true;
         StopWatchers();
         AttributeUtils.Invoke<ClearInputsAttribute>();
     }
 
     private void StartWatchers() {
-        foreach (KeyValuePair<string, byte> pair in UsedFiles) {
+        foreach (KeyValuePair<string, byte> pair in usedFiles) {
             string filePath = Path.GetFullPath(pair.Key);
             // watch tas file
             CreateWatcher(filePath);
@@ -184,7 +184,7 @@ public class InputController {
         }
 
         void CreateWatcher(string filePath) {
-            if (watchers.ContainsKey(filePath)) {
+            if (Watchers.ContainsKey(filePath)) {
                 return;
             }
 
@@ -217,7 +217,7 @@ public class InputController {
                 return;
             }
 
-            watchers[filePath] = watcher;
+            Watchers[filePath] = watcher;
         }
 
         void OnTasFileChanged(object sender, FileSystemEventArgs e) {
@@ -226,11 +226,11 @@ public class InputController {
     }
 
     private void StopWatchers() {
-        foreach (FileSystemWatcher fileSystemWatcher in watchers.Values) {
+        foreach (FileSystemWatcher fileSystemWatcher in Watchers.Values) {
             fileSystemWatcher.Dispose();
         }
 
-        watchers.Clear();
+        Watchers.Clear();
     }
 
     private void ParseFileEnd() {
@@ -286,7 +286,7 @@ public class InputController {
                 return false;
             }
 
-            UsedFiles[filePath] = default;
+            usedFiles[filePath] = default;
             IEnumerable<string> lines = File.ReadLines(filePath).Take(endLine);
             ReadLines(lines, filePath, startLine, studioLine, repeatIndex, repeatCount);
             return true;
@@ -371,7 +371,7 @@ public class InputController {
         }
 
         clone.NeedsReload = NeedsReload;
-        clone.UsedFiles.AddRange((IDictionary) UsedFiles);
+        clone.usedFiles.AddRange((IDictionary) usedFiles);
         clone.CurrentFrameInTas = CurrentFrameInTas;
         clone.CurrentFrameInInput = CurrentFrameInInput;
         clone.CurrentFrameInInputForHud = CurrentFrameInInputForHud;
@@ -402,8 +402,8 @@ public class InputController {
             Commands[frame] = new List<Command>(controller.Commands[frame]);
         }
 
-        UsedFiles.Clear();
-        UsedFiles.AddRange((IDictionary) controller.UsedFiles);
+        usedFiles.Clear();
+        usedFiles.AddRange((IDictionary) controller.usedFiles);
 
         NeedsReload = controller.NeedsReload;
         CurrentFrameInTas = controller.CurrentFrameInTas;

@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
 namespace CelesteStudio.RichText;
 
-public class Line : IList<Char> {
-    protected List<Char> chars;
+public class Line : IList<StudioChar> {
+    protected List<StudioChar> Chars;
 
     internal Line(int uid) {
         UniqueId = uid;
-        chars = new List<Char>();
+        Chars = new List<StudioChar>();
     }
 
     public string FoldingStartMarker { get; set; }
@@ -30,8 +30,8 @@ public class Line : IList<Char> {
     public virtual string Text {
         get {
             StringBuilder sb = new(Count);
-            foreach (Char c in this) {
-                sb.Append(c.c);
+            foreach (StudioChar c in this) {
+                sb.Append(c.Char_);
             }
 
             return sb.ToString();
@@ -42,7 +42,7 @@ public class Line : IList<Char> {
         get {
             int spacesCount = 0;
             for (int i = 0; i < Count; i++) {
-                if (this[i].c == ' ') {
+                if (this[i].Char_ == ' ') {
                     spacesCount++;
                 } else {
                     break;
@@ -53,53 +53,53 @@ public class Line : IList<Char> {
         }
     }
 
-    public int IndexOf(Char item) {
-        return chars.IndexOf(item);
+    public int IndexOf(StudioChar item) {
+        return Chars.IndexOf(item);
     }
 
-    public void Insert(int index, Char item) {
-        chars.Insert(index, item);
+    public void Insert(int index, StudioChar item) {
+        Chars.Insert(index, item);
     }
 
     public void RemoveAt(int index) {
-        chars.RemoveAt(index);
+        Chars.RemoveAt(index);
     }
 
-    public Char this[int index] {
-        get => chars[index];
-        set => chars[index] = value;
+    public StudioChar this[int index] {
+        get => Chars[index];
+        set => Chars[index] = value;
     }
 
-    public void Add(Char item) {
-        chars.Add(item);
+    public void Add(StudioChar item) {
+        Chars.Add(item);
     }
 
     public void Clear() {
-        chars.Clear();
+        Chars.Clear();
     }
 
-    public bool Contains(Char item) {
-        return chars.Contains(item);
+    public bool Contains(StudioChar item) {
+        return Chars.Contains(item);
     }
 
-    public void CopyTo(Char[] array, int arrayIndex) {
-        chars.CopyTo(array, arrayIndex);
+    public void CopyTo(StudioChar[] array, int arrayIndex) {
+        Chars.CopyTo(array, arrayIndex);
     }
 
-    public int Count => chars.Count;
+    public int Count => Chars.Count;
 
     public bool IsReadOnly => false;
 
-    public bool Remove(Char item) {
-        return chars.Remove(item);
+    public bool Remove(StudioChar item) {
+        return Chars.Remove(item);
     }
 
-    public IEnumerator<Char> GetEnumerator() {
-        return chars.GetEnumerator();
+    public IEnumerator<StudioChar> GetEnumerator() {
+        return Chars.GetEnumerator();
     }
 
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-        return chars.GetEnumerator() as System.Collections.IEnumerator;
+        return Chars.GetEnumerator() as System.Collections.IEnumerator;
     }
 
     /// <summary>
@@ -109,8 +109,8 @@ public class Line : IList<Char> {
         FoldingStartMarker = null;
         FoldingEndMarker = null;
         for (int i = 0; i < Count; i++) {
-            Char c = this[i];
-            c.style &= ~styleIndex;
+            StudioChar c = this[i];
+            c.Style &= ~styleIndex;
             this[i] = c;
         }
     }
@@ -125,15 +125,15 @@ public class Line : IList<Char> {
             return;
         }
 
-        chars.RemoveRange(index, Math.Min(Count - index, count));
+        Chars.RemoveRange(index, Math.Min(Count - index, count));
     }
 
     public virtual void TrimExcess() {
-        chars.TrimExcess();
+        Chars.TrimExcess();
     }
 
-    public virtual void AddRange(IEnumerable<Char> collection) {
-        chars.AddRange(collection);
+    public virtual void AddRange(IEnumerable<StudioChar> collection) {
+        Chars.AddRange(collection);
     }
 }
 
@@ -141,13 +141,13 @@ public struct LineInfo {
     List<int> cutOffPositions;
 
     //Y coordinate of line on screen
-    internal int startY;
+    internal int StartY;
     public VisibleState VisibleState;
 
     public LineInfo(int startY) {
         cutOffPositions = null;
         VisibleState = VisibleState.Visible;
-        this.startY = startY;
+        this.StartY = startY;
     }
 
     public List<int> CutOffPositions {
@@ -209,13 +209,13 @@ public struct LineInfo {
         CutOffPositions.Clear();
 
         for (int i = 0; i < line.Count; i++) {
-            char c = line[i].c;
+            char c = line[i].Char_;
             if (charWrap) {
                 //char wrapping
                 cutOff = Math.Min(i + 1, line.Count - 1);
             } else {
                 //word wrapping
-                if (allowIME && isCJKLetter(c)) //in CJK languages cutoff can be in any letter
+                if (allowIME && IsCJKLetter(c)) //in CJK languages cutoff can be in any letter
                 {
                     cutOff = i;
                 } else if (!char.IsLetterOrDigit(c) && c != '_') {
@@ -236,7 +236,7 @@ public struct LineInfo {
         }
     }
 
-    private bool isCJKLetter(char c) {
+    private bool IsCJKLetter(char c) {
         int code = Convert.ToInt32(c);
         return
             (code is >= 0x3300 and <= 0x33FF) ||

@@ -16,17 +16,17 @@ namespace TAS.EverestInterop;
 
 public static class Core {
     // The fields we want to access from Celeste-Addons
-    private static bool SkipBaseUpdate;
-    private static bool InUpdate;
+    private static bool skipBaseUpdate;
+    private static bool inUpdate;
 
-    private static Detour HGameUpdate;
-    private static DGameUpdate OrigGameUpdate;
+    private static Detour hGameUpdate;
+    private static DGameUpdate origGameUpdate;
 
-    private static Action PreviousGameLoop;
+    private static Action previousGameLoop;
 
     // https://github.com/EverestAPI/Everest/commit/b2a6f8e7c41ddafac4e6fde0e43a09ce1ac4f17e
     private static readonly Lazy<bool> CantPauseWhileSaving = new(() => Everest.Version < new Version(1, 2865));
-    private static readonly bool updateGrab = typeof(GameInput).GetMethod("UpdateGrab") != null;
+    private static readonly bool UpdateGrabMethodExists = typeof(GameInput).GetMethod("UpdateGrab") != null;
 
     [Load]
     private static void Load() {
@@ -34,7 +34,7 @@ public static class Core {
         // We need to use Detour for two reasons:
         // 1. Expose the trampoline to be used for the base.Update call in MInput_Update
         // 2. XNA Framework methods would require a separate MMHOOK .dll
-        OrigGameUpdate = (HGameUpdate = new Detour(
+        origGameUpdate = (hGameUpdate = new Detour(
             typeof(Game).GetMethodInfo("Update"),
             typeof(Core).GetMethodInfo("Game_Update")
         )).GenerateTrampoline<DGameUpdate>();
@@ -53,7 +53,7 @@ public static class Core {
             // Forced: Allow "rendering" entities without actually rendering them.
             On.Monocle.Entity.Render += Entity_Render;
 
-            if (updateGrab) {
+            if (UpdateGrabMethodExists) {
                 HookHelper.SkipMethod(typeof(Core), nameof(IgnoreOrigUpdateGrab), typeof(GameInput).GetMethod("UpdateGrab"));
             }
         }
@@ -65,13 +65,13 @@ public static class Core {
         On.Monocle.MInput.Update -= MInput_Update;
         IL.Monocle.MInput.Update -= MInputOnUpdate;
         On.Celeste.RunThread.Start -= RunThread_Start;
-        HGameUpdate.Dispose();
+        hGameUpdate.Dispose();
         On.Monocle.Entity.Render -= Entity_Render;
     }
 
     private static void Engine_Update(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gameTime) {
-        SkipBaseUpdate = false;
-        InUpdate = false;
+        Core.skipBaseUpdate = false;
+        inUpdate = false;
 
         if (!TasSettings.Enabled || !Manager.Running) {
             orig(self, gameTime);
@@ -88,8 +88,8 @@ public static class Core {
         int loops = (int) Manager.FrameLoops;
         bool skipBaseUpdate = loops >= 2;
 
-        SkipBaseUpdate = skipBaseUpdate;
-        InUpdate = true;
+        Core.skipBaseUpdate = skipBaseUpdate;
+        inUpdate = true;
 
         for (int i = 0; i < loops; i++) {
             // Anything happening early on runs in the MInput.Update hook.
@@ -105,11 +105,11 @@ public static class Core {
             }
         }
 
-        SkipBaseUpdate = false;
-        InUpdate = false;
+        Core.skipBaseUpdate = false;
+        inUpdate = false;
 
         if (skipBaseUpdate) {
-            OrigGameUpdate(self, gameTime);
+            origGameUpdate(self, gameTime);
         }
     }
 
@@ -128,7 +128,7 @@ public static class Core {
         // Hacky, but this works just good enough.
         // The original code executes base.Update(); return; instead.
         if (Manager.SkipFrame && !Manager.IsLoading()) {
-            PreviousGameLoop = Engine.OverloadGameLoop;
+            previousGameLoop = Engine.OverloadGameLoop;
             Engine.OverloadGameLoop = FrameStepGameLoop;
         }
     }
@@ -160,15 +160,15 @@ public static class Core {
 
     // ReSharper disable once UnusedMember.Local
     private static void Game_Update(Game self, GameTime gameTime) {
-        if (TasSettings.Enabled && SkipBaseUpdate) {
+        if (TasSettings.Enabled && skipBaseUpdate) {
             return;
         }
 
-        OrigGameUpdate(self, gameTime);
+        origGameUpdate(self, gameTime);
     }
 
     private static void FrameStepGameLoop() {
-        Engine.OverloadGameLoop = PreviousGameLoop;
+        Engine.OverloadGameLoop = previousGameLoop;
     }
 
     private static void RunThread_Start(On.Celeste.RunThread.orig_Start orig, Action method, string name, bool highPriority) {
@@ -181,7 +181,7 @@ public static class Core {
     }
 
     private static void Entity_Render(On.Monocle.Entity.orig_Render orig, Entity self) {
-        if (InUpdate) {
+        if (inUpdate) {
             return;
         }
 
@@ -189,7 +189,7 @@ public static class Core {
     }
 
     private static void TryUpdateGrab() {
-        if (!updateGrab || Manager.SkipFrame) {
+        if (!UpdateGrabMethodExists || Manager.SkipFrame) {
             return;
         }
 

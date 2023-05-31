@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace StudioCommunication;
+namespace TasCommunication;
 
 [Flags]
 public enum Actions {

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using CelesteStudio.RichText;
-using StudioCommunication;
-using Char = CelesteStudio.RichText.Char;
+using TasCommunication;
+using Char = CelesteStudio.RichText.StudioChar;
 
 namespace CelesteStudio.Communication;
 

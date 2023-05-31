@@ -1,4 +1,4 @@
-namespace StudioCommunication;
+namespace TasCommunication;
 
 // ReSharper disable once StructCanBeMadeReadOnly
 public readonly record struct TasInfo {

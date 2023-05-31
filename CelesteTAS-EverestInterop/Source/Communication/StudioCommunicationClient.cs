@@ -16,6 +16,7 @@ using TAS.Input;
 using TAS.Input.Commands;
 using TAS.Module;
 using TAS.Utils;
+using TasCommunication;
 
 namespace TAS.Communication;
 

@@ -1,35 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace CelesteStudio.RichText;
 
 public class SyntaxDescriptor : IDisposable {
-    public readonly List<FoldingDesc> foldings = new();
-    public readonly List<RuleDesc> rules = new();
-    public readonly List<Style> styles = new();
-    public char leftBracket = '(';
-    public char leftBracket2 = '\x0';
-    public char rightBracket = ')';
-    public char rightBracket2 = '\x0';
+    public readonly List<FoldingDesc> Foldings = new();
+    public readonly List<RuleDesc> Rules = new();
+    public readonly List<Style> Styles = new();
+    public char LeftBracket = '(';
+    public char LeftBracket2 = '\x0';
+    public char RightBracket = ')';
+    public char RightBracket2 = '\x0';
 
     public void Dispose() {
-        foreach (var style in styles) {
+        foreach (var style in Styles) {
             style.Dispose();
         }
     }
 }
 
 public class RuleDesc {
-    public RegexOptions options = RegexOptions.None;
-    public string pattern;
+    public RegexOptions Options = RegexOptions.None;
+    public string Pattern;
     Regex regex;
-    public Style style;
+    public Style Style;
 
     public Regex Regex {
         get {
             if (regex == null) {
-                regex = new Regex(pattern, RegexOptions.Compiled | options);
+                regex = new Regex(Pattern, RegexOptions.Compiled | Options);
             }
 
             return regex;
@@ -38,7 +38,7 @@ public class RuleDesc {
 }
 
 public class FoldingDesc {
-    public string finishMarkerRegex;
-    public RegexOptions options = RegexOptions.None;
-    public string startMarkerRegex;
+    public string FinishMarkerRegex;
+    public RegexOptions Options = RegexOptions.None;
+    public string StartMarkerRegex;
 }

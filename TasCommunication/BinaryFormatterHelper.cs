@@ -1,7 +1,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace StudioCommunication;
+namespace TasCommunication;
 
 public static class BinaryFormatterHelper {
     private static readonly BinaryFormatter BinaryFormatter = new();
@@ -9,7 +9,7 @@ public static class BinaryFormatterHelper {
     //ty stackoverflow
     public static T FromByteArray<T>(byte[] data, int offset = 0, int length = 0) {
         if (data == null) {
-            return default(T);
+            return default;
         }
 
         if (length == 0) {
