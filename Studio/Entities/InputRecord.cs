@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using StudioCommunication;
 using TasCommunication;
 
 namespace CelesteStudio.Entities;
@@ -165,7 +164,7 @@ public class InputRecord {
 
     private void ClampAngle(string line, ref int start) {
         string angleStr = line.Substring(start).Trim();
-        if (FloatRegex.Match(angleStr) is {Success: true} match && float.TryParse(match.Groups[1].Value, out float angle)) {
+        if (FloatRegex.Match(angleStr) is { Success: true } match && float.TryParse(match.Groups[1].Value, out float angle)) {
             AngleStr = DuplicateZeroRegex.Replace(match.Groups[1].Value, "$1");
             start += match.Groups[0].Value.Length;
             if (angle < 0f) {
@@ -180,7 +179,7 @@ public class InputRecord {
 
     private void ClampUpperLimit(string line, ref int start) {
         string upperLimitStr = line.Substring(start).Trim();
-        if (FloatRegex.Match(upperLimitStr) is {Success: true} match && float.TryParse(match.Groups[1].Value, out float upperLimit)) {
+        if (FloatRegex.Match(upperLimitStr) is { Success: true } match && float.TryParse(match.Groups[1].Value, out float upperLimit)) {
             UpperLimitStr = DuplicateZeroRegex.Replace(match.Groups[1].Value, "$1");
             start += match.Groups[0].Value.Length;
             if (upperLimit is > 0.2f and < 0.26f) {

@@ -38,8 +38,8 @@ public static class ExportRoomInfo {
         Session session = Engine.Scene.GetSession();
         string roomName = session?.Level;
 
-        if (Engine.Scene is Level {Completed: true} level) {
-            if (RoomInfos.LastOrDefault() is {RoomName: { }} lastRoomInfo) {
+        if (Engine.Scene is Level { Completed: true } level) {
+            if (RoomInfos.LastOrDefault() is { RoomName: { } } lastRoomInfo) {
                 lastRoomInfo.LeaveRoomChapterTime ??= level.Session.Time;
                 if (level.TimerStopped) {
                     lastRoomInfo.LeaveRoomFileTime ??= SaveData.Instance?.Time;
@@ -75,14 +75,14 @@ public static class ExportRoomInfo {
 
     // ReSharper disable once UnusedMember.Local
     // "StartExportRoomInfo [Path = dump_room_info.txt]"
-    [TasCommand("StartExportRoomInfo", AliasNames = new[] {"ExportRoomInfo"}, CalcChecksum = false)]
+    [TasCommand("StartExportRoomInfo", AliasNames = new[] { "ExportRoomInfo" }, CalcChecksum = false)]
     private static void StartExportCommand(string[] args) {
         string path = args.Length > 0 ? args[0] : "dump_room_info.txt";
         BeginExport(path);
     }
 
     // ReSharper disable once UnusedMember.Local
-    [TasCommand("FinishExportRoomInfo", AliasNames = new[] {"EndExportRoomInfo"}, CalcChecksum = false)]
+    [TasCommand("FinishExportRoomInfo", AliasNames = new[] { "EndExportRoomInfo" }, CalcChecksum = false)]
     private static void FinishExportCommand() {
         EndExport();
     }
@@ -113,11 +113,11 @@ public static class ExportRoomInfo {
             return;
         }
 
-        if (RoomInfos.FirstOrDefault() is {AreaKey: null}) {
+        if (RoomInfos.FirstOrDefault() is { AreaKey: null }) {
             RoomInfos.RemoveAt(0);
         }
 
-        if (RoomInfos.LastOrDefault() is {AreaKey: null}) {
+        if (RoomInfos.LastOrDefault() is { AreaKey: null }) {
             RoomInfos.RemoveAt(RoomInfos.Count - 1);
         }
 

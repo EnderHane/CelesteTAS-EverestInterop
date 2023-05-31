@@ -94,14 +94,14 @@ public static class FastForwardBoost {
         Tracker.StoredEntityTypes.Add(type);
 
         if (!Tracker.TrackedEntityTypes.ContainsKey(type)) {
-            Tracker.TrackedEntityTypes[type] = new List<Type> {type};
+            Tracker.TrackedEntityTypes[type] = new List<Type> { type };
         } else if (!Tracker.TrackedEntityTypes[type].Contains(type)) {
             Tracker.TrackedEntityTypes[type].Add(type);
         }
 
         foreach (Type subType in subTypes) {
             if (!Tracker.TrackedEntityTypes.ContainsKey(subType)) {
-                Tracker.TrackedEntityTypes[subType] = new List<Type> {type};
+                Tracker.TrackedEntityTypes[subType] = new List<Type> { type };
             } else if (!Tracker.TrackedEntityTypes[subType].Contains(type)) {
                 Tracker.TrackedEntityTypes[subType].Add(type);
             }

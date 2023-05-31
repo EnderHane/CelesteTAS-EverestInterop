@@ -50,7 +50,7 @@ public class FileTextSource : TextSource, IDisposable {
             if (LineList[i] != null) {
                 return LineList[i];
             } else {
-                for (int j = 0;; j++) {
+                for (int j = 0; ; j++) {
                     try {
                         LoadLineFromSourceFile(i);
                         CloseFile();

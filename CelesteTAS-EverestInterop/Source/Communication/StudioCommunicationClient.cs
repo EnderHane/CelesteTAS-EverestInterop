@@ -436,7 +436,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
 
     private void SendModVersion() {
         string minStudioVersion = StudioMetadata.GetMinStudioVersion();
-        byte[] data = BinaryFormatterHelper.ToByteArray(new[] {CelesteTasModule.Instance.Metadata.VersionString, minStudioVersion});
+        byte[] data = BinaryFormatterHelper.ToByteArray(new[] { CelesteTasModule.Instance.Metadata.VersionString, minStudioVersion });
         WriteMessageGuaranteed(new Message(MessageID.VersionInfo, data));
     }
 

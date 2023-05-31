@@ -132,23 +132,19 @@ public static class SimplifiedGraphicsFeature {
             }
         }
 
-        if (ModUtils.GetType("MaxHelpingHand", "Celeste.Mod.MaxHelpingHand.Entities.RainbowSpinnerColorController")?.GetMethodInfo("getModHue") is
-            { } getModHue) {
+        if (ModUtils.GetType("MaxHelpingHand", "Celeste.Mod.MaxHelpingHand.Entities.RainbowSpinnerColorController")?.GetMethodInfo("getModHue") is { } getModHue) {
             getModHue.IlHook(ModRainbowSpinnerColor);
         }
 
-        if (ModUtils.GetType("SpringCollab2020", "Celeste.Mod.SpringCollab2020.Entities.RainbowSpinnerColorController")?.GetMethodInfo("getModHue") is
-            { } getModHue2) {
+        if (ModUtils.GetType("SpringCollab2020", "Celeste.Mod.SpringCollab2020.Entities.RainbowSpinnerColorController")?.GetMethodInfo("getModHue") is { } getModHue2) {
             getModHue2.IlHook(ModRainbowSpinnerColor);
         }
 
-        if (ModUtils.GetType("VivHelper", "VivHelper.Entities.CustomSpinner")?.GetMethodInfo("CreateSprites") is
-            { } customSpinnerCreateSprites) {
+        if (ModUtils.GetType("VivHelper", "VivHelper.Entities.CustomSpinner")?.GetMethodInfo("CreateSprites") is { } customSpinnerCreateSprites) {
             customSpinnerCreateSprites.IlHook(ModVivCustomSpinnerColor);
         }
 
-        if (ModUtils.GetType("PandorasBox", "Celeste.Mod.PandorasBox.TileGlitcher")?.GetMethodInfo("tileGlitcher") is
-            { } tileGlitcher) {
+        if (ModUtils.GetType("PandorasBox", "Celeste.Mod.PandorasBox.TileGlitcher")?.GetMethodInfo("tileGlitcher") is { } tileGlitcher) {
             tileGlitcher.GetStateMachineTarget().IlHook(ModTileGlitcher);
         }
 
@@ -170,7 +166,7 @@ public static class SimplifiedGraphicsFeature {
 
         HookHelper.SkipMethod(t, nameof(IsSimplifiedParticle),
             typeof(ParticleSystem).GetMethod("Render", new Type[] { }),
-            typeof(ParticleSystem).GetMethod("Render", new[] {typeof(float)})
+            typeof(ParticleSystem).GetMethod("Render", new[] { typeof(float) })
         );
         HookHelper.SkipMethod(t, nameof(IsSimplifiedDistort), "Apply", typeof(Glitch));
         HookHelper.SkipMethod(t, nameof(IsSimplifiedMiniTextbox), "Render", typeof(MiniTextbox));
@@ -285,7 +281,7 @@ public static class SimplifiedGraphicsFeature {
     }
 
     public static void ReplaceSolidTilesStyle() {
-        if (Engine.Scene is not Level {SolidTiles: { } solidTiles} level) {
+        if (Engine.Scene is not Level { SolidTiles: { } solidTiles } level) {
             return;
         }
 
@@ -520,7 +516,7 @@ public static class SimplifiedGraphicsFeature {
         if (TasSettings.SimplifiedGraphics && TasSettings.SimplifiedDustSpriteEdge) {
             Color color = Color.Transparent;
             return new DustStyles.DustStyle {
-                EdgeColors = new[] {color.ToVector3(), color.ToVector3(), color.ToVector3()},
+                EdgeColors = new[] { color.ToVector3(), color.ToVector3(), color.ToVector3() },
                 EyeColor = color,
                 EyeTextures = "danger/dustcreature/eyes"
             };

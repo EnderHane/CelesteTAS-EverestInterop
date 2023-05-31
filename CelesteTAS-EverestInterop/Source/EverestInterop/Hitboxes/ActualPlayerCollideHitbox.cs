@@ -46,7 +46,7 @@ public static partial class ActualEntityCollideHitbox {
         if (Manager.UltraFastForwarding
             || !TasSettings.ShowHitboxes
             || TasSettings.ShowActualCollideHitboxes == ActualCollideHitboxType.Off
-            || player.Scene is Level {Transitioning: true}
+            || player.Scene is Level { Transitioning: true }
             || player.LoadActualCollidePosition() is not { } actualCollidePosition
             || actualCollidePosition == player.Position
            ) {

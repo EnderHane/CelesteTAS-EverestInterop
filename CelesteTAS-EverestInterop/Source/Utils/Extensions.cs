@@ -56,7 +56,7 @@ internal static class FastReflection {
             return getDelegate;
         }
 
-        var method = new DynamicMethod($"{field} Getter", returnType, new[] {typeof(TInstance)}, field.DeclaringType, true);
+        var method = new DynamicMethod($"{field} Getter", returnType, new[] { typeof(TInstance) }, field.DeclaringType, true);
         var il = method.GetILGenerator();
 
         if (field.IsStatic) {
@@ -96,7 +96,7 @@ internal static class ReflectionExtensions {
     private const BindingFlags InstanceAnyVisibilityDeclaredOnly =
         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-    private static readonly object[] NullArgs = {null};
+    private static readonly object[] NullArgs = { null };
 
     // ReSharper disable UnusedMember.Local
     private record struct MemberKey(Type Type, string Name) {
@@ -287,13 +287,13 @@ internal static class ReflectionExtensions {
     }
 
     public static void SetPropertyValue(this object obj, string name, object value) {
-        if (obj.GetType().GetPropertyInfo(name) is {CanWrite: true} propertyInfo) {
+        if (obj.GetType().GetPropertyInfo(name) is { CanWrite: true } propertyInfo) {
             propertyInfo.SetValue(obj, value, null);
         }
     }
 
     public static void SetPropertyValue(this Type type, string name, object value) {
-        if (type.GetPropertyInfo(name) is {CanWrite: true} propertyInfo) {
+        if (type.GetPropertyInfo(name) is { CanWrite: true } propertyInfo) {
             propertyInfo.SetValue(null, value, null);
         }
     }

@@ -11,7 +11,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using CelesteStudio.Entities;
-using StudioCommunication;
 using TasCommunication;
 
 namespace CelesteStudio.RichText;
@@ -124,7 +123,7 @@ public class RichText : UserControl {
             lines.InsertLine(0, lines.CreateLine());
         }
 
-        selection = new Range(this) {Start = new Place(0, 0)};
+        selection = new Range(this) { Start = new Place(0, 0) };
 
         Cursor = Cursors.IBeam;
         BackColor = Color.White;
@@ -948,7 +947,7 @@ public class RichText : UserControl {
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override bool AutoScroll {
         get => base.AutoScroll;
-        set { ; }
+        set {; }
     }
 
     /// <summary>
@@ -1401,7 +1400,7 @@ public class RichText : UserControl {
         needRecalc = true;
     }
 
-    
+
     private void Ts_TextChanging(object sender, TextChangingEventArgs e) {
         if (TextSource.CurrentTB == this) {
             string text = e.InsertingText;
@@ -1410,7 +1409,7 @@ public class RichText : UserControl {
         }
     }
 
-    
+
     private void Ts_RecalcNeeded(object sender, TextSource.TextChangedEventArgs e) {
         if (e.FromLine == e.ToLine && !WordWrap && lines.Count > MinLinesForAccuracy) {
             RecalcScrollByOneLine(e.FromLine);
@@ -1426,7 +1425,7 @@ public class RichText : UserControl {
         needRecalc = true;
     }
 
-    
+
     private void Ts_TextChanged(object sender, TextSource.TextChangedEventArgs e) {
         if (e.FromLine == e.ToLine && !WordWrap) {
             RecalcScrollByOneLine(e.FromLine);
@@ -1440,13 +1439,13 @@ public class RichText : UserControl {
         }
     }
 
-    
+
     private void Ts_LineRemoved(object sender, LineRemovedEventArgs e) {
         LineInfos.RemoveRange(e.Index, e.Count);
         OnLineRemoved(e.Index, e.Count, e.RemovedLineUniqueIds);
     }
 
-    
+
     private void Ts_LineInserted(object sender, LineInsertedEventArgs e) {
         VisibleState newState = VisibleState.Visible;
         if (e.Index >= 0 && e.Index < LineInfos.Count && LineInfos[e.Index].VisibleState == VisibleState.Hidden) {
@@ -1455,7 +1454,7 @@ public class RichText : UserControl {
 
         var temp = new List<LineInfo>(e.Count);
         for (int i = 0; i < e.Count; i++) {
-            temp.Add(new LineInfo(-1) {VisibleState = newState});
+            temp.Add(new LineInfo(-1) { VisibleState = newState });
         }
 
         LineInfos.InsertRange(e.Index, temp);
@@ -1463,7 +1462,7 @@ public class RichText : UserControl {
         OnLineInserted(e.Index, e.Count);
     }
 
-    
+
     private void Ts_LineNeeded(object sender, LineNeededEventArgs e) {
         LineNeeded?.Invoke(sender, e);
     }
@@ -2588,7 +2587,7 @@ public class RichText : UserControl {
                         if (!ReadOnly) {
                             if (Selection.Start.Line >= 0 && Selection.Start.Line < LinesCount) {
                                 int iLine = Selection.Start.Line;
-                                RemoveLines(new List<int>() {iLine});
+                                RemoveLines(new List<int>() { iLine });
                                 Selection.Start = new Place(0, Math.Max(0, Math.Min(iLine, LinesCount - 1)));
                             }
                         }
@@ -3503,7 +3502,7 @@ public class RichText : UserControl {
 
     protected virtual void DrawFoldingLines(PaintEventArgs e, int startLine, int endLine) {
         e.Graphics.SmoothingMode = SmoothingMode.None;
-        using (var pen = new Pen(Color.FromArgb(200, ServiceLinesColor)) {DashStyle = DashStyle.Dot}) {
+        using (var pen = new Pen(Color.FromArgb(200, ServiceLinesColor)) { DashStyle = DashStyle.Dot }) {
             foreach (var iLine in FoldingPairs) {
                 if (iLine.Key < endLine && iLine.Value > startLine) {
                     var line = lines[iLine.Key];
@@ -3603,7 +3602,7 @@ public class RichText : UserControl {
                     Style style = Styles[i];
                     bool isTextStyle = style is TextStyle;
                     if (!hasTextStyle || !isTextStyle || AllowSeveralTextStyleDrawing)
-                        //cancelling secondary rendering by TextStyle
+                    //cancelling secondary rendering by TextStyle
                     {
                         try {
                             style.Draw(gr, pos, range); //rendering
@@ -3925,7 +3924,7 @@ public class RichText : UserControl {
         ClearBracketsPositions();
 
         if (TextChanging != null) {
-            var args = new TextChangingEventArgs {InsertingText = text};
+            var args = new TextChangingEventArgs { InsertingText = text };
             TextChanging(this, args);
             text = args.InsertingText;
             if (args.Cancel) {
@@ -4983,7 +4982,7 @@ public class RichText : UserControl {
     /// Prints all text, without any dialog windows
     /// </summary>
     public void Print() {
-        Print(Range, new PrintDialogSettings {ShowPageSetupDialog = false, ShowPrintDialog = false, ShowPrintPreviewDialog = false});
+        Print(Range, new PrintDialogSettings { ShowPageSetupDialog = false, ShowPrintDialog = false, ShowPrintPreviewDialog = false });
     }
 
     private string SelectHTMLRangeScript() {

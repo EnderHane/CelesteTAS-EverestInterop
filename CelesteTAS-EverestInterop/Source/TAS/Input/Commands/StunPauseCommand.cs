@@ -5,7 +5,6 @@ using System.Linq;
 using Celeste;
 using Monocle;
 using MonoMod.RuntimeDetour;
-using StudioCommunication;
 using TAS.Module;
 using TAS.Utils;
 using TasCommunication;
@@ -43,7 +42,7 @@ public static class StunPauseCommand {
     // hook after CycleHitboxColor.Load, so that the grouping color does not change
     [Initialize]
     private static void Initialize() {
-        using (new DetourContext {After = new List<string> {"*"}}) {
+        using (new DetourContext { After = new List<string> { "*" } }) {
             On.Monocle.Scene.BeforeUpdate += DoublePauses;
         }
     }

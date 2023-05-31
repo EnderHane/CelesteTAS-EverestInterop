@@ -72,7 +72,7 @@ public static class InfoWatchEntity {
     private static List<Entity> FindClickedEntities() {
         if (Engine.Scene is Level level) {
             Vector2 mouseWorldPosition = level.MouseToWorld(MouseButtons.Position);
-            Entity tempEntity = new() {Position = mouseWorldPosition, Collider = new Hitbox(1, 1)};
+            Entity tempEntity = new() { Position = mouseWorldPosition, Collider = new Hitbox(1, 1) };
             List<Entity> allEntities = level.Entities.Where(entity =>
                 entity.GetType() != typeof(Entity)
                 && entity is not ParticleSystem).ToList();
@@ -164,7 +164,7 @@ public static class InfoWatchEntity {
         orig(self, playerIntro, isFromLoader);
 
         RequireWatchEntities.ToList().ForEach(reference => {
-            if (reference.Target is Entity {Scene: null}) {
+            if (reference.Target is Entity { Scene: null }) {
                 RequireWatchEntities.Remove(reference);
             }
         });

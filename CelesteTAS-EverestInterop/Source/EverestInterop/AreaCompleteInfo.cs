@@ -206,7 +206,7 @@ public static class AreaCompleteInfo {
 
         string id = area.ID <= 10 ? area.ID.ToString() : area.SID;
         string separator = id.Contains(" ") ? ", " : " ";
-        List<string> values = new() {"CompleteInfo", mode, id};
+        List<string> values = new() { "CompleteInfo", mode, id };
         return string.Join(separator, values);
     }
 }

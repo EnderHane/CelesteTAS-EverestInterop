@@ -25,7 +25,7 @@ public static class HitboxNpc {
 
     private static void BirdNPC_DebugRender(On.Celeste.BirdNPC.orig_DebugRender orig, BirdNPC birdNpc, Camera camera) {
         if (TasSettings.ShowHitboxes) {
-            if (TasSettings.ShowTriggerHitboxes && birdNpc.mode == BirdNPC.Modes.DashingTutorial && Engine.Scene is Level {Session: {Area.ID: 0, Level: "3"}} level) {
+            if (TasSettings.ShowTriggerHitboxes && birdNpc.mode == BirdNPC.Modes.DashingTutorial && Engine.Scene is Level { Session: { Area.ID: 0, Level: "3" } } level) {
                 Player player = level.GetPlayer();
                 Vector2 offset = player is null ? DefaultOffset : player.Collider.BottomRight;
                 Vector2 position = birdNpc.StartPosition;
@@ -78,7 +78,7 @@ public static class HitboxNpc {
             } else if (entity is NPC03_Oshiro_Hallway1 or NPC03_Oshiro_Hallway2 or NPC06_Granny) {
                 float x = entity.X - 55;
                 Draw.Line(x, top, x, bottom, color);
-            } else if (entity is NPC03_Oshiro_Cluttter {sectionsComplete: 3}) {
+            } else if (entity is NPC03_Oshiro_Cluttter { sectionsComplete: 3 }) {
                 float x = entity.X + 28;
                 Draw.Line(x, top, x, entity.Y, color);
             } else if (entity is NPC04_Granny) {

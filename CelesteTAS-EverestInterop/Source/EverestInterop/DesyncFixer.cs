@@ -33,7 +33,7 @@ public static class DesyncFixer {
         };
 
         foreach (Type type in ModUtils.GetTypes()) {
-            if (type.Name.EndsWith("Debris") && type.GetMethodInfo("Init") is {IsStatic: false} method) {
+            if (type.Name.EndsWith("Debris") && type.GetMethodInfo("Init") is { IsStatic: false } method) {
                 int index = 1;
                 foreach (ParameterInfo parameterInfo in method.GetParameters()) {
                     if (parameterInfo.ParameterType == typeof(Vector2)) {

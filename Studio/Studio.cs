@@ -24,7 +24,7 @@ public partial class Studio : BaseForm {
     public static Studio Instance;
     public static Version Version { get; private set; }
     private static List<string> RecentFiles => Settings.Instance.RecentFiles;
-    public readonly List<InputRecord> InputRecords = new() {new InputRecord("")};
+    public readonly List<InputRecord> InputRecords = new() { new InputRecord("") };
     private readonly StringBuilder statusBarBuilder = new();
 
     private DateTime lastChanged = DateTime.MinValue;
@@ -1060,13 +1060,13 @@ public partial class Studio : BaseForm {
             int index = start;
             InputRecord current = InputRecords[index];
             int currentIndex = index;
-            groups[currentIndex] = new List<InputRecord> {current};
+            groups[currentIndex] = new List<InputRecord> { current };
             while (++index <= end) {
                 InputRecord next = InputRecords[index];
 
                 // ignore empty line if combine succeeds
                 int? nextIndex = null;
-                if (next.IsEmptyOrZeroFrameInput && next.Next(record => !record.IsEmptyOrZeroFrameInput) is {IsInput: true} nextInput) {
+                if (next.IsEmptyOrZeroFrameInput && next.Next(record => !record.IsEmptyOrZeroFrameInput) is { IsInput: true } nextInput) {
                     nextIndex = InputRecords.IndexOf(nextInput);
                     if (nextIndex <= end) {
                         next = nextInput;
@@ -1083,7 +1083,7 @@ public partial class Studio : BaseForm {
                 } else {
                     current = InputRecords[index];
                     currentIndex = index;
-                    groups[currentIndex] = new List<InputRecord> {current};
+                    groups[currentIndex] = new List<InputRecord> { current };
                 }
             }
         } else {
@@ -1163,7 +1163,7 @@ public partial class Studio : BaseForm {
 
                 // ignore empty line if convert succeeds
                 int? nextIndex = null;
-                if (next?.IsEmptyOrZeroFrameInput == true && next.Next(record => !record.IsEmptyOrZeroFrameInput) is {IsInput: true} nextInput) {
+                if (next?.IsEmptyOrZeroFrameInput == true && next.Next(record => !record.IsEmptyOrZeroFrameInput) is { IsInput: true } nextInput) {
                     nextIndex = InputRecords.IndexOf(nextInput);
                     if (nextIndex <= end) {
                         next = nextInput;
@@ -1172,7 +1172,7 @@ public partial class Studio : BaseForm {
                     }
                 }
 
-                if (next is {IsInput: true} && next.HasActions(dash)) {
+                if (next is { IsInput: true } && next.HasActions(dash)) {
                     next.Frames += current.Frames;
                     next.Actions = next.Actions & ~Actions.Dash & ~Actions.Dash2 | GetDemoDashActions(current);
                     result.Add(next);

@@ -105,7 +105,7 @@ public static class AutoInputCommand {
         AutoInputArgs.Remove(filePath);
     }
 
-    [TasCommand("SkipInput", AliasNames = new[] {"SkipAutoInput"}, ExecuteTiming = ExecuteTiming.Parse | ExecuteTiming.Runtime)]
+    [TasCommand("SkipInput", AliasNames = new[] { "SkipAutoInput" }, ExecuteTiming = ExecuteTiming.Parse | ExecuteTiming.Runtime)]
     private static void SkipInput(string[] args, int studioLine, string filePath, int fileLine) {
         if (Command.Parsing && AutoInputArgs.TryGetValue(filePath, out var arguments)) {
             string errorText = $"{Path.GetFileName(filePath)} line {fileLine}\nSkipInput command's ";

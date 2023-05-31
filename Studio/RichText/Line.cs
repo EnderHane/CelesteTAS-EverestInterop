@@ -169,8 +169,10 @@ public struct LineInfo {
                     } else {
                         return cutOffPositions.Count + 1;
                     }
-                case VisibleState.Hidden: return 0;
-                case VisibleState.StartOfHiddenBlock: return 1;
+                case VisibleState.Hidden:
+                    return 0;
+                case VisibleState.StartOfHiddenBlock:
+                    return 1;
             }
 
             return 0;

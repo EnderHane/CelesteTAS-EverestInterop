@@ -9,7 +9,6 @@ using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
 using MonoMod.Utils;
-using StudioCommunication;
 using TAS.Communication;
 using TAS.EverestInterop.InfoHUD;
 using TAS.Module;

@@ -4,7 +4,7 @@ public static class EnforceLegalCommand {
     public static bool EnabledWhenRunning { get; private set; }
     public static bool EnabledWhenParsing { get; private set; }
 
-    [TasCommand("EnforceLegal", AliasNames = new[] {"EnforceMainGame"}, ExecuteTiming = ExecuteTiming.Parse | ExecuteTiming.Runtime)]
+    [TasCommand("EnforceLegal", AliasNames = new[] { "EnforceMainGame" }, ExecuteTiming = ExecuteTiming.Parse | ExecuteTiming.Runtime)]
     private static void EnforceLegal() {
         if (Command.Parsing) {
             EnabledWhenParsing = true;

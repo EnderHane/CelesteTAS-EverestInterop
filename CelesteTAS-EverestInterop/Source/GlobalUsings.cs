@@ -7,7 +7,7 @@ namespace TAS;
 
 public static class GlobalVariables {
     public static CelesteTasSettings TasSettings => CelesteTasSettings.Instance;
-    public static bool ParsingCommand  => Command.Parsing;
+    public static bool ParsingCommand => Command.Parsing;
 
     public static void AbortTas(string message, bool log = false, float duration = 2f) {
         if (log) {

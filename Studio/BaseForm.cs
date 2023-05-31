@@ -46,7 +46,7 @@ public static class NativeMethods {
     public static extern bool GetTitleBarInfo(IntPtr hwnd, ref TITLEBARINFO pti);
 
     public static Rectangle GetTitleBarRectangle(IntPtr hwnd) {
-        var info = new TITLEBARINFO {cbSize = (uint) Marshal.SizeOf(typeof(TITLEBARINFO))};
+        var info = new TITLEBARINFO { cbSize = (uint) Marshal.SizeOf(typeof(TITLEBARINFO)) };
         GetTitleBarInfo(hwnd, ref info);
         return info.rcTitleBar.ToRectangle();
     }

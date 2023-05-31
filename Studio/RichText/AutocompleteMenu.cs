@@ -406,7 +406,7 @@ public class AutocompleteListView : UserControl {
         tb.TextSource.Manager.BeginAutoUndoCommands();
         try {
             AutocompleteItem item = VisibleItems[selectedItemIndex];
-            SelectingEventArgs args = new() {Item = item, SelectedIndex = selectedItemIndex};
+            SelectingEventArgs args = new() { Item = item, SelectedIndex = selectedItemIndex };
 
             Menu.OnSelecting(args);
 
@@ -423,7 +423,7 @@ public class AutocompleteListView : UserControl {
 
             Menu.Close();
             //
-            SelectedEventArgs args2 = new() {Item = item, Tb = Menu.Fragment.Tb};
+            SelectedEventArgs args2 = new() { Item = item, Tb = Menu.Fragment.Tb };
             item.OnSelected(Menu, args2);
             Menu.OnSelected(args2);
         } finally {

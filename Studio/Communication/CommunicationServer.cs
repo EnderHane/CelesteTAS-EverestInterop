@@ -1,5 +1,5 @@
-using TasCommunication;
 using StudioCommunication;
+using TasCommunication;
 
 namespace CelesteStudio.Communication;
 public static class CommunicationServer {

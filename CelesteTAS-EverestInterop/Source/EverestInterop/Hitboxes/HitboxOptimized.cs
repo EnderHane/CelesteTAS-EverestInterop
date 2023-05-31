@@ -22,8 +22,7 @@ public static class HitboxOptimized {
     [Initialize]
     private static void Initialize() {
         // remove the yellow points hitboxes added by "Madeline in Wonderland"
-        if (ModUtils.GetType("Madeline in Wonderland", "Celeste.Mod.TomorrowHelper.TomorrowHelperModule")?.GetMethodInfo("ModDebugRender") is
-            { } methodInfo) {
+        if (ModUtils.GetType("Madeline in Wonderland", "Celeste.Mod.TomorrowHelper.TomorrowHelperModule")?.GetMethodInfo("ModDebugRender") is { } methodInfo) {
             methodInfo.IlHook((cursor, context) => {
                 if (cursor.TryGotoNext(MoveType.After, ins => ins.OpCode == OpCodes.Callvirt)) {
                     Instruction cursorNext = cursor.Next;
@@ -49,7 +48,7 @@ public static class HitboxOptimized {
             // but i have no good idea, so i put it aside
         }
 
-        using (new DetourContext {After = new List<string> {"*"}}) {
+        using (new DetourContext { After = new List<string> { "*" } }) {
             On.Monocle.Entity.DebugRender += ModDebugRender;
         }
     }
@@ -254,7 +253,7 @@ public static class HitboxOptimized {
         player.Collider = origCollider;
 
         foreach (LockBlock lockBlock in lockBlocks) {
-            if (lockBlock.Get<PlayerCollider>() is not {Collider: Circle circle}) {
+            if (lockBlock.Get<PlayerCollider>() is not { Collider: Circle circle }) {
                 continue;
             }
 
@@ -290,7 +289,7 @@ public static class HitboxOptimized {
             if (!collideSolid) {
                 // draw actual checked tiles when checking collision between line and solid tiles
                 solidTilesList.ForEach(entity => {
-                    if (entity is SolidTiles {Collidable: true} solidTiles) {
+                    if (entity is SolidTiles { Collidable: true } solidTiles) {
                         Grid grid = solidTiles.Grid;
                         grid.GetCheckedTilesInLineCollision(playerCenter, lockBlock.Center)
                             .ForEach(tuple => Draw.HollowRect(tuple.Item1, grid.CellWidth, grid.CellHeight,
@@ -372,7 +371,7 @@ public static class HitboxOptimized {
             return;
         }
 
-        if (self.Entity is FireBall {iceMode: false}) {
+        if (self.Entity is FireBall { iceMode: false }) {
             color = Color.Goldenrod;
         }
 
@@ -443,7 +442,7 @@ public static class HitboxOptimized {
 
         self.Collider = origCollider;
 
-        if (!self.Regenerating && self.SceneAs<Level>() is {Pathfinder.lastPath: {Count: >= 2} lastPath}) {
+        if (!self.Regenerating && self.SceneAs<Level>() is { Pathfinder.lastPath: { Count: >= 2 } lastPath }) {
             Vector2 start = lastPath[0];
             for (int i = 1; i < lastPath.Count; i++) {
                 Vector2 vector = lastPath[i];
@@ -456,7 +455,7 @@ public static class HitboxOptimized {
     private static void LevelOnLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
         orig(self, playerIntro, isFromLoader);
 
-        if (TasSettings.ShowHitboxes && self.Pathfinder is {lastPath: { }} pathfinder) {
+        if (TasSettings.ShowHitboxes && self.Pathfinder is { lastPath: { } } pathfinder) {
             pathfinder.lastPath = null;
         }
     }

@@ -16,7 +16,7 @@ public static class MonocleCommands {
     [Command("clrsav", "clears save data on debug file (CelesteTAS)")]
     private static void CmdClearSave() {
         SaveData.TryDelete(-1);
-        SaveData.Start(new SaveData {Name = "debug"}, -1);
+        SaveData.Start(new SaveData { Name = "debug" }, -1);
         // Pretend that we've beaten Prologue.
         LevelSetStats stats = SaveData.Instance.GetLevelSetStatsFor("Celeste");
         stats.UnlockedAreas = 1;

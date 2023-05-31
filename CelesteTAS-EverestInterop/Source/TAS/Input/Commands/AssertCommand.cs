@@ -40,19 +40,19 @@ public static class AssertCommand {
 
             switch (condition) {
                 case AssertCondition.Equal: {
-                    if (actual != expected) {
-                        AbortTas($"{prefix}Expected: {expected}\nBut was: {actual}");
-                    }
+                        if (actual != expected) {
+                            AbortTas($"{prefix}Expected: {expected}\nBut was: {actual}");
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case AssertCondition.NotEqual: {
-                    if (actual == expected) {
-                        AbortTas($"{prefix}Expected: not equal to {expected}\nBut was: {actual}", true, 4f);
-                    }
+                        if (actual == expected) {
+                            AbortTas($"{prefix}Expected: not equal to {expected}\nBut was: {actual}", true, 4f);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case AssertCondition.Contain:
                     if (!actual.Contains(expected)) {
                         AbortTas($"{prefix}Expected: contain {expected}\nBut was: {actual}", true, 4f);

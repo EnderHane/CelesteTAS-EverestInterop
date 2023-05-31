@@ -30,7 +30,8 @@ internal class InsertCharCommand : UndoableCommand {
             case '\n':
                 MergeLines(Sel.Start.Line, Ts);
                 break;
-            case '\r': break;
+            case '\r':
+                break;
             case (char) 1:
             case '\b':
                 Ts.CurrentTB.Selection.Start = LastSel.Start;
@@ -94,7 +95,8 @@ internal class InsertCharCommand : UndoableCommand {
 
                 InsertLine(ts);
                 break;
-            case '\r': break;
+            case '\r':
+                break;
             case (char) 1:
             case '\b': //backspace
                 if (tb.Selection.Start.Char == 0 && tb.Selection.Start.Line == 0) {

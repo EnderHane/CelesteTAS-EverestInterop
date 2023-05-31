@@ -139,7 +139,7 @@ public class Settings {
         saving = true;
 
         try {
-            TommySerializer.ToTomlFile(new object[] {Instance, Themes.Light, Themes.Dark, Themes.Custom}, Path);
+            TommySerializer.ToTomlFile(new object[] { Instance, Themes.Light, Themes.Dark, Themes.Custom }, Path);
         } catch {
             // ignore
         }

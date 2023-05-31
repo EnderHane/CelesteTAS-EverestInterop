@@ -19,7 +19,7 @@ public static class InvokeCommand {
     [Monocle.Command("invoke", "Invoke level/session/entity method. eg invoke Level.Pause; invoke Player.Jump (CelesteTAS)")]
     private static void Invoke(string arg1, string arg2, string arg3, string arg4, string arg5, string arg6, string arg7, string arg8,
         string arg9) {
-        string[] args = {arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9};
+        string[] args = { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
         consolePrintLog = true;
         Invoke(args.TakeWhile(arg => arg != null).ToArray());
         consolePrintLog = false;
@@ -65,9 +65,9 @@ public static class InvokeCommand {
         Type objType;
         object obj = null;
         if (memberNames.IsEmpty() &&
-            type.GetMethodInfo(lastMemberName, null) is {IsStatic: true}) {
+            type.GetMethodInfo(lastMemberName, null) is { IsStatic: true }) {
             objType = type;
-        } else if (memberNames.IsNotEmpty() && type.GetMethodInfo(memberNames.First(), null) is {IsStatic: true}) {
+        } else if (memberNames.IsNotEmpty() && type.GetMethodInfo(memberNames.First(), null) is { IsStatic: true }) {
             obj = InfoCustom.GetMemberValue(type, null, memberNames);
             if (TryPrintErrorLog()) {
                 return NonReturnObject;

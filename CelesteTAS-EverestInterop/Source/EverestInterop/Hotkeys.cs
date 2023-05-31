@@ -13,9 +13,9 @@ using MonoMod.Cil;
 using TAS.Communication;
 using TAS.Module;
 using TAS.Utils;
-using Hud = TAS.EverestInterop.InfoHUD.InfoHud;
-using Camera = TAS.EverestInterop.CenterCamera;
 using TasCommunication;
+using Camera = TAS.EverestInterop.CenterCamera;
+using Hud = TAS.EverestInterop.InfoHUD.InfoHud;
 
 namespace TAS.EverestInterop;
 

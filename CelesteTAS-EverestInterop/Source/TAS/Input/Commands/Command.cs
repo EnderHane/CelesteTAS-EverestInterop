@@ -65,11 +65,11 @@ public partial record Command {
 
                 List<Type> parameterTypes = method.GetParameters().Select(info => info.ParameterType).ToList();
                 object[] parameters = parameterTypes.Count switch {
-                    4 => new object[] {commandArgs, studioLine, filePath, fileLine},
-                    3 => new object[] {commandArgs, studioLine, filePath},
-                    2 when parameterTypes[1] == typeof(int) => new object[] {commandArgs, studioLine},
-                    2 when parameterTypes[1] == typeof(string) => new object[] {commandArgs, lineText.Trim()},
-                    1 => new object[] {commandArgs},
+                    4 => new object[] { commandArgs, studioLine, filePath, fileLine },
+                    3 => new object[] { commandArgs, studioLine, filePath },
+                    2 when parameterTypes[1] == typeof(int) => new object[] { commandArgs, studioLine },
+                    2 when parameterTypes[1] == typeof(string) => new object[] { commandArgs, lineText.Trim() },
+                    1 => new object[] { commandArgs },
                     0 => EmptyParameters,
                     _ => throw new ArgumentException()
                 };

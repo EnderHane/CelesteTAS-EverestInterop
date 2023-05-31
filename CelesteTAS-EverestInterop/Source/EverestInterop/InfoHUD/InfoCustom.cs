@@ -85,7 +85,7 @@ public static class InfoCustom {
                 .SelectMany(type => GetCachedOrFindEntities(type, entityId, cachedEntities)).Count() > 1;
 
             List<string> result = types.Select(type => {
-                if (type.GetGetMethod(memberNames.First()) is {IsStatic: true} || type.GetFieldInfo(memberNames.First()) is {IsStatic: true}) {
+                if (type.GetGetMethod(memberNames.First()) is { IsStatic: true } || type.GetFieldInfo(memberNames.First()) is { IsStatic: true }) {
                     return FormatValue(GetMemberValue(type, null, memberNames), helperMethod, decimals);
                 }
 
@@ -223,7 +223,7 @@ public static class InfoCustom {
         typeNameMatched = "";
         typeNameWithAssembly = "";
         entityId = "";
-        if (TypeNameRegex.Match(text) is {Success: true} match) {
+        if (TypeNameRegex.Match(text) is { Success: true } match) {
             typeNameMatched = match.Groups[1].Value;
             typeNameWithAssembly = $"{typeNameMatched}@{match.Groups[5].Value}";
             typeNameWithAssembly = typeNameWithAssembly switch {

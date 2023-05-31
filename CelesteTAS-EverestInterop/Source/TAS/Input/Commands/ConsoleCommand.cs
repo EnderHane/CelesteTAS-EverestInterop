@@ -120,7 +120,7 @@ public static class ConsoleCommand {
     private static void Console(string[] arguments, string commandText) {
         string commandName = arguments[0].ToLower(CultureInfo.InvariantCulture);
         string[] args = arguments.Skip(1).ToArray();
-        if (LoadCommandRegex.Match(commandName) is {Success: true} match) {
+        if (LoadCommandRegex.Match(commandName) is { Success: true } match) {
             commandName = match.Groups[1].Value;
             if (int.TryParse(match.Groups[2].Value, out int slot)) {
                 // load1 => 0.celeste
@@ -275,7 +275,7 @@ public static class ConsoleCommand {
 
     private static bool CheckValid(SaveData saveData, string[] args) {
         if (args.Length == 0) {
-            if (saveData.CurrentSession_Safe is {InArea: true} session) {
+            if (saveData.CurrentSession_Safe is { InArea: true } session) {
                 if (AreaData.Get(session) != null) {
                     return true;
                 } else {
@@ -399,7 +399,7 @@ public static class ConsoleCommand {
 
         string id = area.ID <= 10 ? area.ID.ToString() : area.GetSID();
         string separator = id.Contains(" ") ? ", " : " ";
-        List<string> values = new() {"console", mode, id};
+        List<string> values = new() { "console", mode, id };
 
         if (!simple) {
             Player player = level.Tracker.GetEntity<Player>();

@@ -81,7 +81,7 @@ public static class Manager {
                         DisableRun();
                     } else if (Engine.Scene is Level level && level.Tracker.GetEntity<TextMenu>() is { } menu) {
                         if (menu.Items.FirstOrDefault() is TextMenu.Header header && header.Title == Dialog.Clean("options_title") ||
-                            menu.Items.FirstOrDefault() is TextMenuExt.HeaderImage {Image: "menu/everest"}) {
+                            menu.Items.FirstOrDefault() is TextMenuExt.HeaderImage { Image: "menu/everest" }) {
                             DisableRun();
                         }
                     }
@@ -230,7 +230,7 @@ public static class Manager {
             case SummitVignette summit:
                 return !summit.ready;
             case Overworld overworld:
-                return overworld.Current is OuiFileSelect {SlotIndex: >= 0} slot && slot.Slots[slot.SlotIndex].StartingGame ||
+                return overworld.Current is OuiFileSelect { SlotIndex: >= 0 } slot && slot.Slots[slot.SlotIndex].StartingGame ||
                        overworld.Next is OuiChapterSelect && UserIO.Saving ||
                        overworld.Next is OuiMainMenu && (UserIO.Saving || Everest._SavingSettings);
             default:

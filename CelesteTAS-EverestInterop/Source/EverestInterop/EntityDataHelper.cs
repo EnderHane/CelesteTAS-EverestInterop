@@ -18,7 +18,7 @@ public static class EntityDataHelper {
 
     private static readonly Lazy<EntityData> Ch6FlyFeatherData = new(() => new EntityData() {
         Name = "infiniteStar", ID = -1, Level = AreaData.Get(6).Mode[0].MapData.StartLevel(), Position = new Vector2(88, 256),
-        Values = new Dictionary<string, object> {{"shielded", false}, {"singleUse", false}}
+        Values = new Dictionary<string, object> { { "shielded", false }, { "singleUse", false } }
     });
 
     [Load]
@@ -47,27 +47,27 @@ public static class EntityDataHelper {
         };
 
         if (ModUtils.GetType("DJMapHelper", "Celeste.Mod.DJMapHelper.Triggers.OshiroRightTrigger") is { } oshiroRightTrigger) {
-            typeMethodNames.Add(oshiroRightTrigger, new[] {"OnEnter"});
+            typeMethodNames.Add(oshiroRightTrigger, new[] { "OnEnter" });
         }
 
         if (ModUtils.GetType("DJMapHelper", "Celeste.Mod.DJMapHelper.Triggers.WindAttackLeftTrigger") is { } windAttackLeftTrigger) {
-            typeMethodNames.Add(windAttackLeftTrigger, new[] {"OnEnter"});
+            typeMethodNames.Add(windAttackLeftTrigger, new[] { "OnEnter" });
         }
 
         if (ModUtils.GetType("Monika's D-Sides", "Celeste.Mod.RubysEntities.FastOshiroTrigger") is { } fastOshiroTrigger) {
-            typeMethodNames.Add(fastOshiroTrigger, new[] {"OnEnter"});
+            typeMethodNames.Add(fastOshiroTrigger, new[] { "OnEnter" });
         }
 
         if (ModUtils.GetType("FrostHelper", "FrostHelper.SnowballTrigger") is { } snowballTrigger) {
-            typeMethodNames.Add(snowballTrigger, new[] {"OnEnter"});
+            typeMethodNames.Add(snowballTrigger, new[] { "OnEnter" });
         }
 
         if (ModUtils.GetType("FemtoHelper", "OshiroCaller") is { } oshiroCaller) {
-            typeMethodNames.Add(oshiroCaller, new[] {"OnHoldable", "OnPlayer"});
+            typeMethodNames.Add(oshiroCaller, new[] { "OnHoldable", "OnPlayer" });
         }
 
         if (ModUtils.GetType("PandorasBox", "Celeste.Mod.PandorasBox.CloneSpawner") is { } cloneSpawner) {
-            typeMethodNames.Add(cloneSpawner, new[] {"handleClone"});
+            typeMethodNames.Add(cloneSpawner, new[] { "handleClone" });
         }
 
         foreach (Type type in typeMethodNames.Keys) {
@@ -142,7 +142,7 @@ public static class EntityDataHelper {
             cursor.Index++;
             object entityDataOperand = cursor.Next.Operand;
             while (cursor.TryGotoNext(MoveType.Before,
-                       i => i.OpCode == OpCodes.Newobj && i.Operand is MethodReference {HasParameters: true} m && m.Parameters.Count == 1 &&
+                       i => i.OpCode == OpCodes.Newobj && i.Operand is MethodReference { HasParameters: true } m && m.Parameters.Count == 1 &&
                             m.Parameters[0].ParameterType.Name == "Vector2",
                        i => i.OpCode == OpCodes.Call && i.Operand.ToString() == "System.Void Monocle.Scene::Add(Monocle.Entity)")) {
                 cursor.Index++;
@@ -172,7 +172,7 @@ public static class EntityDataHelper {
         // General
         cursor.Goto(0);
         while (cursor.TryGotoNext(MoveType.After,
-                   i => (i.OpCode == OpCodes.Newobj) && i.Operand is MethodReference {HasParameters: true} m &&
+                   i => (i.OpCode == OpCodes.Newobj) && i.Operand is MethodReference { HasParameters: true } m &&
                         m.Parameters.Any(parameter => parameter.ParameterType.Name == "EntityData"))) {
             if (cursor.TryFindPrev(out ILCursor[] results,
                     i => i.OpCode == OpCodes.Ldloc_S && i.Operand is VariableDefinition v && v.VariableType.Name == "EntityData")) {

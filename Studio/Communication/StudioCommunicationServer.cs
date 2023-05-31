@@ -183,7 +183,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
             return;
         }
 
-        byte[] hotkeyBytes = {(byte) hotkey, Convert.ToByte(released)};
+        byte[] hotkeyBytes = { (byte) hotkey, Convert.ToByte(released) };
         WriteMessageGuaranteed(new Message(MessageID.SendHotkeyPressed, hotkeyBytes));
     }
 

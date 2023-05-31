@@ -23,7 +23,7 @@ public static class ExportGameInfo {
     // "StartExportGameInfo"
     // "StartExportGameInfo Path"
     // "StartExportGameInfo Path EntitiesToTrack"
-    [TasCommand("StartExportGameInfo", AliasNames = new[] {"ExportGameInfo"}, CalcChecksum = false)]
+    [TasCommand("StartExportGameInfo", AliasNames = new[] { "ExportGameInfo" }, CalcChecksum = false)]
     private static void StartExportCommand(string[] args) {
         string path = "dump.txt";
         if (args.Length > 0) {
@@ -38,7 +38,7 @@ public static class ExportGameInfo {
 
     // ReSharper disable once UnusedMember.Local
     [DisableRun]
-    [TasCommand("FinishExportGameInfo", AliasNames = new[] {"EndExportGameInfo"}, CalcChecksum = false)]
+    [TasCommand("FinishExportGameInfo", AliasNames = new[] { "EndExportGameInfo" }, CalcChecksum = false)]
     private static void FinishExportCommand() {
         exporting = false;
         exportingInput = null;

@@ -43,7 +43,8 @@ public class SyntaxHighlighter : IDisposable {
             case Language.TAS:
                 TASSyntaxHighlight(range);
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 

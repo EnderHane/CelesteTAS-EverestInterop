@@ -119,7 +119,7 @@ public static class UnloadedRoomHitbox {
                         rect = Rectangle.Empty;
                         actions.Add((level) => Draw.Circle(position, 12, HitboxColor.EntityColor, 4));
 
-                        if (Engine.Scene.GetSession() is {CoreMode: > 0}) {
+                        if (Engine.Scene.GetSession() is { CoreMode: > 0 }) {
                             textureId = "objects/Bumper/Evil00";
                         } else {
                             textureId = "objects/Bumper/idle00";

@@ -39,7 +39,7 @@ public static class Core {
             typeof(Core).GetMethodInfo("Game_Update")
         )).GenerateTrampoline<DGameUpdate>();
 
-        using (new DetourContext {After = new List<string> {"*"}}) {
+        using (new DetourContext { After = new List<string> { "*" } }) {
             // The original mod adds a few lines of code into Monocle.Engine::Update.
             On.Monocle.Engine.Update += Engine_Update;
 

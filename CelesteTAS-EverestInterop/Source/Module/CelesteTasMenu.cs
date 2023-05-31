@@ -81,7 +81,7 @@ internal static class CelesteTasMenu {
                 subMenu.Focused = false;
                 KeyboardConfigUI keyboardConfig;
                 if (CreateKeyboardConfigUi != null) {
-                    keyboardConfig = (KeyboardConfigUI) CreateKeyboardConfigUi.Invoke(everestModule, new object[] {menu});
+                    keyboardConfig = (KeyboardConfigUI) CreateKeyboardConfigUi.Invoke(everestModule, new object[] { menu });
                 } else {
                     keyboardConfig = new ModuleSettingsKeyboardConfigUI(everestModule);
                 }
@@ -96,7 +96,7 @@ internal static class CelesteTasMenu {
                 subMenu.Focused = false;
                 ButtonConfigUI buttonConfig;
                 if (CreateButtonConfigUI != null) {
-                    buttonConfig = (ButtonConfigUI) CreateButtonConfigUI.Invoke(everestModule, new object[] {menu});
+                    buttonConfig = (ButtonConfigUI) CreateButtonConfigUI.Invoke(everestModule, new object[] { menu });
                 } else {
                     buttonConfig = new ModuleSettingsButtonConfigUI(everestModule);
                 }

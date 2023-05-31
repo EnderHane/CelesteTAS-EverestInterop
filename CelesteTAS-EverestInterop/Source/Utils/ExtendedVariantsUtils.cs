@@ -15,9 +15,9 @@ internal static class ExtendedVariantsUtils {
 
     public static bool UpsideDown =>
         Installed.Value &&
-        (bool)ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue((ExtendedVariantsModule.Variant)UpsideDownVariant.Value);
+        (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue((ExtendedVariantsModule.Variant) UpsideDownVariant.Value);
 
     public static bool SuperDashing =>
         Installed.Value &&
-        (bool)ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue((ExtendedVariantsModule.Variant)SuperDashingVariant.Value);
+        (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue((ExtendedVariantsModule.Variant) SuperDashingVariant.Value);
 }

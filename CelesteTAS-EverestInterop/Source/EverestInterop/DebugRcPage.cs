@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using Celeste.Mod;
-using StudioCommunication;
 using TAS.Input;
 using TAS.Module;
 using TAS.Utils;

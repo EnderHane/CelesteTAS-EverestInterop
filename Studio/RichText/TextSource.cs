@@ -231,7 +231,7 @@ public class TextSource : IList<Line>, IDisposable {
 
     internal void OnTextChanging(ref string text) {
         if (TextChanging != null) {
-            var args = new TextChangingEventArgs() {InsertingText = text};
+            var args = new TextChangingEventArgs() { InsertingText = text };
             TextChanging(this, args);
             text = args.InsertingText;
             if (args.Cancel) {

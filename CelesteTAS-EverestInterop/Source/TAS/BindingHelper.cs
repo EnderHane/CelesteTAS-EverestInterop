@@ -15,8 +15,8 @@ namespace TAS;
 
 public static class BindingHelper {
     private static readonly Type BindingType = typeof(Engine).Assembly.GetType("Monocle.Binding");
-    private static readonly MethodInfo BindingAddKeys = BindingType?.GetMethod("Add", new[] {typeof(Keys[])});
-    private static readonly MethodInfo BindingAddButtons = BindingType?.GetMethod("Add", new[] {typeof(Buttons[])});
+    private static readonly MethodInfo BindingAddKeys = BindingType?.GetMethod("Add", new[] { typeof(Keys[]) });
+    private static readonly MethodInfo BindingAddButtons = BindingType?.GetMethod("Add", new[] { typeof(Buttons[]) });
     private static readonly FieldInfo MInputControllerHasFocus = typeof(MInput).GetFieldInfo("ControllerHasFocus");
 
     static BindingHelper() {
@@ -117,20 +117,20 @@ public static class BindingHelper {
         settings.Set("Dash", new List<Keys>());
         settings.Set("Talk", new List<Keys>());
         settings.Set("Pause", new List<Keys>());
-        settings.Set("Confirm", new List<Keys> {Confirm2});
+        settings.Set("Confirm", new List<Keys> { Confirm2 });
         settings.Set("Cancel", new List<Keys>());
         settings.Set("Journal", new List<Keys>());
         settings.Set("QuickRestart", new List<Keys>());
 
-        settings.Set("BtnGrab", new List<Buttons> {Grab});
-        settings.Set("BtnJump", new List<Buttons> {JumpAndConfirm, Jump2});
-        settings.Set("BtnDash", new List<Buttons> {DashAndTalkAndCancel, Dash2AndCancel});
-        settings.Set("BtnTalk", new List<Buttons> {DashAndTalkAndCancel, JournalAndTalk});
+        settings.Set("BtnGrab", new List<Buttons> { Grab });
+        settings.Set("BtnJump", new List<Buttons> { JumpAndConfirm, Jump2 });
+        settings.Set("BtnDash", new List<Buttons> { DashAndTalkAndCancel, Dash2AndCancel });
+        settings.Set("BtnTalk", new List<Buttons> { DashAndTalkAndCancel, JournalAndTalk });
         settings.Set("BtnAltQuickRestart", new List<Buttons>());
 
         GameInput.Initialize();
 
-        GameInput.QuickRestart.AddButtons(new List<Buttons> {QuickRestart});
+        GameInput.QuickRestart.AddButtons(new List<Buttons> { QuickRestart });
     }
 
     private static void SetTasBindingsNew() {
@@ -150,7 +150,7 @@ public static class BindingHelper {
         SetBinding("Talk", DashAndTalkAndCancel, JournalAndTalk);
 
         SetBinding("Pause", Pause);
-        SetBinding("Confirm", new[] {Confirm2}, JumpAndConfirm);
+        SetBinding("Confirm", new[] { Confirm2 }, JumpAndConfirm);
         SetBinding("Cancel", DashAndTalkAndCancel, Dash2AndCancel);
 
         SetBinding("Journal", JournalAndTalk);
@@ -163,10 +163,10 @@ public static class BindingHelper {
         SetBinding("UpDashOnly", UpDashOnly);
         SetBinding("DownDashOnly", DownDashOnly);
 
-        SetBinding("LeftMoveOnly", new[] {LeftMoveOnly});
-        SetBinding("RightMoveOnly", new[] {RightMoveOnly});
-        SetBinding("UpMoveOnly", new[] {UpMoveOnly});
-        SetBinding("DownMoveOnly", new[] {DownMoveOnly});
+        SetBinding("LeftMoveOnly", new[] { LeftMoveOnly });
+        SetBinding("RightMoveOnly", new[] { RightMoveOnly });
+        SetBinding("UpMoveOnly", new[] { UpMoveOnly });
+        SetBinding("DownMoveOnly", new[] { DownMoveOnly });
 
         GameInput.Initialize();
 
@@ -186,14 +186,14 @@ public static class BindingHelper {
 
     private static void SetBinding(string fieldName, params Buttons[] buttons) {
         object binding = Activator.CreateInstance(BindingType);
-        BindingAddButtons.Invoke(binding, new object[] {buttons});
+        BindingAddButtons.Invoke(binding, new object[] { buttons });
         Settings.Instance.GetDynamicDataInstance().Set(fieldName, binding);
     }
 
     private static void SetBinding(string fieldName, Keys[] keys, params Buttons[] buttons) {
         object binding = Activator.CreateInstance(BindingType);
-        BindingAddKeys.Invoke(binding, new object[] {keys});
-        BindingAddButtons.Invoke(binding, new object[] {buttons});
+        BindingAddKeys.Invoke(binding, new object[] { keys });
+        BindingAddButtons.Invoke(binding, new object[] { buttons });
         Settings.Instance.GetDynamicDataInstance().Set(fieldName, binding);
     }
 }

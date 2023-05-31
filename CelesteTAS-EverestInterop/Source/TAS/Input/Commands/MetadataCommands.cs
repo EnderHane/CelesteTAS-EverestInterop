@@ -52,17 +52,17 @@ public static class MetadataCommands {
         TasStartFileTime = null;
     }
 
-    [TasCommand("RecordCount", AliasNames = new[] {"RecordCount:", "RecordCount："}, CalcChecksum = false)]
+    [TasCommand("RecordCount", AliasNames = new[] { "RecordCount:", "RecordCount：" }, CalcChecksum = false)]
     private static void RecordCountCommand() {
         // dummy
     }
 
-    [TasCommand("FileTime", AliasNames = new[] {"FileTime:", "FileTime："}, CalcChecksum = false)]
+    [TasCommand("FileTime", AliasNames = new[] { "FileTime:", "FileTime：" }, CalcChecksum = false)]
     private static void FileTimeCommand() {
         // dummy
     }
 
-    [TasCommand("ChapterTime", AliasNames = new[] {"ChapterTime:", "ChapterTime："}, CalcChecksum = false)]
+    [TasCommand("ChapterTime", AliasNames = new[] { "ChapterTime:", "ChapterTime：" }, CalcChecksum = false)]
     private static void ChapterTimeCommand() {
         // dummy
     }

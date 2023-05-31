@@ -22,7 +22,7 @@ public static class SetCommand {
     [Monocle.Command("set", "Set settings/level/session/entity field. eg set DashMode Infinite; set Player.Speed 325 -52.5 (CelesteTAS)")]
     private static void ConsoleSet(string arg1, string arg2, string arg3, string arg4, string arg5, string arg6, string arg7, string arg8,
         string arg9) {
-        string[] args = {arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9};
+        string[] args = { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
         consolePrintLog = true;
         Set(args.TakeWhile(arg => arg != null).ToArray());
         consolePrintLog = false;
@@ -117,11 +117,11 @@ public static class SetCommand {
         Type objType;
         object obj = null;
         if (memberNames.IsEmpty() &&
-            (type.GetGetMethod(lastMemberName) is {IsStatic: true} || type.GetFieldInfo(lastMemberName) is {IsStatic: true})) {
+            (type.GetGetMethod(lastMemberName) is { IsStatic: true } || type.GetFieldInfo(lastMemberName) is { IsStatic: true })) {
             objType = type;
         } else if (memberNames.IsNotEmpty() &&
-                   (type.GetGetMethod(memberNames.First()) is {IsStatic: true} ||
-                    type.GetFieldInfo(memberNames.First()) is {IsStatic: true})) {
+                   (type.GetGetMethod(memberNames.First()) is { IsStatic: true } ||
+                    type.GetFieldInfo(memberNames.First()) is { IsStatic: true })) {
             obj = InfoCustom.GetMemberValue(type, null, memberNames, true);
             if (TryPrintErrorLog()) {
                 return;
@@ -184,7 +184,7 @@ public static class SetCommand {
             // we also need to update the object own the struct
             if (memberNames.IsNotEmpty() && objType.IsStructType()) {
                 string[] position = @object switch {
-                    Vector2 vector2 => new[] {vector2.X.ToString(CultureInfo.InvariantCulture), vector2.Y.ToString(CultureInfo.InvariantCulture)},
+                    Vector2 vector2 => new[] { vector2.X.ToString(CultureInfo.InvariantCulture), vector2.Y.ToString(CultureInfo.InvariantCulture) },
                     Vector2Double vector2Double => new[] {
                         vector2Double.X.ToString(CultureInfo.InvariantCulture), vector2Double.Y.ToString(CultureInfo.InvariantCulture)
                     },
@@ -297,7 +297,7 @@ public static class SetCommand {
                 }
             } else {
                 object value = structObj ?? ConvertType(values, property.PropertyType);
-                setMethod.Invoke(obj, new[] {value});
+                setMethod.Invoke(obj, new[] { value });
             }
         } else if (objType.GetFieldInfo(lastMemberName) is { } field) {
             if (obj is Actor actor && lastMemberName == "Position" && values.Length == 2) {
