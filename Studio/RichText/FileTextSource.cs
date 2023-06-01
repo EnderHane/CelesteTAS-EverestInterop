@@ -23,7 +23,7 @@ public class FileTextSource : TextSource, IDisposable {
     // /// </summary>
     // public event EventHandler<LinePushedEventArgs> LinePushed;
 
-    public FileTextSource(RichText currentTB)
+    public FileTextSource(StudioTextEdit currentTB)
         : base(currentTB) {
         timer.Interval = 10000;
         timer.Tick += new EventHandler(Timer_Tick);

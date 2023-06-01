@@ -2,85 +2,85 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
-using Tommy.Serializer;
 
 namespace CelesteStudio;
 
-[TommyTableName("Settings")]
 public class Settings {
-    private const string Path = "Celeste Studio.toml";
+    private const string Path = "Celeste Studio.json";
     public static Settings Instance { get; private set; } = new();
     private static bool saving;
     private static FileSystemWatcher watcher;
 
-    [TommyInclude] private int locationX = 100;
-    [TommyInclude] private int locationY = 100;
+    [JsonInclude] public int LocationX = 100;
+    [JsonInclude] public int LocationY = 100;
 
-    [TommyIgnore]
+    [JsonIgnore]
     public Point Location {
-        get => new(locationX, locationY);
+        get => new(LocationX, LocationY);
         set {
-            locationX = value.X;
-            locationY = value.Y;
+            LocationX = value.X;
+            LocationY = value.Y;
         }
     }
 
-    [TommyInclude] private int width = 400;
-    [TommyInclude] private int height = 800;
+    [JsonInclude] public int Width = 400;
+    [JsonInclude] public int Height = 800;
 
-    [TommyIgnore]
+    [JsonIgnore]
     public Size Size {
-        get => new(width, height);
+        get => new(Width, Height);
         set {
-            width = value.Width;
-            height = value.Height;
+            Width = value.Width;
+            Height = value.Height;
         }
     }
 
-    [TommyInclude] private string fontName = "Courier New";
-    [TommyInclude] private float fontSize = 14.25f;
-    [TommyInclude] private byte fontStyle;
+    [JsonInclude] public string FontName = "Courier New";
+    [JsonInclude] public float FontSize = 14.25f;
+    [JsonInclude] public byte FontStyle;
 
-    [TommyIgnore]
+    [JsonIgnore]
     public Font Font {
         get {
             try {
-                return new Font(new FontFamily(fontName), fontSize, (FontStyle) fontStyle);
+                return new Font(new FontFamily(FontName), FontSize, (FontStyle) FontStyle);
             } catch {
-                fontName = "Courier New";
-                fontSize = 14.25f;
-                fontStyle = 0;
-                return new Font(new FontFamily(fontName), fontSize, (FontStyle) fontStyle);
+                FontName = "Courier New";
+                FontSize = 14.25f;
+                FontStyle = 0;
+                return new Font(new FontFamily(FontName), FontSize, (FontStyle) FontStyle);
             }
         }
         set {
-            fontName = value.FontFamily.Name;
-            fontSize = value.Size;
-            fontStyle = (byte) value.Style;
+            FontName = value.FontFamily.Name;
+            FontSize = value.Size;
+            FontStyle = (byte) value.Style;
         }
     }
 
-    public bool SendInputsToCeleste = true;
-    public bool ShowGameInfo = true;
-    public bool AutoRemoveMutuallyExclusiveActions = true;
-    public bool AlwaysOnTop = false;
-    public bool AutoBackupEnabled = true;
-    public int AutoBackupRate = 1;
-    public int AutoBackupCount = 100;
-    public bool FindMatchCase;
+    [JsonInclude] public bool SendInputsToCeleste = true;
+    [JsonInclude] public bool ShowGameInfo = true;
+    [JsonInclude] public bool AutoRemoveMutuallyExclusiveActions = true;
+    [JsonInclude] public bool AlwaysOnTop = false;
+    [JsonInclude] public bool AutoBackupEnabled = true;
+    [JsonInclude] public int AutoBackupRate = 1;
+    [JsonInclude] public int AutoBackupCount = 100;
+    [JsonInclude] public bool FindMatchCase;
 
-    public string LastFileName = "";
+    [JsonInclude] public string LastFileName = "";
 
     // ReSharper disable once FieldCanBeMadeReadOnly.Global
-    public List<string> RecentFiles = new();
+    [JsonInclude] public List<string> RecentFiles = new();
 
-    [TommyInclude] private string themes = ThemesType.Light.ToString();
+    [JsonInclude][JsonPropertyName("Theme")] public string Theme_ = ThemesType.Light.ToString();
 
-    [TommyIgnore]
+    [JsonIgnore]
     public ThemesType ThemesType {
         get {
-            int index = typeof(ThemesType).GetEnumNames().ToList().IndexOf(themes);
+            int index = typeof(ThemesType).GetEnumNames().ToList().IndexOf(Theme_);
             if (index == -1) {
                 index = 0;
             }
@@ -88,7 +88,7 @@ public class Settings {
             return (ThemesType) index;
         }
 
-        set => themes = value.ToString();
+        set => Theme_ = value.ToString();
     }
 
     public static void StartWatcher() {
@@ -119,18 +119,25 @@ public class Settings {
         watcher = null;
     }
 
+    private static readonly JsonSerializerOptions Option_ = new() {
+        WriteIndented = true,
+    };
+
     public static void Load() {
         if (File.Exists(Path)) {
             try {
-                Instance = TommySerializer.FromTomlFile<Settings>(Path);
+                string jsonString = File.ReadAllText(Path);
+                Dictionary<string, JsonElement> conf = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonString);
+                Instance = conf["Settings"].Deserialize<Settings>();
+                Themes.Load(
+                    conf["LightThemes"].Deserialize<LightTheme>(),
+                    conf["DarkThemes"].Deserialize<DarkTheme>(),
+                    conf["CustomThemes"].Deserialize<CustomTheme>()
+                );
             } catch {
                 // ignore
             }
-        }
-
-        Themes.Load(Path);
-
-        if (!File.Exists(Path)) {
+        } else {
             Save();
         }
     }
@@ -139,7 +146,14 @@ public class Settings {
         saving = true;
 
         try {
-            TommySerializer.ToTomlFile(new object[] { Instance, Themes.Light, Themes.Dark, Themes.Custom }, Path);
+            using StreamWriter writer = File.CreateText(Path);
+            string jsonString = JsonSerializer.Serialize(new Dictionary<string, object> {
+                { "Settings", Instance },
+                { "LightThemes", Themes.Light },
+                { "DarkThemes", Themes.Dark },
+                { "CustomThemes", Themes.Custom },
+            }, Option_);
+            writer.Write(jsonString);
         } catch {
             // ignore
         }

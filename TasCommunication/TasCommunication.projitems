@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)BinaryFormatterHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommunicationBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SerializationUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudioCommunication\MessageID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)State.cs" />

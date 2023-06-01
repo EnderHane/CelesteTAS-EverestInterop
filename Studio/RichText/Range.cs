@@ -9,7 +9,7 @@ namespace CelesteStudio.RichText;
 /// Diapason of text chars
 /// </summary>
 public class Range : IEnumerable<Place> {
-    public readonly RichText Tb;
+    public readonly StudioTextEdit Tb;
     private List<Place> cachedCharIndexToPlace;
 
     private string cachedText;
@@ -24,23 +24,23 @@ public class Range : IEnumerable<Place> {
     /// <summary>
     /// Constructor
     /// </summary>
-    public Range(RichText tb) {
+    public Range(StudioTextEdit tb) {
         Tb = tb;
     }
 
     /// <summary>
     /// Constructor
     /// </summary>
-    public Range(RichText tb, int iStartChar, int iStartLine, int iEndChar, int iEndLine)
+    public Range(StudioTextEdit tb, int startChar, int startLine, int endChar, int endLine)
         : this(tb) {
-        start = new Place(iStartChar, iStartLine);
-        end = new Place(iEndChar, iEndLine);
+        start = new Place(startChar, startLine);
+        end = new Place(endChar, endLine);
     }
 
     /// <summary>
     /// Constructor
     /// </summary>
-    public Range(RichText tb, Place start, Place end)
+    public Range(StudioTextEdit tb, Place start, Place end)
         : this(tb) {
         this.start = start;
         this.end = end;

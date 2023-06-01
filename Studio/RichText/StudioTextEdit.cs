@@ -15,7 +15,7 @@ using TasCommunication;
 
 namespace CelesteStudio.RichText;
 
-public class RichText : UserControl {
+public class StudioTextEdit : UserControl {
     private const int MinLeftIndent = 8;
     private const int MaxBracketSearchIterations = 1000;
     private const int MaxLinesForFolding = 3000;
@@ -109,9 +109,9 @@ public class RichText : UserControl {
 
     private WordWrapMode wordWrapMode = WordWrapMode.WordWrapControlWidth;
 
-    public RichText() : this(null) { }
+    public StudioTextEdit() : this(null) { }
 
-    public RichText(TextSource ts = null) {
+    public StudioTextEdit(TextSource ts = null) {
         //drawing optimization
         SetStyle(ControlStyles.AllPaintingInWmPaint, true);
         SetStyle(ControlStyles.UserPaint, true);

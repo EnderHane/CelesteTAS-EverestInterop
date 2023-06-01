@@ -131,7 +131,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     }
 
     private void ProcessGetData(byte[] data) {
-        object[] objects = BinaryFormatterHelper.FromByteArray<object[]>(data);
+        object[] objects = SerializationUtil.DeserializeUtf8JsonBytes<object[]>(data);
         GameDataType gameDataType = (GameDataType) objects[0];
         string gameData = gameDataType switch {
             GameDataType.ConsoleCommand => GetConsoleCommand((bool) objects[1]),
@@ -298,7 +298,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     }
 
     private void ProcessToggleGameSetting(byte[] data) {
-        object[] values = BinaryFormatterHelper.FromByteArray<object[]>(data);
+        object[] values = SerializationUtil.DeserializeUtf8JsonBytes<object[]>(data);
         string settingName = values[0] as string;
         object settingValue = values[1];
 
@@ -408,7 +408,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
 
     private void SendStateNow(TasInfo studioInfo, bool canFail) {
         if (IsInitialized) {
-            byte[] data = studioInfo.ToByteArray();
+            byte[] data = studioInfo.ToUtf8JsonBytes();
             Message message = new(MessageID.SendState, data);
             if (canFail) {
                 WriteMessage(message);
@@ -425,7 +425,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     public void SendCurrentBindings(bool forceSend = false) {
         Dictionary<int, List<int>> nativeBindings =
             Hotkeys.KeysInteractWithStudio.ToDictionary(pair => (int) pair.Key, pair => pair.Value.Cast<int>().ToList());
-        byte[] data = BinaryFormatterHelper.ToByteArray(nativeBindings);
+        byte[] data = SerializationUtil.SerializeToUtf8JsonBytes(nativeBindings);
         if (!forceSend && string.Join("", data) == string.Join("", lastBindingsData)) {
             return;
         }
@@ -436,12 +436,12 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
 
     private void SendModVersion() {
         string minStudioVersion = StudioMetadata.GetMinStudioVersion();
-        byte[] data = BinaryFormatterHelper.ToByteArray(new[] { CelesteTasModule.Instance.Metadata.VersionString, minStudioVersion });
+        byte[] data = SerializationUtil.SerializeToUtf8JsonBytes(new[] { CelesteTasModule.Instance.Metadata.VersionString, minStudioVersion });
         WriteMessageGuaranteed(new Message(MessageID.VersionInfo, data));
     }
 
     public void UpdateLines(Dictionary<int, string> lines) {
-        byte[] data = BinaryFormatterHelper.ToByteArray(lines);
+        byte[] data = SerializationUtil.SerializeToUtf8JsonBytes(lines);
         try {
             WriteMessageGuaranteed(new Message(MessageID.UpdateLines, data));
         } catch {

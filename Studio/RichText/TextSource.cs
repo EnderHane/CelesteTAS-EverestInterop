@@ -20,10 +20,10 @@ public class TextSource : IList<Line>, IDisposable {
     /// Maximum style count is 16
     /// </summary>
     public readonly Style[] Styles = new Style[sizeof(ushort) * 8];
-    private RichText currentTB;
+    private StudioTextEdit currentTB;
     private int lastLineUniqueId;
 
-    public TextSource(RichText currentTB) {
+    public TextSource(StudioTextEdit currentTB) {
         CurrentTB = currentTB;
         linesAccessor = new LinesAccessor(this);
         Manager = new CommandManager(this);
@@ -35,7 +35,7 @@ public class TextSource : IList<Line>, IDisposable {
     /// <summary>
     /// Current focused FastColoredTextBox
     /// </summary>
-    public RichText CurrentTB {
+    public StudioTextEdit CurrentTB {
         get => currentTB;
         set {
             currentTB = value;

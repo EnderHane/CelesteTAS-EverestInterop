@@ -5,11 +5,10 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using CelesteStudio.RichText;
 using TasCommunication;
-using Char = CelesteStudio.RichText.StudioChar;
 
 namespace CelesteStudio.Communication;
 
-internal static class CommunicationWrapper {
+internal static class CommunicationUtil {
     public static TasInfo? StudioInfo;
     public static string ReturnData;
     private static Dictionary<HotkeyID, List<Keys>> bindings;
@@ -104,14 +103,14 @@ internal static class CommunicationWrapper {
     }
 
     public static void UpdateLines(Dictionary<int, string> updateLines) {
-        RichText.RichText tasText = Studio.Instance.richText;
+        StudioTextEdit tasText = Studio.Instance.richText;
         foreach (int lineNumber in updateLines.Keys) {
             string lineText = updateLines[lineNumber];
             if (tasText.Lines.Count > lineNumber) {
                 Line line = tasText.TextSource[lineNumber];
                 line.Clear();
                 if (lineText.Length > 0) {
-                    line.AddRange(lineText.ToCharArray().Select(c => new Char(c)));
+                    line.AddRange(lineText.ToCharArray().Select(c => new StudioChar(c)));
                     Range range = new(tasText, 0, lineNumber, line.Count, lineNumber);
                     range.SetStyle(SyntaxHighlighter.CommandStyle);
                 }

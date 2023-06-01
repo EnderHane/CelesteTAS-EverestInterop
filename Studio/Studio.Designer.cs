@@ -1,7 +1,5 @@
-using CelesteStudio.RichText;
-
 namespace CelesteStudio {
-	partial class Studio {
+    partial class Studio {
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -161,7 +159,7 @@ namespace CelesteStudio {
             this.convertDashToDemoDashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.openReadFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.richText = new CelesteStudio.RichText.RichText();
+            this.richText = new CelesteStudio.RichText.StudioTextEdit();
             this.fontDialog = new System.Windows.Forms.FontDialog();
             this.statusPanel = new System.Windows.Forms.Panel();
             this.statusBar = new System.Windows.Forms.StatusStrip();
@@ -1387,7 +1385,7 @@ namespace CelesteStudio {
         private System.Windows.Forms.ToolStripMenuItem insertModInfoStripMenuItem1;
 
         #endregion
-		public CelesteStudio.RichText.RichText richText;
+		public CelesteStudio.RichText.StudioTextEdit richText;
         private System.Windows.Forms.ToolTip hotkeyToolTip;
         private System.Windows.Forms.ContextMenuStrip statusBarContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem copyGameDataMenuItem;

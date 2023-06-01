@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using CelesteStudio.RichText;
-using Tommy.Serializer;
 
 namespace CelesteStudio;
 
@@ -16,11 +15,61 @@ public enum ThemesType {
     Custom
 }
 
-public abstract class Themes {
-    public static Themes Light = new LightThemes();
-    public static Themes Dark = new DarkThemes();
-    public static Themes Custom = new CustomThemes();
+public static class Themes {
+    public static Theme Light = new LightTheme();
+    public static Theme Dark = new DarkTheme();
+    public static Theme Custom = new CustomTheme();
 
+    public static void Load(Theme light, Theme dark, Theme custom) {
+        Light = light;
+        Dark = dark;
+        Custom = custom;
+
+        ResetThemes();
+    }
+
+    public static void ResetThemes() {
+        Theme theme = Settings.Instance.ThemesType switch {
+            ThemesType.Dark => Dark,
+            ThemesType.Custom => Custom,
+            _ => Light
+        };
+
+        RichText.StudioTextEdit richText = Studio.Instance.richText;
+
+        SyntaxHighlighter.ActionStyle = ColorUtil.CreateTextStyle(theme.Action);
+        SyntaxHighlighter.AngleStyle = ColorUtil.CreateTextStyle(theme.Angle);
+        SyntaxHighlighter.BreakpointAsteriskStyle = ColorUtil.CreateTextStyle(theme.Breakpoint);
+        SyntaxHighlighter.CommaStyle = ColorUtil.CreateTextStyle(theme.Comma);
+        SyntaxHighlighter.CommandStyle = ColorUtil.CreateTextStyle(theme.Command);
+        SyntaxHighlighter.CommentStyle = ColorUtil.CreateTextStyle(theme.Comment);
+        SyntaxHighlighter.FrameStyle = ColorUtil.CreateTextStyle(theme.Frame);
+        SyntaxHighlighter.SaveStateStyle = ColorUtil.CreateTextStyle(theme.SaveState);
+
+        richText.SaveStateTextColor = ColorUtil.HexToColor(theme.SaveState);
+        richText.SaveStateBgColor = ColorUtil.HexToColor(theme.SaveState, 1);
+        richText.PlayingLineTextColor = ColorUtil.HexToColor(theme.PlayingLine);
+        richText.PlayingLineBgColor = ColorUtil.HexToColor(theme.PlayingLine, 1);
+        richText.BackColor = ColorUtil.HexToColor(theme.Background);
+        richText.PaddingBackColor = ColorUtil.HexToColor(theme.Background);
+        richText.IndentBackColor = ColorUtil.HexToColor(theme.Background);
+        richText.CaretColor = ColorUtil.HexToColor(theme.Caret);
+        richText.CurrentTextColor = ColorUtil.HexToColor(theme.PlayingFrame);
+        richText.LineNumberColor = ColorUtil.HexToColor(theme.LineNumber);
+        richText.SelectionColor = ColorUtil.HexToColor(theme.Selection);
+        richText.CurrentLineColor = ColorUtil.HexToColor(theme.CurrentLine);
+        richText.ChangedLineTextColor = ColorUtil.HexToColor(theme.ChangedLine);
+        richText.ChangedLineBgColor = ColorUtil.HexToColor(theme.ChangedLine, 1);
+        richText.ServiceLinesColor = ColorUtil.HexToColor(theme.ServiceLine);
+
+        Studio.Instance.SetControlsColor(theme);
+
+        richText.ClearStylesBuffer();
+        richText.SyntaxHighlighter.TASSyntaxHighlight(richText.Range);
+    }
+}
+
+public abstract class Theme {
     public abstract List<string> Action { get; set; }
     public abstract List<string> Angle { get; set; }
     public abstract List<string> Background { get; set; }
@@ -39,64 +88,9 @@ public abstract class Themes {
     public abstract List<string> Selection { get; set; }
     public abstract List<string> ServiceLine { get; set; }
     public abstract List<string> Status { get; set; }
-
-    public static void Load(string path) {
-        if (File.Exists(path)) {
-            try {
-                Light = TommySerializer.FromTomlFile<LightThemes>(path);
-                Dark = TommySerializer.FromTomlFile<DarkThemes>(path);
-                Custom = TommySerializer.FromTomlFile<CustomThemes>(path);
-            } catch {
-                // ignore
-            }
-        }
-
-        ResetThemes();
-    }
-
-    public static void ResetThemes() {
-        Themes themes = Settings.Instance.ThemesType switch {
-            ThemesType.Dark => Dark,
-            ThemesType.Custom => Custom,
-            _ => Light
-        };
-
-        RichText.RichText richText = Studio.Instance.richText;
-
-        SyntaxHighlighter.ActionStyle = ColorUtils.CreateTextStyle(themes.Action);
-        SyntaxHighlighter.AngleStyle = ColorUtils.CreateTextStyle(themes.Angle);
-        SyntaxHighlighter.BreakpointAsteriskStyle = ColorUtils.CreateTextStyle(themes.Breakpoint);
-        SyntaxHighlighter.CommaStyle = ColorUtils.CreateTextStyle(themes.Comma);
-        SyntaxHighlighter.CommandStyle = ColorUtils.CreateTextStyle(themes.Command);
-        SyntaxHighlighter.CommentStyle = ColorUtils.CreateTextStyle(themes.Comment);
-        SyntaxHighlighter.FrameStyle = ColorUtils.CreateTextStyle(themes.Frame);
-        SyntaxHighlighter.SaveStateStyle = ColorUtils.CreateTextStyle(themes.SaveState);
-
-        richText.SaveStateTextColor = ColorUtils.HexToColor(themes.SaveState);
-        richText.SaveStateBgColor = ColorUtils.HexToColor(themes.SaveState, 1);
-        richText.PlayingLineTextColor = ColorUtils.HexToColor(themes.PlayingLine);
-        richText.PlayingLineBgColor = ColorUtils.HexToColor(themes.PlayingLine, 1);
-        richText.BackColor = ColorUtils.HexToColor(themes.Background);
-        richText.PaddingBackColor = ColorUtils.HexToColor(themes.Background);
-        richText.IndentBackColor = ColorUtils.HexToColor(themes.Background);
-        richText.CaretColor = ColorUtils.HexToColor(themes.Caret);
-        richText.CurrentTextColor = ColorUtils.HexToColor(themes.PlayingFrame);
-        richText.LineNumberColor = ColorUtils.HexToColor(themes.LineNumber);
-        richText.SelectionColor = ColorUtils.HexToColor(themes.Selection);
-        richText.CurrentLineColor = ColorUtils.HexToColor(themes.CurrentLine);
-        richText.ChangedLineTextColor = ColorUtils.HexToColor(themes.ChangedLine);
-        richText.ChangedLineBgColor = ColorUtils.HexToColor(themes.ChangedLine, 1);
-        richText.ServiceLinesColor = ColorUtils.HexToColor(themes.ServiceLine);
-
-        Studio.Instance.SetControlsColor(themes);
-
-        richText.ClearStylesBuffer();
-        richText.SyntaxHighlighter.TASSyntaxHighlight(richText.Range);
-    }
 }
 
-[TommyTableName("LightThemes")]
-public class LightThemes : Themes {
+public class LightTheme : Theme {
     public override List<string> Action { get; set; } = new() { "2222FF" };
     public override List<string> Angle { get; set; } = new() { "EE22EE" };
     public override List<string> Background { get; set; } = new() { "FFFFFF" };
@@ -117,8 +111,7 @@ public class LightThemes : Themes {
     public override List<string> Status { get; set; } = new() { "000000", "F2F2F2" };
 }
 
-[TommyTableName("DarkThemes")]
-public class DarkThemes : Themes {
+public class DarkTheme : Theme {
     public override List<string> Action { get; set; } = new() { "8BE9FD" };
     public override List<string> Angle { get; set; } = new() { "FF79C6" };
     public override List<string> Background { get; set; } = new() { "282A36" };
@@ -139,8 +132,7 @@ public class DarkThemes : Themes {
     public override List<string> Status { get; set; } = new() { "F8F8F2", "383A46" };
 }
 
-[TommyTableName("CustomThemes")]
-public class CustomThemes : Themes {
+public class CustomTheme : Theme {
     public override List<string> Action { get; set; } = new() { "268BD2" };
     public override List<string> Angle { get; set; } = new() { "D33682" };
     public override List<string> Background { get; set; } = new() { "FDF6E3" };
@@ -161,55 +153,55 @@ public class CustomThemes : Themes {
     public override List<string> Status { get; set; } = new() { "073642", "EEE8D5" };
 }
 
-public class ThemesColorTable : ProfessionalColorTable {
-    private readonly Themes themes;
+public class ThemeColorTable : ProfessionalColorTable {
+    private readonly Theme theme;
 
-    public ThemesColorTable(Themes themes) {
-        this.themes = themes;
+    public ThemeColorTable(Theme theme) {
+        this.theme = theme;
     }
 
-    public override Color ToolStripDropDownBackground => ColorUtils.HexToColor(themes.Status, 1);
-    public override Color ImageMarginGradientBegin => ColorUtils.HexToColor(themes.Status, 1);
-    public override Color ImageMarginGradientMiddle => ColorUtils.HexToColor(themes.Status, 1);
-    public override Color ImageMarginGradientEnd => ColorUtils.HexToColor(themes.Status, 1);
-    public override Color MenuBorder => ColorUtils.HexToColor(themes.CurrentLine);
-    public override Color MenuItemBorder => ColorUtils.HexToColor(themes.CurrentLine);
-    public override Color MenuItemSelected => ColorUtils.HexToColor(themes.Selection);
-    public override Color MenuStripGradientBegin => ColorUtils.HexToColor(themes.Status, 1);
-    public override Color MenuStripGradientEnd => ColorUtils.HexToColor(themes.Status, 1);
-    public override Color MenuItemSelectedGradientBegin => ColorUtils.HexToColor(themes.Selection);
-    public override Color MenuItemSelectedGradientEnd => ColorUtils.HexToColor(themes.Selection);
-    public override Color MenuItemPressedGradientBegin => ColorUtils.HexToColor(themes.Status, 1);
-    public override Color MenuItemPressedGradientEnd => ColorUtils.HexToColor(themes.Status, 1);
+    public override Color ToolStripDropDownBackground => ColorUtil.HexToColor(theme.Status, 1);
+    public override Color ImageMarginGradientBegin => ColorUtil.HexToColor(theme.Status, 1);
+    public override Color ImageMarginGradientMiddle => ColorUtil.HexToColor(theme.Status, 1);
+    public override Color ImageMarginGradientEnd => ColorUtil.HexToColor(theme.Status, 1);
+    public override Color MenuBorder => ColorUtil.HexToColor(theme.CurrentLine);
+    public override Color MenuItemBorder => ColorUtil.HexToColor(theme.CurrentLine);
+    public override Color MenuItemSelected => ColorUtil.HexToColor(theme.Selection);
+    public override Color MenuStripGradientBegin => ColorUtil.HexToColor(theme.Status, 1);
+    public override Color MenuStripGradientEnd => ColorUtil.HexToColor(theme.Status, 1);
+    public override Color MenuItemSelectedGradientBegin => ColorUtil.HexToColor(theme.Selection);
+    public override Color MenuItemSelectedGradientEnd => ColorUtil.HexToColor(theme.Selection);
+    public override Color MenuItemPressedGradientBegin => ColorUtil.HexToColor(theme.Status, 1);
+    public override Color MenuItemPressedGradientEnd => ColorUtil.HexToColor(theme.Status, 1);
 }
 
-public class ThemesRenderer : ToolStripProfessionalRenderer {
-    private readonly Themes themes;
+public class ThemeRenderer : ToolStripProfessionalRenderer {
+    private readonly Theme themes;
 
-    public ThemesRenderer(Themes themes) : base(new ThemesColorTable(themes)) {
+    public ThemeRenderer(Theme themes) : base(new ThemeColorTable(themes)) {
         this.themes = themes;
     }
 
     protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e) {
         if (e.Item is ToolStripMenuItem) {
-            e.ArrowColor = ColorUtils.HexToColor(themes.Status);
+            e.ArrowColor = ColorUtil.HexToColor(themes.Status);
         }
 
         base.OnRenderArrow(e);
     }
 
     protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e) {
-        e.TextColor = ColorUtils.HexToColor(themes.Status);
+        e.TextColor = ColorUtil.HexToColor(themes.Status);
         base.OnRenderItemText(e);
     }
 
     protected override void OnRenderItemBackground(ToolStripItemRenderEventArgs e) {
-        e.Item.BackColor = ColorUtils.HexToColor(themes.Status, 1);
+        e.Item.BackColor = ColorUtil.HexToColor(themes.Status, 1);
         base.OnRenderItemBackground(e);
     }
 }
 
-public static class ColorUtils {
+public static class ColorUtil {
     private static readonly Regex HexChar = new(@"^[0-9a-f]*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Color ErrorColor = Color.FromArgb(128, 255, 0, 0);
     private static readonly TextStyle ErrorTextStyle = new(Brushes.White, new SolidBrush(ErrorColor), FontStyle.Regular);

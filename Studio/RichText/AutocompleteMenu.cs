@@ -16,7 +16,7 @@ public class AutocompleteMenu : ToolStripDropDown {
     readonly AutocompleteListView listView;
     public ToolStripControlHost Host;
 
-    public AutocompleteMenu(RichText tb) {
+    public AutocompleteMenu(StudioTextEdit tb) {
         // create a new popup and add the list view to it 
         AutoClose = false;
         AutoSize = false;
@@ -122,7 +122,7 @@ public class AutocompleteMenu : ToolStripDropDown {
 public class AutocompleteListView : UserControl {
     readonly int hoveredItemIndex = -1;
     readonly int itemHeight;
-    readonly RichText tb;
+    readonly StudioTextEdit tb;
     readonly Timer timer = new();
 
     int oldItemCount = 0;
@@ -131,7 +131,7 @@ public class AutocompleteListView : UserControl {
     internal ToolTip ToolTip = new();
     internal List<AutocompleteItem> VisibleItems;
 
-    internal AutocompleteListView(RichText tb) {
+    internal AutocompleteListView(StudioTextEdit tb) {
         SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
         base.Font = new Font(FontFamily.GenericSansSerif, 9);
         VisibleItems = new List<AutocompleteItem>();
@@ -563,5 +563,5 @@ public class SelectingEventArgs : EventArgs {
 
 public class SelectedEventArgs : EventArgs {
     public AutocompleteItem Item { get; internal set; }
-    public RichText Tb { get; set; }
+    public StudioTextEdit Tb { get; set; }
 }

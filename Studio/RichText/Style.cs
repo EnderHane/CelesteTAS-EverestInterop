@@ -42,7 +42,7 @@ public abstract class Style : IDisposable {
     /// <summary>
     /// Occurs when user click on StyleVisualMarker joined to this style 
     /// </summary>
-    public virtual void OnVisualMarkerClick(RichText tb, VisualMarkerEventArgs args) {
+    public virtual void OnVisualMarkerClick(StudioTextEdit tb, VisualMarkerEventArgs args) {
         VisualMarkerClick?.Invoke(tb, args);
     }
 
@@ -50,7 +50,7 @@ public abstract class Style : IDisposable {
     /// Shows VisualMarker
     /// Call this method in Draw method, when you need to show VisualMarker for your style
     /// </summary>
-    protected virtual void AddVisualMarker(RichText tb, StyleVisualMarker marker) {
+    protected virtual void AddVisualMarker(StudioTextEdit tb, StyleVisualMarker marker) {
         tb.AddVisualMarker(marker);
     }
 
@@ -119,7 +119,7 @@ public class TextStyle : Style {
         //IME mode
         if (range.Tb.ImeAllowed) {
             for (int i = range.Start.Char; i < range.End.Char; i++) {
-                SizeF size = RichText.GetCharSize(f, line[i].Char_);
+                SizeF size = StudioTextEdit.GetCharSize(f, line[i].Char_);
 
                 GraphicsState gs = gr.Save();
                 float k = size.Width > range.Tb.CharWidth + 1 ? range.Tb.CharWidth / size.Width : 1;

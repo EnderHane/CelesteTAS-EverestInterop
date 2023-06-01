@@ -12,7 +12,7 @@ public class ExportToHTML {
     public string LineNumbersCSS =
         "<style type=\"text/css\"> .lineNumber{font-family : monospace; font-size : small; font-style : normal; font-weight : normal; color : Teal; background-color : ThreedFace;} </style>";
 
-    RichText tb;
+    StudioTextEdit tb;
 
     public ExportToHTML() {
         UseNbsp = true;
@@ -51,7 +51,7 @@ public class ExportToHTML {
     /// </summary>
     public bool IncludeLineNumbers { get; set; }
 
-    public string GetHtml(RichText tb) {
+    public string GetHtml(StudioTextEdit tb) {
         this.tb = tb;
         Range sel = new(tb);
         sel.SelectAll();

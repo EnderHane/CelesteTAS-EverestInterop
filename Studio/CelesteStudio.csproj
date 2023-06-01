@@ -3,14 +3,15 @@
         <OutputType>WinExe</OutputType>
         <AssemblyName>Celeste Studio</AssemblyName>
         <TargetFramework>net48</TargetFramework>
-        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
         <LangVersion>10</LangVersion>
         <AssemblyTitle>Celeste Studio</AssemblyTitle>
         <Product>Celeste Studio</Product>
-        <Copyright>Copyright © 2018</Copyright>
+        <Copyright></Copyright>
         <AssemblyVersion>2.14.5.0</AssemblyVersion>
         <FileVersion>2.14.5.0</FileVersion>
-        <OutputPath>..\CelesteTAS-EverestInterop\bin\</OutputPath>
+        <OutputPath>$(SolutionDir)build\CelesteStudio\bin\</OutputPath>
+        <IntermediateOutputPath>$(SolutionDir)build\obj\</IntermediateOutputPath>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>sgKey.snk</AssemblyOriginatorKeyFile>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -18,11 +19,13 @@
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <DebugType>portable</DebugType>
         <DefineConstants>TRACE</DefineConstants>
+        <OutputPath>$(SolutionDir)build\CelesteStudio\bin\Debug\</OutputPath>
         <PlatformTarget>AnyCPU</PlatformTarget>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugType>portable</DebugType>
         <DefineConstants>TRACE</DefineConstants>
+        <OutputPath>$(SolutionDir)build\CelesteStudio\bin\Release\</OutputPath>
         <PlatformTarget>AnyCPU</PlatformTarget>
     </PropertyGroup>
     <PropertyGroup>
@@ -43,7 +46,7 @@
         <Compile Update="RichText\GoToForm.Designer.cs">
             <DependentUpon>GoToForm.cs</DependentUpon>
         </Compile>
-        <Compile Update="RichText\RichText.cs">
+        <Compile Update="RichText\StudioTextEdit.cs">
             <SubType>UserControl</SubType>
         </Compile>
         <Compile Update="Studio.cs">
@@ -65,8 +68,8 @@
         <EmbeddedResource Update="RichText\GoToForm.resx">
             <DependentUpon>GoToForm.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Update="RichText\RichText.resx">
-            <DependentUpon>RichText.cs</DependentUpon>
+        <EmbeddedResource Update="RichText\StudioTextEdit.resx">
+            <DependentUpon>StudioTextEdit.cs</DependentUpon>
         </EmbeddedResource>
         <EmbeddedResource Update="Studio.resx">
             <DependentUpon>Studio.cs</DependentUpon>
@@ -77,11 +80,13 @@
         <Content Include="GoldBerry.ico" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18.2" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" />
-        <PackageReference Include="Tommy.Serializer" Version="0.1.0" />
+        <PackageReference Include="System.Text.Json" Version="7.0.2" />
+        <PackageReference Include="System.Threading.Channels" Version="7.0.0" />
     </ItemGroup>
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Delete Files="$(TargetDir)$(AssemblyName).exe.config" />
-    </Target>
+    <ItemGroup>
+      <None Include="App.config" />
+    </ItemGroup>
     <Import Project="..\TasCommunication\TasCommunication.projitems" Label="Shared" />
 </Project>

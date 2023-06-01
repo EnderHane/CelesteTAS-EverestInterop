@@ -37,7 +37,7 @@ public partial class Studio : BaseForm {
 
     private bool DisableTyping => tasStates.HasFlag(States.Enable) && !tasStates.HasFlag(States.FrameStep) &&
                                   (CommunicationServer.Instance?.IsInitialized ?? false) ||
-                                  CommunicationWrapper.Forwarding;
+                                  CommunicationUtil.Forwarding;
 
     private string TitleBarText =>
         (string.IsNullOrEmpty(CurrentFileName) ? "Celeste.tas" : Path.GetFileName(CurrentFileName))
@@ -301,7 +301,7 @@ public partial class Studio : BaseForm {
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
         // if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN)
         if (msg.Msg is 0x100 or 0x104) {
-            if (!richText.IsChanged && CommunicationWrapper.CheckControls(ref msg)) {
+            if (!richText.IsChanged && CommunicationUtil.CheckControls(ref msg)) {
                 return true;
             }
         }
@@ -714,9 +714,9 @@ public partial class Studio : BaseForm {
         richText.Selection = new Range(richText, cursor, currentLine, cursor, currentLine);
     }
 
-    private void InsertRoomName() => InsertNewLine($"#lvl_{CommunicationWrapper.StudioInfo?.LevelName}");
+    private void InsertRoomName() => InsertNewLine($"#lvl_{CommunicationUtil.StudioInfo?.LevelName}");
 
-    private void InsertTime() => InsertNewLine($"#{CommunicationWrapper.StudioInfo?.ChapterTime}");
+    private void InsertTime() => InsertNewLine($"#{CommunicationUtil.StudioInfo?.ChapterTime}");
 
     private void InsertDataFromGame(GameDataType gameDataType, object arg = null) {
         if (GetDataFromGame(gameDataType, arg) is { } gameData) {
@@ -725,22 +725,22 @@ public partial class Studio : BaseForm {
     }
 
     private string GetDataFromGame(GameDataType? gameDataTypes, object arg = null) {
-        CommunicationWrapper.ReturnData = null;
+        CommunicationUtil.ReturnData = null;
         if (gameDataTypes.HasValue) {
             CommunicationServer.Instance.GetDataFromGame(gameDataTypes.Value, arg);
         }
 
         int sleepTimeout = 150;
-        while (CommunicationWrapper.ReturnData == null && sleepTimeout > 0) {
+        while (CommunicationUtil.ReturnData == null && sleepTimeout > 0) {
             Thread.Sleep(10);
             sleepTimeout -= 10;
         }
 
-        if (CommunicationWrapper.ReturnData == null && sleepTimeout <= 0) {
+        if (CommunicationUtil.ReturnData == null && sleepTimeout <= 0) {
             ShowTooltip("Getting data from the game timed out.");
         }
 
-        return CommunicationWrapper.ReturnData == string.Empty ? null : CommunicationWrapper.ReturnData;
+        return CommunicationUtil.ReturnData == string.Empty ? null : CommunicationUtil.ReturnData;
     }
 
     private void ToggleGameSetting(string settingName, object value, object sender, bool showResult = true) {
@@ -791,7 +791,7 @@ public partial class Studio : BaseForm {
                 if (hooked) {
                     UpdateValues();
                     FixSomeBugsWhenOutOfMinimized();
-                    CommunicationWrapper.CheckForward();
+                    CommunicationUtil.CheckForward();
                 } else {
                     richText.ReadOnly = DisableTyping;
                 }
@@ -834,8 +834,8 @@ public partial class Studio : BaseForm {
         if (InvokeRequired) {
             Invoke((Action) UpdateValues);
         } else {
-            if (CommunicationWrapper.StudioInfo != null) {
-                TasInfo studioInfo = CommunicationWrapper.StudioInfo.Value;
+            if (CommunicationUtil.StudioInfo != null) {
+                TasInfo studioInfo = CommunicationUtil.StudioInfo.Value;
                 richText.PlayingLine = studioInfo.CurrentLine;
                 richText.CurrentLineSuffix = studioInfo.CurrentLineSuffix;
                 richText.SaveStateLine = studioInfo.SaveStateLine;
@@ -886,7 +886,7 @@ public partial class Studio : BaseForm {
             return;
         }
 
-        RichText.RichText tas = (RichText.RichText) sender;
+        RichText.StudioTextEdit tas = (RichText.StudioTextEdit) sender;
         int count = e.Count;
         while (count-- > 0) {
             InputRecord input = new(tas.GetLineText(e.Index + count));
@@ -899,7 +899,7 @@ public partial class Studio : BaseForm {
 
     private void UpdateStatusBar() {
         if ((CommunicationServer.Instance?.IsInitialized ?? false)) {
-            string gameInfo = CommunicationWrapper.StudioInfo?.GameInfo ?? string.Empty;
+            string gameInfo = CommunicationUtil.StudioInfo?.GameInfo ?? string.Empty;
             statusBarBuilder.Clear();
             if (currentFrame > 0) {
                 statusBarBuilder.Append($"{currentFrame}/");
@@ -954,7 +954,7 @@ public partial class Studio : BaseForm {
 
     private void TasText_TextChanged(object sender, TextChangedEventArgs e) {
         lastChanged = DateTime.Now;
-        UpdateLines((RichText.RichText) sender, e.ChangedRange);
+        UpdateLines((RichText.StudioTextEdit) sender, e.ChangedRange);
     }
 
     private void CommentText(bool toggle) {
@@ -1214,7 +1214,7 @@ public partial class Studio : BaseForm {
         }
     }
 
-    private void UpdateLines(RichText.RichText tas, Range range) {
+    private void UpdateLines(RichText.StudioTextEdit tas, Range range) {
         if (updating) {
             return;
         }
@@ -1600,8 +1600,8 @@ public partial class Studio : BaseForm {
     private void FontToolStripMenuItem_Click(object sender, EventArgs e) {
         if (fontDialog.ShowDialog() != DialogResult.Cancel) {
             //check monospace font
-            SizeF sizeM = RichText.RichText.GetCharSize(fontDialog.Font, 'M');
-            SizeF sizeDot = RichText.RichText.GetCharSize(fontDialog.Font, '.');
+            SizeF sizeM = RichText.StudioTextEdit.GetCharSize(fontDialog.Font, 'M');
+            SizeF sizeDot = RichText.StudioTextEdit.GetCharSize(fontDialog.Font, '.');
             if (sizeM == sizeDot) {
                 InitFont(fontDialog.Font);
                 Settings.Instance.Font = fontDialog.Font;
@@ -1913,12 +1913,12 @@ public partial class Studio : BaseForm {
         backupFileCountsToolStripMenuItem.Text = $"Backup File Count: {Settings.Instance.AutoBackupCount}";
     }
 
-    public void SetControlsColor(Themes themes) {
-        Color foreColor = ColorUtils.HexToColor(themes.Status);
-        Color backColor = ColorUtils.HexToColor(themes.Status, 1);
-        Color dividerColor = ColorUtils.HexToColor(themes.ServiceLine, 0);
+    public void SetControlsColor(Theme themes) {
+        Color foreColor = ColorUtil.HexToColor(themes.Status);
+        Color backColor = ColorUtil.HexToColor(themes.Status, 1);
+        Color dividerColor = ColorUtil.HexToColor(themes.ServiceLine, 0);
 
-        BackColor = ColorUtils.HexToColor(themes.Background);
+        BackColor = ColorUtil.HexToColor(themes.Background);
 
         lblStatus.ForeColor = foreColor;
         lblStatus.BackColor = backColor;
@@ -1928,7 +1928,7 @@ public partial class Studio : BaseForm {
 
         menuStrip.ForeColor = foreColor;
         menuStrip.BackColor = backColor;
-        menuStrip.Renderer = new ThemesRenderer(themes);
+        menuStrip.Renderer = new ThemeRenderer(themes);
 
         dividerLabel.BackColor = dividerColor;
     }

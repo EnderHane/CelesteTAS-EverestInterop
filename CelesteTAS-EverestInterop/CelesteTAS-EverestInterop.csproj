@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>TAS</RootNamespace>
         <TargetFramework>net48</TargetFramework>
@@ -6,7 +6,8 @@
         <AssemblyTitle>CelesteTAS-EverestInterop</AssemblyTitle>
         <Product>CelesteTAS-EverestInterop</Product>
         <Copyright>Copyright © 2018</Copyright>
-        <OutputPath>bin\</OutputPath>
+        <OutputPath>$(SolutionDir)build\CelesteTAS-EverestInterop\bin\</OutputPath>
+        <IntermediateOutputPath>$(SolutionDir)build\obj\</IntermediateOutputPath>
         <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB3270</MSBuildWarningsAsMessages>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -23,20 +24,25 @@
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <DebugType>portable</DebugType>
         <DefineConstants>TRACE</DefineConstants>
+        <OutputPath>$(SolutionDir)build\CelesteTAS-EverestInterop\bin\Debug\</OutputPath>
         <WarningLevel>0</WarningLevel>
         <UseVSHostingProcess>true</UseVSHostingProcess>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugType>portable</DebugType>
         <DefineConstants>TRACE</DefineConstants>
+        <OutputPath>$(SolutionDir)build\CelesteTAS-EverestInterop\bin\Release</OutputPath>
         <DocumentationFile />
         <NoWarn>CS1591</NoWarn>
         <PlatformTarget>AnyCPU</PlatformTarget>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="DotNetZip" Version="1.13.8" />
+        <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18.2" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" />
         <PackageReference Include="MonoMod.RuntimeDetour" Version="21.4.29.1" />
+        <PackageReference Include="System.Text.Json" Version="7.0.2" />
+        <PackageReference Include="System.Threading.Channels" Version="7.0.0" />
         <PackageReference Include="YamlDotNet" Version="8.0.0.0" />
         <PackageReference Include="JetBrains.Profiler.Api" Version="1.1.8">
             <IncludeAssets Condition="'$(Configuration)' == 'Debug'">all</IncludeAssets>

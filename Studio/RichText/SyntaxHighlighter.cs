@@ -216,7 +216,7 @@ public class SyntaxHighlighter : IDisposable {
     }
 
     public virtual void TASSyntaxHighlight(Range range) {
-        RichText tb = range.Tb;
+        StudioTextEdit tb = range.Tb;
         tb.CommentPrefix = "#";
         tb.LeftBracket = '\x0';
         tb.RightBracket = '\x0';

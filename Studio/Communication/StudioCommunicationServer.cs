@@ -74,8 +74,8 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
 
     private void ProcessSendState(byte[] data) {
         try {
-            TasInfo studioInfo = TasInfo.FromByteArray(data);
-            CommunicationWrapper.StudioInfo = studioInfo;
+            TasInfo studioInfo = TasInfo.FromUtf8JsonBytes(data);
+            CommunicationUtil.StudioInfo = studioInfo;
         } catch (InvalidCastException) {
             string studioVersion = Studio.Version.ToString(3);
             MessageBox.Show(
@@ -86,18 +86,18 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
     }
 
     private void ProcessSendCurrentBindings(byte[] data) {
-        Dictionary<int, List<int>> nativeBindings = BinaryFormatterHelper.FromByteArray<Dictionary<int, List<int>>>(data);
+        Dictionary<int, List<int>> nativeBindings = SerializationUtil.DeserializeUtf8JsonBytes<Dictionary<int, List<int>>>(data);
         Dictionary<HotkeyID, List<Keys>> bindings =
             nativeBindings.ToDictionary(pair => (HotkeyID) pair.Key, pair => pair.Value.Cast<Keys>().ToList());
         foreach (var pair in bindings) {
             Log(pair.ToString());
         }
 
-        CommunicationWrapper.SetBindings(bindings);
+        CommunicationUtil.SetBindings(bindings);
     }
 
     private void ProcessVersionInfo(byte[] data) {
-        string[] versionInfos = BinaryFormatterHelper.FromByteArray<string[]>(data);
+        string[] versionInfos = SerializationUtil.DeserializeUtf8JsonBytes<string[]>(data);
         string modVersion = ErrorLog.ModVersion = versionInfos[0];
         string minStudioVersion = versionInfos[1];
 
@@ -110,12 +110,12 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
     }
 
     private void ProcessUpdateLines(byte[] data) {
-        Dictionary<int, string> updateLines = BinaryFormatterHelper.FromByteArray<Dictionary<int, string>>(data);
-        CommunicationWrapper.UpdateLines(updateLines);
+        Dictionary<int, string> updateLines = SerializationUtil.DeserializeUtf8JsonBytes<Dictionary<int, string>>(data);
+        CommunicationUtil.UpdateLines(updateLines);
     }
 
     private void ProcessReturnData(byte[] data) {
-        CommunicationWrapper.ReturnData = Encoding.UTF8.GetString(data);
+        CommunicationUtil.ReturnData = Encoding.UTF8.GetString(data);
     }
 
     #endregion
@@ -192,7 +192,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
             return;
         }
 
-        byte[] bytes = BinaryFormatterHelper.ToByteArray(new[] {
+        byte[] bytes = SerializationUtil.SerializeToUtf8JsonBytes(new[] {
             settingName, value
         });
         WriteMessageGuaranteed(new Message(MessageID.ToggleGameSetting, bytes));
@@ -203,7 +203,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
             return;
         }
 
-        byte[] bytes = BinaryFormatterHelper.ToByteArray(new[] {
+        byte[] bytes = SerializationUtil.SerializeToUtf8JsonBytes(new[] {
             (byte) gameDataType, arg
         });
         WriteMessageGuaranteed(new Message(MessageID.GetData, bytes));

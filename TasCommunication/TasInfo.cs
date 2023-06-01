@@ -1,3 +1,7 @@
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace TasCommunication;
 
 // ReSharper disable once StructCanBeMadeReadOnly
@@ -28,34 +32,8 @@ public readonly record struct TasInfo {
         ChapterTime = chapterTime;
     }
 
-    // ReSharper disable once UnusedMember.Global
-    public byte[] ToByteArray() {
-        return BinaryFormatterHelper.ToByteArray(new object[] {
-            CurrentLine,
-            CurrentLineSuffix,
-            CurrentFrameInTas,
-            TotalFrames,
-            SaveStateLine,
-            TasStates,
-            GameInfo,
-            LevelName,
-            ChapterTime,
-        });
-    }
+    public byte[] ToUtf8JsonBytes() => SerializationUtil.SerializeToUtf8JsonBytes(this);
 
-    // ReSharper disable once UnusedMember.Global
-    public static TasInfo FromByteArray(byte[] data) {
-        object[] values = BinaryFormatterHelper.FromByteArray<object[]>(data);
-        return new TasInfo(
-            (int) values[0],
-            values[1] as string,
-            (int) values[2],
-            (int) values[3],
-            (int) values[4],
-            (int) values[5],
-            values[6] as string,
-            values[7] as string,
-            values[8] as string
-        );
-    }
+    public static TasInfo FromUtf8JsonBytes(byte[] bytes) => SerializationUtil.DeserializeUtf8JsonBytes<TasInfo>(bytes);
+
 }

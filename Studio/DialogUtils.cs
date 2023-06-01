@@ -60,7 +60,7 @@ public static class DialogUtils {
         return result == DialogResult.OK;
     }
 
-    public static void ShowFindDialog(RichText.RichText richText) {
+    public static void ShowFindDialog(RichText.StudioTextEdit richText) {
         const int padding = 10;
         const int buttonWidth = 75;
         const int buttonHeight = 30;
@@ -136,7 +136,7 @@ public static class DialogUtils {
         inputBox.ShowDialog();
     }
 
-    private static void QuickFind(RichText.RichText richText, string text, bool next, bool fromStart = false) {
+    private static void QuickFind(RichText.StudioTextEdit richText, string text, bool next, bool fromStart = false) {
         if (string.IsNullOrEmpty(text)) {
             return;
         }
@@ -205,7 +205,7 @@ public static class DialogUtils {
         }
     }
 
-    public static void ShowGoToDialog(RichText.RichText richText) {
+    public static void ShowGoToDialog(RichText.StudioTextEdit richText) {
         const int padding = 10;
         const int buttonWidth = 75;
         const int buttonHeight = 30;
