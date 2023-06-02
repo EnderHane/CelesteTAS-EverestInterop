@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 
 namespace TasCommunication;
@@ -9,15 +10,17 @@ public static class SerializationUtil {
     };
 
     public static byte[] SerializeToUtf8JsonBytes<T>(T obj) {
-        return JsonSerializer.SerializeToUtf8Bytes(obj, Option_);
+        string s = JsonSerializer.Serialize(obj, Option_);
+        return Encoding.UTF8.GetBytes(s);
     }
 
     public static T DeserializeUtf8JsonBytes<T>(byte[] json) {
         if (json == null) {
             return default;
         }
-        Utf8JsonReader reader = new(json);
-        return JsonSerializer.Deserialize<T>(ref reader, Option_) ?? default;
+        string s = Encoding.UTF8.GetString(json);
+        T result = JsonSerializer.Deserialize<T>(s, Option_);
+        return result ?? default;
     }
 
 }

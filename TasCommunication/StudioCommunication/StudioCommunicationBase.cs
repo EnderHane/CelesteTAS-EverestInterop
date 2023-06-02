@@ -14,7 +14,6 @@ public class StudioCommunicationBase : ICommunicationBase {
     // ReSharper disable once MemberCanBePrivate.Global
     protected const int Timeout = 16;
 
-    private static readonly List<StudioCommunicationBase> AttachedCom = new();
     private readonly Mutex mutex;
 
     //I gave up on using pipes.
@@ -57,8 +56,6 @@ public class StudioCommunicationBase : ICommunicationBase {
         if (!created) {
             mutex = Mutex.OpenExisting(mutexName);
         }
-
-        AttachedCom.Add(this);
     }
 
     ~StudioCommunicationBase() {
@@ -160,15 +157,7 @@ public class StudioCommunicationBase : ICommunicationBase {
         }
     }
 
-    protected bool WriteMessage(Message message, bool local = true) {
-        if (!local) {
-            foreach (var com in AttachedCom) {
-                if (com != this) {
-                    com.PendingWrite ??= (() => WriteMessage(message));
-                }
-            }
-        }
-
+    protected bool WriteMessage(Message message) {
         using (MemoryMappedViewStream stream = sharedMemory.CreateViewStream()) {
             mutex.WaitOne();
 
@@ -202,15 +191,7 @@ public class StudioCommunicationBase : ICommunicationBase {
         return true;
     }
 
-    protected void WriteMessageGuaranteed(Message message, bool local = true) {
-        if (!local) {
-            foreach (var com in AttachedCom) {
-                if (com != this) {
-                    com.PendingWrite = () => WriteMessageGuaranteed(message);
-                }
-            }
-        }
-
+    protected void WriteMessageGuaranteed(Message message) {
         while (true) {
             if (WriteMessage(message)) {
                 break;

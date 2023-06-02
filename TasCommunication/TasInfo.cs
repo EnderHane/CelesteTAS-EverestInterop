@@ -6,21 +6,30 @@ namespace TasCommunication;
 
 // ReSharper disable once StructCanBeMadeReadOnly
 public readonly record struct TasInfo {
-    public readonly int CurrentLine;
-    public readonly string CurrentLineSuffix;
-    public readonly int CurrentFrameInTas;
-    public readonly int TotalFrames;
-    public readonly int SaveStateLine;
-    public readonly int TasStates;
-    public readonly string GameInfo;
-    public readonly string LevelName;
-    public readonly string ChapterTime;
+    [JsonInclude] public readonly int CurrentLine;
+    [JsonInclude] public readonly string CurrentLineSuffix;
+    [JsonInclude] public readonly int CurrentFrameInTas;
+    [JsonInclude] public readonly int TotalFrames;
+    [JsonInclude] public readonly int SaveStateLine;
+    [JsonInclude] public readonly int TasStates;
+    [JsonInclude] public readonly string GameInfo;
+    [JsonInclude] public readonly string LevelName;
+    [JsonInclude] public readonly string ChapterTime;
 
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once ConvertToPrimaryConstructor
+    [JsonConstructor]
     public TasInfo(
-        int currentLine, string currentLineSuffix, int currentFrameInTas, int totalFrames, int saveStateLine, int tasStates,
-        string gameInfo, string levelName, string chapterTime) {
+        int currentLine, 
+        string currentLineSuffix, 
+        int currentFrameInTas, 
+        int totalFrames, 
+        int saveStateLine, 
+        int tasStates,
+        string gameInfo, 
+        string levelName, 
+        string chapterTime
+    ) {
         CurrentLine = currentLine;
         CurrentLineSuffix = currentLineSuffix;
         CurrentFrameInTas = currentFrameInTas;

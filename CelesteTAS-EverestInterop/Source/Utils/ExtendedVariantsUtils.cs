@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using ExtendedVariants.Module;
 
 namespace TAS.Utils;
@@ -13,11 +14,13 @@ internal static class ExtendedVariantsUtils {
     private static readonly Lazy<object> SuperDashingVariant =
         new(() => Enum.Parse(typeof(ExtendedVariantsModule.Variant), "SuperDashing"));
 
-    public static bool UpsideDown =>
-        Installed.Value &&
-        (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue((ExtendedVariantsModule.Variant) UpsideDownVariant.Value);
+    public static bool UpsideDown => Installed.Value && upsideDown();
 
-    public static bool SuperDashing =>
-        Installed.Value &&
-        (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue((ExtendedVariantsModule.Variant) SuperDashingVariant.Value);
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static bool upsideDown() => (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue((ExtendedVariantsModule.Variant) UpsideDownVariant.Value);
+
+    public static bool SuperDashing => Installed.Value && superDashing();
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static bool superDashing() => (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue((ExtendedVariantsModule.Variant) SuperDashingVariant.Value);
 }
