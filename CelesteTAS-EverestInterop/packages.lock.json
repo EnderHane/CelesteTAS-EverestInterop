@@ -8,11 +8,11 @@
         "resolved": "1.13.8",
         "contentHash": "r4oFZLHuxhOw4kr19nuVBQe+r0OMqqO2VZw5p6uW4ANZM/bPAuWBkUSo+P1R0KT7yYXpuT/wH7D9o59lPtCPrA=="
       },
-      "ILRepack.Lib.MSBuild.Task": {
+      "ILRepack": {
         "type": "Direct",
-        "requested": "[2.0.18.2, )",
-        "resolved": "2.0.18.2",
-        "contentHash": "lreK19MMDA/ekeqjLY4w171cG7+pHwjeTMHMNq6tghuhTOIOfHT+b/LTMj5jpfbJoR7J6AMD3yOYZoyY/2wtJA=="
+        "requested": "[2.0.18, )",
+        "resolved": "2.0.18",
+        "contentHash": "sR5Aj3JLDbA8JwESfWYfigSz5k1oNSHPN434W1LX8sboWJYEOSQP/KkvZGmJKPgajzSUKkl2jDar3LPZiMFU4Q=="
       },
       "JetBrains.Profiler.Api": {
         "type": "Direct",

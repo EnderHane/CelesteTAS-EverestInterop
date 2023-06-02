@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Channels;
 using TasCommunication;
 
 namespace StudioCommunication;
@@ -25,11 +25,10 @@ public class StudioCommunicationBase : ICommunicationBase {
     private int failedWrites;
     private int lastSignature;
 
-    protected Action PendingWrite;
+    protected Channel<Action> WritingChannel;
+
     private int timeoutCount;
     private bool waiting;
-
-    private static readonly bool RunningOnMono = Type.GetType("Mono.Runtime") != null;
 
     public bool IsInitialized { get; protected set; }
 
@@ -56,6 +55,10 @@ public class StudioCommunicationBase : ICommunicationBase {
         if (!created) {
             mutex = Mutex.OpenExisting(mutexName);
         }
+        WritingChannel = Channel.CreateBounded<Action>(
+            new BoundedChannelOptions(1) {
+                FullMode = BoundedChannelFullMode.DropOldest
+            });
     }
 
     ~StudioCommunicationBase() {
@@ -78,8 +81,8 @@ public class StudioCommunicationBase : ICommunicationBase {
                     Thread.Sleep(Timeout);
 
                     if (!NeedsToWait()) {
-                        PendingWrite?.Invoke();
-                        PendingWrite = null;
+                        WritingChannel.Reader.TryRead(out Action action);
+                        action?.Invoke();
                     }
                 }
             }
@@ -205,7 +208,10 @@ public class StudioCommunicationBase : ICommunicationBase {
         IsInitialized = false;
         waiting = false;
         failedWrites = 0;
-        PendingWrite = null;
+        WritingChannel = Channel.CreateBounded<Action>(
+            new BoundedChannelOptions(1) {
+                FullMode = BoundedChannelFullMode.DropOldest
+            });
         timeoutCount++;
         Log($"Exception thrown - {e.Message}");
         //Ensure the first byte of the mmf is reset
@@ -232,7 +238,7 @@ public class StudioCommunicationBase : ICommunicationBase {
     }
 
     public void WriteWait() {
-        PendingWrite = () => WriteMessageGuaranteed(new Message(MessageID.Wait, new byte[0]));
+        WritingChannel.Writer.TryWrite(() => WriteMessageGuaranteed(new Message(MessageID.Wait, new byte[0])));
     }
 
     protected void ProcessWait() {

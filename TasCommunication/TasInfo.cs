@@ -1,5 +1,3 @@
-using System;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace TasCommunication;
@@ -20,14 +18,14 @@ public readonly record struct TasInfo {
     // ReSharper disable once ConvertToPrimaryConstructor
     [JsonConstructor]
     public TasInfo(
-        int currentLine, 
-        string currentLineSuffix, 
-        int currentFrameInTas, 
-        int totalFrames, 
-        int saveStateLine, 
+        int currentLine,
+        string currentLineSuffix,
+        int currentFrameInTas,
+        int totalFrames,
+        int saveStateLine,
         int tasStates,
-        string gameInfo, 
-        string levelName, 
+        string gameInfo,
+        string levelName,
         string chapterTime
     ) {
         CurrentLine = currentLine;

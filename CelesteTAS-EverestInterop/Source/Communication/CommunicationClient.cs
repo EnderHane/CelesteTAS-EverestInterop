@@ -14,6 +14,8 @@ public static class CommunicationClient {
 
 public interface ICommunicationClient : ICommunicationBase {
 
+    void SetStudioInteractBindings<T>(IDictionary<HotkeyID, T> bindings) where T : IList<int>;
+
     void SendCurrentBindings(bool forceSend = false);
 
     void SendState(TasInfo studioInfo, bool canFail);

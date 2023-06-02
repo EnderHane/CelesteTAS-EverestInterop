@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,6 +27,8 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
 
     private byte[] lastBindingsData = new byte[0];
     private readonly List<Thread> threads = new();
+    private readonly ConcurrentDictionary<int, List<int>> studioBindings = new();
+
     private StudioCommunicationClient() { }
     private StudioCommunicationClient(string target) : base(target) { }
 
@@ -79,18 +82,6 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
         };
         thread.Start();
         Instance.threads.Add(thread);
-    }
-
-    /// <summary>
-    /// Do not use outside of multiplayer mods. Allows more than 2 processes to communicate.
-    /// </summary>
-    /// <param name="target"></param>
-    /// <returns></returns>
-    [Obsolete]
-    public static StudioCommunicationClient RunExternal(string target) {
-        StudioCommunicationClient client = new StudioCommunicationClient(target);
-        RunThread($"StudioCom Client_{target}");
-        return client;
     }
 
     protected override void LogImpl(string text) {
@@ -419,14 +410,12 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     }
 
     public void SendState(TasInfo studioInfo, bool canFail) {
-        PendingWrite = () => SendStateNow(studioInfo, canFail);
+        WritingChannel.Writer.TryWrite(() => SendStateNow(studioInfo, canFail));
     }
 
     public void SendCurrentBindings(bool forceSend = false) {
-        Dictionary<int, List<int>> nativeBindings =
-            Hotkeys.KeysInteractWithStudio.ToDictionary(pair => (int) pair.Key, pair => pair.Value.Cast<int>().ToList());
-        byte[] data = SerializationUtil.SerializeToUtf8JsonBytes(nativeBindings);
-        if (!forceSend && string.Join("", data) == string.Join("", lastBindingsData)) {
+        byte[] data = SerializationUtil.SerializeToUtf8JsonBytes(studioBindings);
+        if (!forceSend && lastBindingsData.SequenceEqual(data)) {
             return;
         }
 
@@ -450,6 +439,13 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     }
 
     #endregion
+
+    public void SetStudioInteractBindings<T>(IDictionary<HotkeyID, T> bindings) where T : IList<int> {
+        studioBindings.Clear();
+        foreach (var binding in bindings) {
+            studioBindings[(int) binding.Key] = binding.Value.ToList();
+        }
+    }
 }
 
 class StudioMetadata {

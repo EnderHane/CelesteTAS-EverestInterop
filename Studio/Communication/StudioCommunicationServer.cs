@@ -39,8 +39,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
         // ignored
     }
 
-    public void ExternalReset() => PendingWrite = () => throw new NeedsResetException();
-
+    public void ExternalReset() => WritingChannel.Writer.TryWrite(() => throw new NeedsResetException());
 
     #region Read
 
@@ -154,11 +153,11 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
         IsInitialized = true;
     }
 
-    public void SendPath(string path) => PendingWrite = () => SendPathNow(path, false);
-    public void ConvertToLibTas(string path) => PendingWrite = () => ConvertToLibTasNow(path);
-    public void SendHotkeyPressed(HotkeyID hotkey, bool released = false) => PendingWrite = () => SendHotkeyPressedNow(hotkey, released);
-    public void ToggleGameSetting(string settingName, object value) => PendingWrite = () => ToggleGameSettingNow(settingName, value);
-    public void GetDataFromGame(GameDataType gameDataType, object arg) => PendingWrite = () => GetGameDataNow(gameDataType, arg);
+    public void SendPath(string path) => WritingChannel.Writer.TryWrite(() => SendPathNow(path, false));
+    public void ConvertToLibTas(string path) => WritingChannel.Writer.TryWrite(() => ConvertToLibTasNow(path));
+    public void SendHotkeyPressed(HotkeyID hotkey, bool released = false) => WritingChannel.Writer.TryWrite(() => SendHotkeyPressedNow(hotkey, released));
+    public void ToggleGameSetting(string settingName, object value) => WritingChannel.Writer.TryWrite(() => ToggleGameSettingNow(settingName, value));
+    public void GetDataFromGame(GameDataType gameDataType, object arg) => WritingChannel.Writer.TryWrite(() => GetGameDataNow(gameDataType, arg));
 
     private void SendPathNow(string path, bool canFail) {
         if (IsInitialized || !canFail) {

@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)State.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudioCommunication\StudioCommunicationBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UdpCommunication\UdpCommunicationBase.cs" />
     <Compile Include="..\TasCommunication\TasInfo.cs" />
   </ItemGroup>
 </Project>

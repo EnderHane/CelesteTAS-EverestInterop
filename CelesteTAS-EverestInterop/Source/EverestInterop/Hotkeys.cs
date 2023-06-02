@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -64,7 +65,7 @@ public static class Hotkeys {
 
     public static readonly Dictionary<HotkeyID, Hotkey> KeysDict = new();
     private static List<Hotkey> hotKeysInteractWithStudio;
-    public static Dictionary<HotkeyID, List<Keys>> KeysInteractWithStudio = new();
+    public static ConcurrentDictionary<HotkeyID, List<Keys>> KeysInteractWithStudio = new();
 
     private static readonly List<HotkeyID> HotkeyIDsIgnoreOnStudio = new() {
         HotkeyID.InfoHud, HotkeyID.FreeCamera, HotkeyID.CameraUp, HotkeyID.CameraDown, HotkeyID.CameraLeft, HotkeyID.CameraRight,
@@ -120,8 +121,11 @@ public static class Hotkeys {
         KeysDict[HotkeyID.CameraZoomOut] = CameraZoomOut = BindingToHotkey(new ButtonBinding(0, Keys.End));
 
         hotKeysInteractWithStudio = KeysDict.Where(pair => !HotkeyIDsIgnoreOnStudio.Contains(pair.Key)).Select(pair => pair.Value).ToList();
-        KeysInteractWithStudio = KeysDict.Where(pair => !HotkeyIDsIgnoreOnStudio.Contains(pair.Key))
-            .ToDictionary(pair => pair.Key, pair => pair.Value.Keys);
+        KeysInteractWithStudio = new(
+            KeysDict
+            .Where(pair => !HotkeyIDsIgnoreOnStudio.Contains(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value.Keys)
+        );
     }
 
     private static Hotkey BindingToHotkey(ButtonBinding binding, bool held = false) {
@@ -259,6 +263,10 @@ public static class Hotkeys {
 
     private static void InputOnInitialize(On.Celeste.Input.orig_Initialize orig) {
         orig();
+        CommunicationClient.Instance?
+            .SetStudioInteractBindings(
+                KeysInteractWithStudio.ToDictionary(p => p.Key, p => p.Value.Cast<int>().ToList())
+            );
         CommunicationClient.Instance?.SendCurrentBindings();
     }
 
