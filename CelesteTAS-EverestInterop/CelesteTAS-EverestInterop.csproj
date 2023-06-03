@@ -38,11 +38,19 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="DotNetZip" Version="1.13.8" />
-        <PackageReference Include="ILRepack" Version="2.0.18" />
+        <PackageReference Include="ILRepack" Version="2.0.18">
+          <IncludeAssets></IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" />
-        <PackageReference Include="MonoMod.RuntimeDetour" Version="21.4.29.1" />
-        <PackageReference Include="System.Text.Json" Version="7.0.2" />
-        <PackageReference Include="System.Threading.Channels" Version="7.0.0" />
+        <PackageReference Include="MonoMod.RuntimeDetour" Version="21.4.29.1">
+          <IncludeAssets>all</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.Text.Json" Version="7.0.2">
+          <IncludeAssets>all</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Channels" Version="7.0.0">
+          <IncludeAssets>all</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="YamlDotNet" Version="8.0.0.0" />
         <PackageReference Include="JetBrains.Profiler.Api" Version="1.1.8">
             <IncludeAssets Condition="'$(Configuration)' == 'Debug'">all</IncludeAssets>
@@ -82,4 +90,8 @@
         <None Remove="CelesteTAS-EverestInterop.csproj.DotSettings" />
     </ItemGroup>
     <Import Project="..\TasCommunication\TasCommunication.projitems" Label="Shared" />
+
+    <Target Name="ILRepack" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Release'">
+        <Exec Command="&quot;$(ILRepack)&quot; /lib:$(ProjectDir)lib-stripped /lib:$(ProjectDir)lib-stripped\Celeste-nstrip.exe /lib:$(OutputPath) /internalize /out:&quot;$(OutputPath)$(AssemblyName).dll&quot; &quot;$(OutputPath)$(AssemblyName).dll&quot; $(OutputPath)Microsoft.Bcl.AsyncInterfaces.dll $(OutputPath)System.Buffers.dll $(OutputPath)System.Memory.dll $(OutputPath)System.Numerics.Vectors.dll $(OutputPath)System.Runtime.CompilerServices.Unsafe.dll $(OutputPath)System.Text.Encodings.Web.dll $(OutputPath)System.Text.Json.dll $(OutputPath)System.Threading.Channels.dll $(OutputPath)System.Threading.Tasks.Extensions.dll $(OutputPath)System.ValueTuple.dll" />
+    </Target>
 </Project>

@@ -191,9 +191,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
             return;
         }
 
-        byte[] bytes = SerializationUtil.SerializeToUtf8JsonBytes(new[] {
-            settingName, value
-        });
+        byte[] bytes = SerializationUtil.SerializeToUtf8JsonBytes((settingName, value));
         WriteMessageGuaranteed(new Message(MessageID.ToggleGameSetting, bytes));
     }
 
@@ -202,9 +200,7 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
             return;
         }
 
-        byte[] bytes = SerializationUtil.SerializeToUtf8JsonBytes(new[] {
-            (byte) gameDataType, arg
-        });
+        byte[] bytes = SerializationUtil.SerializeToUtf8JsonBytes(((byte) gameDataType, arg));
         WriteMessageGuaranteed(new Message(MessageID.GetData, bytes));
     }
 

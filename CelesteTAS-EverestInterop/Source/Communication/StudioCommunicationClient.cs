@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using Celeste;
 using Celeste.Mod;
@@ -30,7 +31,6 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     private readonly ConcurrentDictionary<int, List<int>> studioBindings = new();
 
     private StudioCommunicationClient() { }
-    private StudioCommunicationClient(string target) : base(target) { }
 
     [Load]
     private static void Load() {
@@ -116,19 +116,18 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
                 if (ExternalReadHandler?.Invoke(message.Data) != true) {
                     throw new InvalidOperationException($"{message.Id}");
                 }
-
                 break;
         }
     }
 
     private void ProcessGetData(byte[] data) {
-        object[] objects = SerializationUtil.DeserializeUtf8JsonBytes<object[]>(data);
-        GameDataType gameDataType = (GameDataType) objects[0];
+        (byte t, JsonElement d) = SerializationUtil.DeserializeUtf8JsonBytes<(byte, JsonElement)>(data);
+        GameDataType gameDataType = (GameDataType) t;
         string gameData = gameDataType switch {
-            GameDataType.ConsoleCommand => GetConsoleCommand((bool) objects[1]),
+            GameDataType.ConsoleCommand => GetConsoleCommand(d.GetBoolean()),
             GameDataType.ModInfo => GetModInfo(),
             GameDataType.ExactGameInfo => GameInfo.ExactStudioInfo,
-            GameDataType.SettingValue => GetSettingValue((string) objects[1]),
+            GameDataType.SettingValue => GetSettingValue(d.GetString()),
             GameDataType.CompleteInfoCommand => AreaCompleteInfo.CreateCommand(),
             GameDataType.ModUrl => GetModUrl(),
             _ => string.Empty
@@ -289,9 +288,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     }
 
     private void ProcessToggleGameSetting(byte[] data) {
-        object[] values = SerializationUtil.DeserializeUtf8JsonBytes<object[]>(data);
-        string settingName = values[0] as string;
-        object settingValue = values[1];
+        (string settingName, object settingValue) = SerializationUtil.DeserializeUtf8JsonBytes<(string, object)>(data);
 
         if (settingName.IsNullOrEmpty()) {
             return;
