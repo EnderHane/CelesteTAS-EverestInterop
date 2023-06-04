@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using CelesteStudio.Communication;
 using CelesteStudio.Entities;
@@ -714,9 +715,9 @@ public partial class Studio : BaseForm {
         richText.Selection = new Range(richText, cursor, currentLine, cursor, currentLine);
     }
 
-    private void InsertRoomName() => InsertNewLine($"#lvl_{CommunicationUtil.StudioInfo?.LevelName}");
+    private void InsertRoomName() => InsertNewLine($"#lvl_{CommunicationServer.Instance?.CurrentTasInfo?.LevelName}");
 
-    private void InsertTime() => InsertNewLine($"#{CommunicationUtil.StudioInfo?.ChapterTime}");
+    private void InsertTime() => InsertNewLine($"#{CommunicationServer.Instance?.CurrentTasInfo?.ChapterTime}");
 
     private void InsertDataFromGame(GameDataType gameDataType, object arg = null) {
         if (GetDataFromGame(gameDataType, arg) is { } gameData) {
@@ -724,23 +725,17 @@ public partial class Studio : BaseForm {
         }
     }
 
-    private string GetDataFromGame(GameDataType? gameDataTypes, object arg = null) {
-        CommunicationUtil.ReturnData = null;
-        if (gameDataTypes.HasValue) {
-            CommunicationServer.Instance.GetDataFromGame(gameDataTypes.Value, arg);
+    private string GetDataFromGame(GameDataType gameDataTypes, object arg = null) {
+        CancellationTokenSource cts = new();
+        Task<string> task = CommunicationServer.Instance.GetDataFromGameAsync(gameDataTypes, arg, cts.Token);
+        
+        int timeout = 150;
+        if (task.Wait(timeout)) {
+            return task.Result;
         }
+        cts.Cancel();
 
-        int sleepTimeout = 150;
-        while (CommunicationUtil.ReturnData == null && sleepTimeout > 0) {
-            Thread.Sleep(10);
-            sleepTimeout -= 10;
-        }
-
-        if (CommunicationUtil.ReturnData == null && sleepTimeout <= 0) {
-            ShowTooltip("Getting data from the game timed out.");
-        }
-
-        return CommunicationUtil.ReturnData == string.Empty ? null : CommunicationUtil.ReturnData;
+        return null;
     }
 
     private void ToggleGameSetting(string settingName, object value, object sender, bool showResult = true) {
@@ -749,7 +744,7 @@ public partial class Studio : BaseForm {
         }
 
         CommunicationServer.Instance.ToggleGameSetting(settingName, value);
-        if (showResult && GetDataFromGame(null) is { } settingStatus) {
+        if (showResult && GetDataFromGame(GameDataType.SettingValue, settingName) is { } settingStatus) {
             ShowTooltip($"{sender.ToString().Replace("&", "")}: {settingStatus}");
         }
     }
@@ -832,10 +827,9 @@ public partial class Studio : BaseForm {
 
     private void UpdateValues() {
         if (InvokeRequired) {
-            Invoke((Action) UpdateValues);
+            Invoke(UpdateValues);
         } else {
-            if (CommunicationUtil.StudioInfo != null) {
-                TasInfo studioInfo = CommunicationUtil.StudioInfo.Value;
+            if (CommunicationServer.Instance?.CurrentTasInfo is { } studioInfo) {
                 richText.PlayingLine = studioInfo.CurrentLine;
                 richText.CurrentLineSuffix = studioInfo.CurrentLineSuffix;
                 richText.SaveStateLine = studioInfo.SaveStateLine;
@@ -886,7 +880,7 @@ public partial class Studio : BaseForm {
             return;
         }
 
-        RichText.StudioTextEdit tas = (RichText.StudioTextEdit) sender;
+        RichText.StudioTextEdit tas = (StudioTextEdit) sender;
         int count = e.Count;
         while (count-- > 0) {
             InputRecord input = new(tas.GetLineText(e.Index + count));
@@ -898,8 +892,8 @@ public partial class Studio : BaseForm {
     }
 
     private void UpdateStatusBar() {
-        if ((CommunicationServer.Instance?.IsInitialized ?? false)) {
-            string gameInfo = CommunicationUtil.StudioInfo?.GameInfo ?? string.Empty;
+        if (CommunicationServer.Instance?.IsInitialized ?? false) {
+            string gameInfo = CommunicationServer.Instance.CurrentTasInfo?.GameInfo ?? string.Empty;
             statusBarBuilder.Clear();
             if (currentFrame > 0) {
                 statusBarBuilder.Append($"{currentFrame}/");

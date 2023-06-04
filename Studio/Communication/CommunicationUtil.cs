@@ -9,8 +9,6 @@ using TasCommunication;
 namespace CelesteStudio.Communication;
 
 internal static class CommunicationUtil {
-    public static TasInfo? StudioInfo;
-    public static string ReturnData;
     private static Dictionary<HotkeyID, List<Keys>> bindings;
     private static bool fastForwarding;
     private static bool slowForwarding;
@@ -24,7 +22,13 @@ internal static class CommunicationUtil {
     }
 
     public static void SetBindings(Dictionary<HotkeyID, List<Keys>> newBindings) {
-        bindings = newBindings;
+        if (bindings is null) {
+            bindings = newBindings;
+            return;
+        }
+        lock (bindings) {
+            bindings = newBindings;
+        }
     }
 
     public static bool CheckControls(ref Message msg) {
@@ -37,38 +41,40 @@ internal static class CommunicationUtil {
         }
 
         bool anyPressed = false;
-        foreach (HotkeyID hotkeyIDs in bindings.Keys) {
-            List<Keys> keys = bindings[hotkeyIDs];
+        lock (bindings) {
+            foreach (HotkeyID hotkeyID in bindings.Keys) {
+                List<Keys> keys = bindings[hotkeyID];
 
-            bool pressed = keys.Count > 0 && keys.All(IsKeyDown);
+                bool pressed = keys.Count > 0 && keys.All(IsKeyDown);
 
-            if (pressed && keys.Count == 1) {
-                if (!keys.Contains(Keys.LShiftKey) && IsKeyDown(Keys.LShiftKey)) {
-                    pressed = false;
+                if (pressed && keys.Count == 1) {
+                    if (!keys.Contains(Keys.LShiftKey) && IsKeyDown(Keys.LShiftKey)) {
+                        pressed = false;
+                    }
+
+                    if (!keys.Contains(Keys.RShiftKey) && IsKeyDown(Keys.RShiftKey)) {
+                        pressed = false;
+                    }
+
+                    if (!keys.Contains(Keys.LControlKey) && IsKeyDown(Keys.LControlKey)) {
+                        pressed = false;
+                    }
+
+                    if (!keys.Contains(Keys.RControlKey) && IsKeyDown(Keys.RControlKey)) {
+                        pressed = false;
+                    }
                 }
 
-                if (!keys.Contains(Keys.RShiftKey) && IsKeyDown(Keys.RShiftKey)) {
-                    pressed = false;
-                }
+                if (pressed) {
+                    if (hotkeyID == HotkeyID.FastForward) {
+                        fastForwarding = true;
+                    } else if (hotkeyID == HotkeyID.SlowForward) {
+                        slowForwarding = true;
+                    }
 
-                if (!keys.Contains(Keys.LControlKey) && IsKeyDown(Keys.LControlKey)) {
-                    pressed = false;
+                    CommunicationServer.Instance?.SendHotkeyPressed(hotkeyID);
+                    anyPressed = true;
                 }
-
-                if (!keys.Contains(Keys.RControlKey) && IsKeyDown(Keys.RControlKey)) {
-                    pressed = false;
-                }
-            }
-
-            if (pressed) {
-                if (hotkeyIDs == HotkeyID.FastForward) {
-                    fastForwarding = true;
-                } else if (hotkeyIDs == HotkeyID.SlowForward) {
-                    slowForwarding = true;
-                }
-
-                CommunicationServer.Instance?.SendHotkeyPressed(hotkeyIDs);
-                anyPressed = true;
             }
         }
 
@@ -89,11 +95,13 @@ internal static class CommunicationUtil {
         }
 
         bool pressed;
-        if (bindings.ContainsKey(hotkeyId)) {
-            List<Keys> keys = bindings[hotkeyId];
-            pressed = keys.Count > 0 && keys.All(IsKeyDown);
-        } else {
-            pressed = false;
+        lock (bindings) {
+            if (bindings.ContainsKey(hotkeyId)) {
+                List<Keys> keys = bindings[hotkeyId];
+                pressed = keys.Count > 0 && keys.All(IsKeyDown);
+            } else {
+                pressed = false;
+            } 
         }
 
         if (!pressed) {
@@ -104,21 +112,23 @@ internal static class CommunicationUtil {
 
     public static void UpdateLines(Dictionary<int, string> updateLines) {
         StudioTextEdit tasText = Studio.Instance.richText;
-        foreach (int lineNumber in updateLines.Keys) {
-            string lineText = updateLines[lineNumber];
-            if (tasText.Lines.Count > lineNumber) {
-                Line line = tasText.TextSource[lineNumber];
-                line.Clear();
-                if (lineText.Length > 0) {
-                    line.AddRange(lineText.ToCharArray().Select(c => new StudioChar(c)));
-                    Range range = new(tasText, 0, lineNumber, line.Count, lineNumber);
-                    range.SetStyle(SyntaxHighlighter.CommandStyle);
+        tasText.Invoke(() => {
+            foreach (int lineNumber in updateLines.Keys) {
+                string lineText = updateLines[lineNumber];
+                if (tasText.Lines.Count > lineNumber) {
+                    Line line = tasText.TextSource[lineNumber];
+                    line.Clear();
+                    if (lineText.Length > 0) {
+                        line.AddRange(lineText.ToCharArray().Select(c => new StudioChar(c)));
+                        Range range = new(tasText, 0, lineNumber, line.Count, lineNumber);
+                        range.SetStyle(SyntaxHighlighter.CommandStyle);
+                    }
                 }
             }
-        }
 
-        if (updateLines.Count > 0) {
-            tasText.NeedRecalc();
-        }
+            if (updateLines.Count > 0) {
+                tasText.NeedRecalc();
+            }
+        });
     }
 }

@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using StudioCommunication;
 using TasCommunication;
@@ -30,6 +33,19 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
         };
         updateThread.Start();
     }
+
+    private readonly Channel<TasInfo> tasInfoChannel = Channel.CreateBounded<TasInfo>(
+        new BoundedChannelOptions(1) {
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+    public TasInfo? CurrentTasInfo {
+        get {
+            return (tasInfoChannel?.Reader.TryPeek(out TasInfo tasInfo) ?? false) ? tasInfo : null;
+        }
+    }
+
+    private readonly ConcurrentDictionary<long, string> returnDatas = new();
 
     protected override bool NeedsToWait() {
         return base.NeedsToWait() || Studio.Instance.richText.IsChanged;
@@ -72,16 +88,8 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
     }
 
     private void ProcessSendState(byte[] data) {
-        try {
-            TasInfo studioInfo = TasInfo.FromUtf8JsonBytes(data);
-            CommunicationUtil.StudioInfo = studioInfo;
-        } catch (InvalidCastException) {
-            string studioVersion = Studio.Version.ToString(3);
-            MessageBox.Show(
-                $"CelesteStudio v{studioVersion} and CelesteTAS v{ErrorLog.ModVersion} do not match. Please manually extract the CelesteStudio from the \"game_path\\Mods\\CelesteTAS.zip\" file.",
-                "Communication Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Application.Exit();
-        }
+        TasInfo studioInfo = TasInfo.FromUtf8JsonBytes(data);
+        tasInfoChannel.Writer.TryWrite(studioInfo);
     }
 
     private void ProcessSendCurrentBindings(byte[] data) {
@@ -114,7 +122,8 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
     }
 
     private void ProcessReturnData(byte[] data) {
-        CommunicationUtil.ReturnData = Encoding.UTF8.GetString(data);
+        (long token, string gameData) = SerializationUtil.DeserializeUtf8JsonBytes<(long, string)>(data);
+        returnDatas[token] = gameData;
     }
 
     #endregion
@@ -157,7 +166,19 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
     public void ConvertToLibTas(string path) => WritingChannel.Writer.TryWrite(() => ConvertToLibTasNow(path));
     public void SendHotkeyPressed(HotkeyID hotkey, bool released = false) => WritingChannel.Writer.TryWrite(() => SendHotkeyPressedNow(hotkey, released));
     public void ToggleGameSetting(string settingName, object value) => WritingChannel.Writer.TryWrite(() => ToggleGameSettingNow(settingName, value));
-    public void GetDataFromGame(GameDataType gameDataType, object arg) => WritingChannel.Writer.TryWrite(() => GetGameDataNow(gameDataType, arg));
+
+    public Task<string> GetDataFromGameAsync(GameDataType gameDataType, object arg, CancellationToken ct) {
+        long token = DateTime.Now.Ticks;
+        WritingChannel.Writer.TryWrite(() => GetGameDataNow(gameDataType, token, arg));
+        return Task.Run(() => {
+            while (!ct.IsCancellationRequested) {
+                if (SpinWait.SpinUntil(() => returnDatas.ContainsKey(token), 10) && returnDatas.TryRemove(token, out string data)) { 
+                    return data; 
+                }
+            }
+            return null;
+        }, ct);
+    }
 
     private void SendPathNow(string path, bool canFail) {
         if (IsInitialized || !canFail) {
@@ -195,12 +216,12 @@ public sealed class StudioCommunicationServer : StudioCommunicationBase, ICommun
         WriteMessageGuaranteed(new Message(MessageID.ToggleGameSetting, bytes));
     }
 
-    private void GetGameDataNow(GameDataType gameDataType, object arg) {
+    private void GetGameDataNow(GameDataType gameDataType, long communicationToken, object arg) {
         if (!IsInitialized) {
             return;
         }
 
-        byte[] bytes = SerializationUtil.SerializeToUtf8JsonBytes(((byte) gameDataType, arg));
+        byte[] bytes = SerializationUtil.SerializeToUtf8JsonBytes(((byte) gameDataType, communicationToken, arg));
         WriteMessageGuaranteed(new Message(MessageID.GetData, bytes));
     }
 

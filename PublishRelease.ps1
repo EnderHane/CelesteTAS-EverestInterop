@@ -9,4 +9,4 @@ Copy-Item -Path (Join-Path $mod_build_dir "everest.yaml") -Destination $publish_
 Copy-Item -Path (Join-Path $studio_build_dir "Celeste Studio.exe") -Destination $publish_dir -Force
 Copy-Item -Path (Join-Path $studio_build_dir "Celeste Studio.pdb") -Destination $publish_dir -Force
 
-Get-ChildItem -Path $publish_dir -Recurse | Compress-Archive -DestinationPath (Join-Path $publish_dir "CelesteTAS.zip") -Force
+Get-ChildItem -Path $publish_dir | Compress-Archive -DestinationPath (Join-Path $publish_dir "CelesteTAS.zip") -Force

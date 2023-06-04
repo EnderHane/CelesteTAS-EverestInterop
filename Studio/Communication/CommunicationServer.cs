@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using StudioCommunication;
 using TasCommunication;
 
@@ -14,6 +16,8 @@ public static class CommunicationServer {
 
 public interface ICommunicationServer : ICommunicationBase {
 
+    TasInfo? CurrentTasInfo { get; }
+
     void SendPath(string path);
 
     void ConvertToLibTas(string path);
@@ -22,7 +26,7 @@ public interface ICommunicationServer : ICommunicationBase {
 
     void ToggleGameSetting(string settingName, object value);
 
-    void GetDataFromGame(GameDataType gameDataType, object arg);
+    Task<string> GetDataFromGameAsync(GameDataType gameDataType, object arg, CancellationToken ct);
 
     void ExternalReset();
 

@@ -33,6 +33,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     private StudioCommunicationClient() { }
 
     [Load]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051")]
     private static void Load() {
         Everest.Events.Celeste.OnExiting += Destroy;
         On.Celeste.Mod.Helpers.ModUpdaterHelper.DownloadModUpdateList += ModUpdaterHelperOnDownloadModUpdateList;
@@ -40,6 +41,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     }
 
     [Unload]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051")]
     private static void Unload() {
         Everest.Events.Celeste.OnExiting -= Destroy;
         On.Celeste.Mod.Helpers.ModUpdaterHelper.DownloadModUpdateList -= ModUpdaterHelperOnDownloadModUpdateList;
@@ -121,7 +123,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
     }
 
     private void ProcessGetData(byte[] data) {
-        (byte t, JsonElement d) = SerializationUtil.DeserializeUtf8JsonBytes<(byte, JsonElement)>(data);
+        (byte t, long token, JsonElement d) = SerializationUtil.DeserializeUtf8JsonBytes<(byte, long, JsonElement)>(data);
         GameDataType gameDataType = (GameDataType) t;
         string gameData = gameDataType switch {
             GameDataType.ConsoleCommand => GetConsoleCommand(d.GetBoolean()),
@@ -133,12 +135,12 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
             _ => string.Empty
         };
 
-        ReturnData(gameData);
+        ReturnData(token, gameData);
     }
 
-    private void ReturnData(string gameData) {
-        byte[] gameDataBytes = Encoding.UTF8.GetBytes(gameData ?? string.Empty);
-        WriteMessageGuaranteed(new Message(MessageID.ReturnData, gameDataBytes));
+    private void ReturnData(long token, string gameData) {
+        byte[] data = SerializationUtil.SerializeToUtf8JsonBytes((token, gameData));
+        WriteMessageGuaranteed(new Message(MessageID.ReturnData, data));
     }
 
     private string GetConsoleCommand(bool simple) {
@@ -299,7 +301,6 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
         switch (settingName) {
             case "Copy Custom Info Template to Clipboard":
                 TextInput.SetClipboardText(string.IsNullOrEmpty(TasSettings.InfoCustomTemplate) ? "\0" : TasSettings.InfoCustomTemplate);
-                ReturnData(string.Empty);
                 return;
             case "Set Custom Info Template From Clipboard":
                 TasSettings.InfoCustomTemplate = TextInput.GetClipboardText();
@@ -314,12 +315,10 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
             case "Clear Watch Entity Info":
                 InfoWatchEntity.ClearWatchEntities();
                 GameInfo.Update();
-                ReturnData(string.Empty);
                 return;
         }
 
         if (modified) {
-            ReturnData(string.Empty);
             CelesteTasModule.Instance.SaveSettings();
             return;
         }
@@ -345,10 +344,7 @@ public sealed class StudioCommunicationClient : StudioCommunicationBase, ICommun
             }
 
             if (modified) {
-                ReturnData((property.GetValue(TasSettings)?.ToString() ?? string.Empty).SpacedPascalCase());
                 CelesteTasModule.Instance.SaveSettings();
-            } else {
-                ReturnData(string.Empty);
             }
         }
     }

@@ -25,7 +25,10 @@ public class StudioCommunicationBase : ICommunicationBase {
     private int failedWrites;
     private int lastSignature;
 
-    protected Channel<Action> WritingChannel;
+    protected Channel<Action> WritingChannel = Channel.CreateBounded<Action>(
+        new BoundedChannelOptions(1) {
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
 
     private int timeoutCount;
     private bool waiting;
@@ -55,10 +58,6 @@ public class StudioCommunicationBase : ICommunicationBase {
         if (!created) {
             mutex = Mutex.OpenExisting(mutexName);
         }
-        WritingChannel = Channel.CreateBounded<Action>(
-            new BoundedChannelOptions(1) {
-                FullMode = BoundedChannelFullMode.DropOldest
-            });
     }
 
     ~StudioCommunicationBase() {
