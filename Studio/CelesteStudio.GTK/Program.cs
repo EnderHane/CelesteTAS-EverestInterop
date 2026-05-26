@@ -12,7 +12,9 @@ public static class Program {
             var platform = new Eto.GtkSharp.Platform();
             platform.Add<SkiaDrawable.IHandler>(() => new SkiaDrawableHandler());
 
-            new Application(platform).Run(new Studio(args, _ => {}));
+            var application = new Application(platform);
+            ApplyGtkFontScale();
+            application.Run(new Studio(args, _ => {}));
         } catch (Exception ex) {
             Console.Error.WriteLine(ex);
             ErrorLog.Write(ex);
@@ -25,6 +27,15 @@ public static class Program {
         } catch (Exception) {
             // Just stop the process
             Environment.Exit(0);
+        }
+    }
+
+    private static void ApplyGtkFontScale() {
+        int xftDpi = global::Gtk.Settings.Default?.XftDpi ?? -1;
+        float scale = xftDpi / (96.0f * 1024.0f);
+
+        if (scale > 1.0f && scale < 2.0f) {
+            FontManager.SystemFontScale = scale;
         }
     }
 }

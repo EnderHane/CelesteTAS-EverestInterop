@@ -37,6 +37,7 @@ public class SkiaDrawableHandler : GtkPanel<Gtk.EventBox, SkiaDrawable, Control.
         private SKBitmap? bitmap;
         private SKSurface? surface;
         private ImageSurface? imageSurface;
+        private int scaleFactor;
 
         public void HandleDrawableButtonPressEvent(object o, Gtk.ButtonPressEventArgs args) {
             var handler = Handler;
@@ -57,21 +58,27 @@ public class SkiaDrawableHandler : GtkPanel<Gtk.EventBox, SkiaDrawable, Control.
 
             var drawable = Handler.Widget;
             bool preRender = drawable.PreRenderImage;
+            int scale = Handler.Control.ScaleFactor;
             if (drawable.CanDraw) {
                 int width = drawable.ImageWidth, height = drawable.ImageHeight;
-                if (surface == null || imageSurface == null || width != bitmap?.Width || height != bitmap?.Height) {
+                int pixelWidth = width * scale, pixelHeight = height * scale;
+                if (surface == null || imageSurface == null || pixelWidth != bitmap?.Width || pixelHeight != bitmap?.Height || scale != scaleFactor) {
                     var colorType = SKImageInfo.PlatformColorType;
 
                     bitmap?.Dispose();
-                    bitmap = new SKBitmap(width, height, colorType, SKAlphaType.Premul);
+                    bitmap = new SKBitmap(pixelWidth, pixelHeight, colorType, SKAlphaType.Premul);
                     IntPtr pixels = bitmap.GetPixels();
 
                     surface?.Dispose();
                     surface = SKSurface.Create(new SKImageInfo(bitmap.Info.Width, bitmap.Info.Height, colorType, SKAlphaType.Premul), pixels, bitmap.Info.RowBytes);
+                    surface.Canvas.Scale(scale);
                     surface.Canvas.Flush();
 
                     imageSurface?.Dispose();
-                    imageSurface = new ImageSurface(pixels, Format.Argb32, bitmap.Width, bitmap.Height, bitmap.Width * 4);
+                    imageSurface = new ImageSurface(pixels, Format.Argb32, bitmap.Width, bitmap.Height, bitmap.Info.RowBytes) {
+                        DeviceScale = new PointD(scale, scale)
+                    };
+                    scaleFactor = scale;
 
                     if (preRender) {
                         var canvas = surface.Canvas;

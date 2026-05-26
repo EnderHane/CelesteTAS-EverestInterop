@@ -13,6 +13,7 @@ public static class FontManager {
 
     public const string FontFamilyBuiltin = "<builtin>";
     public const string FontFamilyBuiltinDisplayName = "JetBrains Mono (builtin)";
+    public static float SystemFontScale { get; set; } = 1.0f;
 
     private static Font? editorFont, statusFont;
     private static SKFont? skEditorFontRegular, skEditorFontBold, skEditorFontItalic, skEditorFontBoldItalic, skStatusFont, skPopupFont, skPopupFontBold;
@@ -30,6 +31,8 @@ public static class FontManager {
 
     private static FontFamily? builtinFontFamily;
     public static Font CreateFont(string fontFamily, float size, FontStyle style = FontStyle.None) {
+        size *= SystemFontScale;
+
         if (fontFamily == FontFamilyBuiltin) {
             var asm = Assembly.GetExecutingAssembly();
             builtinFontFamily ??= FontFamily.FromStreams(asm.GetManifestResourceNames()
@@ -43,6 +46,8 @@ public static class FontManager {
     }
 
     public static SKFont CreateSKFont(string fontFamily, float size, FontStyle style = FontStyle.None) {
+        size *= SystemFontScale;
+
         if (fontFamily == FontFamilyBuiltin) {
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(style switch {
                 FontStyle.None => "JetBrainsMono/JetBrainsMono-Regular",
