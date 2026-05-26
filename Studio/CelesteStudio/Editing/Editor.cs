@@ -450,6 +450,10 @@ public sealed class Editor : TextEditor {
     #endregion
 
     protected override void OnKeyDown(KeyEventArgs e) {
+        if (SuppressPendingKeyDown(e)) {
+            return;
+        }
+
         string lineTrimmed = Document.Lines[Document.Caret.Row].TrimStart();
 
         // Send inputs to Celeste if applicable

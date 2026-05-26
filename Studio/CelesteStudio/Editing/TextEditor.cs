@@ -67,6 +67,10 @@ public class TextEditor(Document document, Scrollable scrollable) : TextViewer(d
     }
 
     protected override void OnKeyDown(KeyEventArgs e) {
+        if (SuppressPendingKeyDown(e)) {
+            return;
+        }
+
         if (ActivePopupMenu is { } menu && menu.HandleKeyDown(e)) {
             e.Handled = true;
             Recalc();

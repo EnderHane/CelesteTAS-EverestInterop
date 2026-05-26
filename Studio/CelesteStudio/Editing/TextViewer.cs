@@ -474,6 +474,10 @@ public class TextViewer : SkiaDrawable {
 
     protected void BaseOnKeyDown(KeyEventArgs e) => base.OnKeyDown(e);
     protected override void OnKeyDown(KeyEventArgs e) {
+        if (SuppressPendingKeyDown(e)) {
+            return;
+        }
+
         var mods = e.Modifiers;
         if (e.Key is Keys.LeftShift or Keys.RightShift) mods |= Keys.Shift;
         if (e.Key is Keys.LeftControl or Keys.RightControl) mods |= Keys.Control;
@@ -526,6 +530,21 @@ public class TextViewer : SkiaDrawable {
             Recalc();
             ScrollCaretIntoView();
         }
+    }
+
+    protected bool SuppressPendingKeyDown(KeyEventArgs e) {
+        if (SuppressNextKeyDown == Keys.None) {
+            return false;
+        }
+
+        var suppressKey = SuppressNextKeyDown;
+        SuppressNextKeyDown = Keys.None;
+        if (e.Key != suppressKey) {
+            return false;
+        }
+
+        e.Handled = true;
+        return true;
     }
 
     protected virtual bool CheckHotkey(Hotkey hotkey) {

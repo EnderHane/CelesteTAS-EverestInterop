@@ -32,6 +32,8 @@ public class SkiaDrawable : Panel {
     /// Whether the control can currently be drawn
     public virtual bool CanDraw => true;
 
+    public Keys SuppressNextKeyDown { get; set; } = Keys.None;
+
     public bool CanFocus {
         get => Handler.CanFocus;
         set => Handler.CanFocus = value;

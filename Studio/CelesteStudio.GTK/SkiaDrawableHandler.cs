@@ -2,6 +2,7 @@ using Cairo;
 using CelesteStudio.Controls;
 using CelesteStudio.Util;
 using Eto.Forms;
+using Eto.GtkSharp;
 using Eto.GtkSharp.Forms;
 using SkiaSharp;
 using System;
@@ -29,6 +30,8 @@ public class SkiaDrawableHandler : GtkPanel<Gtk.EventBox, SkiaDrawable, Control.
         base.Initialize();
         Control.Drawn += Connector.HandleDrawn;
         Control.ButtonPressEvent += Connector.HandleDrawableButtonPressEvent;
+        Control.AddEvents((int)Gdk.EventMask.KeyPressMask);
+        Control.KeyPressEvent += Connector.HandleDrawableKeyPressEvent;
     }
 
     protected class SkiaDrawableConnector : GtkPanelEventConnector {
@@ -48,6 +51,50 @@ public class SkiaDrawableHandler : GtkPanel<Gtk.EventBox, SkiaDrawable, Control.
             if (handler.CanFocus) {
                 handler.Control.GrabFocus();
             }
+        }
+
+        [GLib.ConnectBefore]
+        public void HandleDrawableKeyPressEvent(object o, Gtk.KeyPressEventArgs args) {
+            var handler = Handler;
+            if (handler == null || !TryGetKeypadText(args.Event, out string text, out Keys key, out Keys suppressKey)) {
+                return;
+            }
+
+            var keyArgs = new KeyEventArgs(key | args.Event.State.ToEtoKey(), KeyEventType.KeyDown, text[0]);
+            handler.Callback.OnKeyDown(handler.Widget, keyArgs);
+            handler.Widget.SuppressNextKeyDown = suppressKey;
+            if (!keyArgs.Handled) {
+                handler.Callback.OnTextInput(handler.Widget, new TextInputEventArgs(text));
+            }
+
+            args.RetVal = true;
+        }
+
+        private static bool TryGetKeypadText(Gdk.EventKey e, out string text, out Keys key, out Keys suppressKey) {
+            text = string.Empty;
+            key = Keys.None;
+            suppressKey = Keys.None;
+
+            if ((e.State & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask | Gdk.ModifierType.ShiftMask)) != 0) {
+                return false;
+            }
+
+            (text, key, suppressKey) = e.Key switch {
+                Gdk.Key.KP_0 => ("0", Keys.Keypad0, Keys.Insert),
+                Gdk.Key.KP_1 => ("1", Keys.Keypad1, Keys.End),
+                Gdk.Key.KP_2 => ("2", Keys.Keypad2, Keys.Down),
+                Gdk.Key.KP_3 => ("3", Keys.Keypad3, Keys.PageDown),
+                Gdk.Key.KP_4 => ("4", Keys.Keypad4, Keys.Left),
+                Gdk.Key.KP_6 => ("6", Keys.Keypad6, Keys.Right),
+                Gdk.Key.KP_7 => ("7", Keys.Keypad7, Keys.Home),
+                Gdk.Key.KP_8 => ("8", Keys.Keypad8, Keys.Up),
+                Gdk.Key.KP_9 => ("9", Keys.Keypad9, Keys.PageUp),
+                Gdk.Key.KP_Decimal => (".", Keys.Decimal, Keys.Delete),
+                Gdk.Key.KP_Separator => (",", Keys.Decimal, Keys.Delete),
+                _ => (string.Empty, Keys.None, Keys.None),
+            };
+
+            return key != Keys.None;
         }
 
         [GLib.ConnectBefore]
