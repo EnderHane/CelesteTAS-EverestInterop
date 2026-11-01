@@ -1,11 +1,9 @@
-using Celeste;
 using Celeste.Mod;
+using Celeste.Mod.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Numerics;
 using System.Reflection;
-using JetBrains.Annotations;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -36,28 +34,49 @@ internal static class HookHelper {
     }
 
     /// Creates an On-hook to the specified method, which will automatically be unregistered
-    public static void OnHook(this MethodBase from, MethodInfo to) => onHooks.Add(new Hook(from, to));
+    public static void OnHook(this MethodBase from, MethodInfo to) {
+        if (!HookUtils.TryDisableInlining(from)) {
+            $"Failed to disable inlining for On-hooked method: {from.GetFullName()}".Log(LogLevel.Warn);
+        } else {
+            $"Successfully disabled inlining for On-hooked method: {from.GetFullName()}".Log(LogLevel.Debug);
+        }
+        
+        onHooks.Add(new Hook(from, to));
+    }
 
     /// Creates an On-hook to the specified method, which will automatically be unregistered
-    public static void OnHook(this MethodBase from, Delegate to) => onHooks.Add(new Hook(from, to));
+    public static void OnHook(this MethodBase from, Delegate to) {
+        if (!HookUtils.TryDisableInlining(from)) {
+            $"Failed to disable inlining for On-hooked method: {from.GetFullName()}".Log(LogLevel.Warn);
+        } else {
+            $"Successfully disabled inlining for On-hooked method: {from.GetFullName()}".Log(LogLevel.Debug);
+        }
+        
+        onHooks.Add(new Hook(from, to));
+    }
 
     /// Creates an IL-hook to the specified method, which will automatically be unregistered
-    public static void IlHook(this MethodBase from, ILContext.Manipulator manipulator) => ilHooks.Add(new ILHook(from, manipulator));
-
-    /// Creates an IL-hook to the specified method, which will automatically be unregistered
-    public static void IlHook(this MethodBase from, Action<ILCursor, ILContext> manipulator) {
-        from.IlHook(il => {
-            var cursor = new ILCursor(il);
-            manipulator(cursor, il);
+    public static void IlHook(this MethodBase from, ILContext.Manipulator manipulator) {
+        if (!HookUtils.TryDisableInlining(from)) {
+            $"Failed to disable inlining for IL-hooked method: {from.GetFullName()}".Log(LogLevel.Warn);
+        } else {
+            $"Successfully disabled inlining for IL-hooked method: {from.GetFullName()}".Log(LogLevel.Debug);
+        }
+        
+        ilHooks.Add(new ILHook(from, il => {
+            manipulator(il);
 
             try {
                 il.Method.FixShortLongOps();
             } catch {
                 // Some methods have slightly weird IL, causing that method to crash
             }
-        });
+        }));
     }
 
+    /// Creates an IL-hook to the specified method, which will automatically be unregistered
+    public static void IlHook(this MethodBase from, Action<ILCursor, ILContext> manipulator) => from.IlHook(il => manipulator(new ILCursor(il), il));
+    
     /// Creates a callback before the original method is called
     public static void HookBefore(this MethodBase methodInfo, Action action) {
         methodInfo.IlHook((cursor, _) => {
@@ -170,16 +189,18 @@ internal static class HookHelper {
     }
 
     /// Creates a callback to conditionally override the return value of the original method without ever even calling it
-    public static void OverrideReturn<T>(this MethodInfo method, Func<bool> condition, T value) {
+    public static void OverrideReturn<T>(this MethodInfo method, Func<bool>? condition, T value) {
 #if DEBUG
-        Debug.Assert(typeof(T).IsSameOrSubclassOf(method.ReturnType));
+        Debug.Assert(typeof(T).IsAssignableTo(method.ReturnType), $"Expected type of override {typeof(T).FullName} to be assignable to {method.ReturnType.FullName}");
 #endif
         method.IlHook((cursor, _) => {
             var start = cursor.MarkLabel();
             cursor.MoveBeforeLabels();
 
-            cursor.EmitStaticDelegate("OverrideReturn", condition);
-            cursor.EmitBrfalse(start);
+            if (condition is not null) {
+                cursor.EmitStaticDelegate("OverrideReturn", condition);
+                cursor.EmitBrfalse(start);
+            }
 
             // Put the return value onto the stack
             switch (value) {
@@ -207,16 +228,18 @@ internal static class HookHelper {
     }
 
     /// Creates a callback to conditionally override the return value of the original method without ever even calling it
-    public static void OverrideReturn<T>(this MethodInfo method, Func<bool> condition, Func<T> valueProvider) {
+    public static void OverrideReturn<T>(this MethodInfo method, Func<bool>? condition, Func<T> valueProvider) {
 #if DEBUG
-        Debug.Assert(typeof(T).IsSameOrSubclassOf(method.ReturnType));
+        Debug.Assert(typeof(T).IsAssignableTo(method.ReturnType), $"Expected type of override {typeof(T).FullName} to be assignable to {method.ReturnType.FullName}");
 #endif
         method.IlHook((cursor, _) => {
             var start = cursor.MarkLabel();
             cursor.MoveBeforeLabels();
 
-            cursor.EmitStaticDelegate("OverrideReturn", condition);
-            cursor.EmitBrfalse(start);
+            if (condition is not null) {
+                cursor.EmitStaticDelegate("OverrideReturn", condition);
+                cursor.EmitBrfalse(start);
+            }
 
             // Put the return value onto the stack
             cursor.EmitStaticDelegate("OverrideReturn", valueProvider);
@@ -225,7 +248,7 @@ internal static class HookHelper {
     }
 
     /// Creates a callback to conditionally override the return value of the original method without ever even calling it
-    public static void OverrideReturn<TParam, TReturn>(this MethodInfo method, Func<TParam, bool> condition, Func<TParam, TReturn> valueProvider) {
+    public static void OverrideReturn<TParam, TReturn>(this MethodInfo method, Func<TParam, bool>? condition, Func<TParam, TReturn> valueProvider) {
 #if DEBUG
         if (method.IsStatic) {
             var parameters = method.GetParameters();
@@ -234,15 +257,17 @@ internal static class HookHelper {
             Debug.Assert(method.DeclaringType?.IsSameOrSubclassOf(typeof(TParam)) ?? false);
         }
 
-        Debug.Assert(typeof(TReturn).IsSameOrSubclassOf(method.ReturnType));
+        Debug.Assert(typeof(TReturn).IsAssignableTo(method.ReturnType), $"Expected type of override {typeof(TReturn).FullName} to be assignable to {method.ReturnType.FullName}");
 #endif
         method.IlHook((cursor, _) => {
             var start = cursor.MarkLabel();
             cursor.MoveBeforeLabels();
 
-            cursor.EmitLdarg0();
-            cursor.EmitStaticDelegate("OverrideReturn", condition);
-            cursor.EmitBrfalse(start);
+            if (condition is not null) {
+                cursor.EmitLdarg0();
+                cursor.EmitStaticDelegate("OverrideReturn", condition);
+                cursor.EmitBrfalse(start);
+            }
 
             // Put the return value onto the stack
             cursor.EmitLdarg0();
@@ -348,7 +373,7 @@ internal static class HookHelper {
         var targetMethod = dynamicMethod.Generate();
         var targetReference = cursor.Context.Import(targetMethod);
         targetReference.Name = name;
-        targetReference.DeclaringType = cb.Method.DeclaringType?.DeclaringType.ResolveDefinition();
+        targetReference.DeclaringType = cb.Method.DeclaringType?.DeclaringType!.ResolveDefinition();
         targetReference.ReturnType = dynamicMethod.Definition.ReturnType;
         targetReference.Parameters.AddRange(dynamicMethod.Definition.Parameters);
 

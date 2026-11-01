@@ -20,6 +20,8 @@ public abstract class PopupMenu : Scrollable {
     #region Storage
 
     public record StorageData(HashSet<string> Favourites, Dictionary<string, uint> Usages);
+    public const string StoragesArrayKey = "Storages";
+    public const string StoragesNameKey = "Name";
     private static readonly Dictionary<string, StorageData> popupDataStorage = new();
 
     public static void LoadStorage() {
@@ -31,10 +33,12 @@ public abstract class PopupMenu : Scrollable {
 
         var toml = TomlParser.ParseFile(Settings.PopupStoragePath);
 
-        foreach ((string key, var tomlValue) in toml.Entries) {
+        foreach (var tomlValue in toml.GetArray(StoragesArrayKey)) {
             if (tomlValue is not TomlTable table) {
                 throw new TomlTypeMismatchException(typeof(TomlTable), tomlValue.GetType(), typeof(StorageData));
             }
+
+            string key = table.GetString(StoragesNameKey);
 
             popupDataStorage[key] = new StorageData(
                 table.GetArray(nameof(StorageData.Favourites)).ArrayValues
@@ -60,6 +64,7 @@ public abstract class PopupMenu : Scrollable {
     }
     public static void SaveStorage() {
         var toml = TomlDocument.CreateEmpty();
+        var array = new TomlArray();
 
         foreach ((string key, var data) in popupDataStorage) {
             if (data.Favourites.Count == 0 && data.Usages.Count == 0) {
@@ -77,19 +82,20 @@ public abstract class PopupMenu : Scrollable {
                 var entry = new TomlTable();
                 entry.Put("Name", name);
                 entry.Put("Amount", amount);
+
                 usages.ArrayValues.Add(entry);
             }
 
+            table.Put(StoragesNameKey, key);
             table.Put(nameof(data.Favourites), favourites);
             table.Put(nameof(data.Usages), usages);
 
-            toml.PutValue(key, table);
+            array.ArrayValues.Add(table);
         }
 
-        // Write to another file and then move that over, to avoid getting interrupted while writing and corrupting the settings
-        string tmpFile = Settings.PopupStoragePath + ".tmp";
-        File.WriteAllText(tmpFile, toml.SerializedValue);
-        File.Move(tmpFile, Settings.PopupStoragePath, overwrite: true);
+        toml.PutValue(StoragesArrayKey, array);
+
+        IOHelper.WriteToFileSafeOrThrow(Settings.PopupStoragePath, toml.SerializedValue);
     }
 
     #endregion
@@ -114,16 +120,13 @@ public abstract class PopupMenu : Scrollable {
         public int FrequentlyUsedIndex = -1;
 
         /// Unique identifier for the category of the entry
-        public string? StorageKey {
-            get;
-            init => field = value?.Replace('.', '#');
-        }
+        public string? StorageKey { get; init; }
 
         /// Unique identifier inside the current category
         [AllowNull]
         public string StorageName {
-            get => field ?? DisplayText.Replace('.', '#');
-            init => field = value?.Replace('.', '#');
+            get => field ?? DisplayText;
+            init;
         }
 
         /// Active data slot, used for storing persistant data
@@ -514,8 +517,21 @@ public abstract class PopupMenu : Scrollable {
                     .Skip(minRow)
                     .Take(maxRow - minRow + 1)
                     .Select(entry => {
+                        // Attempt to map fuzzy match indices onto display text
+                        int displayIdx = entry.SearchText.IndexOf(entry.DisplayText);
+                        if (displayIdx == -1) {
+                            // Not a substring
+                            return (entry, []);
+                        }
+
                         var indices = new List<int>();
                         matcher.GetIndices(entry.SearchText.AsSpan(), filter.AsSpan(), indices);
+
+                        indices.RemoveAll(idx => idx < displayIdx || idx >= displayIdx + entry.DisplayText.Length);
+                        for (int i = 0; i < indices.Count; i++) {
+                            indices[i] -= displayIdx;
+                        }
+
                         return (entry, indices);
                     })
                     .ToArray();
